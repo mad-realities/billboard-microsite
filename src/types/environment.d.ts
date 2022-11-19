@@ -5,6 +5,7 @@ declare global {
     /* eslint-disable-next-line @typescript-eslint/no-empty-interface */
     interface ProcessEnv {
       // Put type definitions for process.env variables here
+      NEXT_PUBLIC_PRIVY_APP_ID: string;
     }
   }
 }

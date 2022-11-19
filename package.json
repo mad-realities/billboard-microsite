@@ -5,8 +5,10 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "get-graphql-schema": "get-graphql-schema https://broadway-next.vercel.app/api/graphql > schema.graphql --graphql",
     "lint": "next lint",
     "pretty-quick": "pretty-quick --staged",
+    "relay": "node ./node_modules/relay-compiler/cli.js",
     "start": "next start",
     "tidy": "prettier --write .",
     "type-check": "tsc --noEmit",
@@ -18,14 +20,25 @@
     "lint"
   ],
   "dependencies": {
+    "@privy-io/react-auth": "^1.5.0",
+    "@radix-ui/react-icons": "^1.1.1",
+    "clsx": "^1.2.1",
+    "get-graphql-schema": "^2.1.2",
     "next": "^13.0.0",
+    "pigeon-maps": "^0.21.3",
     "react": "^18.2.0",
+    "react-aria": "^3.21.0",
+    "react-relay": "^14.1.0",
+    "react-spinners": "^0.13.6",
+    "tailwind-merge": "^1.8.0",
+    "ts-pattern": "^4.0.6",
     "vercel": "^28.4.12"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
     "@trivago/prettier-plugin-sort-imports": "^3.4.0",
     "@types/react": "^18.0.24",
+    "@types/react-relay": "^14.1.2",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "autoprefixer": "^10.4.13",
@@ -39,6 +52,7 @@
     "prettier-plugin-packagejson": "^2.3.0",
     "prettier-plugin-tailwindcss": "^0.1.13",
     "pretty-quick": "^3.1.3",
+    "relay-compiler": "^14.1.0",
     "tailwindcss": "^3.2.1",
     "typescript": "^4.8.4"
   },

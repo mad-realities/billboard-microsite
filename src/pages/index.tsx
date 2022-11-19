@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
+import { usePrivy } from "@privy-io/react-auth";
+import { useRouter } from "next/router";
 
 const IndexPage = () => {
-  const [text, setText] = useState("");
-
+  const router = useRouter();
   useEffect(() => {
-    (async () =>
-      await fetch("/api/hello-world")
-        .then((res) => res.text())
-        .then((text) => setText(text)))();
+    const { pathname } = router;
+    if (pathname == "/") {
+      router.push("/leaderboard");
+    }
   }, []);
 
-  return <h1>{text}</h1>;
+  return <div>Holup</div>;
 };
 
 export default IndexPage;
