@@ -11,7 +11,12 @@ const Leaderboard = () => {
     <div className="w-full">
       <div className="flex flex-col divide-y divide-mr-sky-blue">
         {Object.keys(SQUAD).map((squadMembeId) => (
-          <LeaderboardRow onClick={() => setVote(squadMembeId)} id={squadMembeId} votedFor={squadMembeId === vote} />
+          <LeaderboardRow
+            key={squadMembeId}
+            onClick={() => setVote(squadMembeId)}
+            id={squadMembeId}
+            votedFor={squadMembeId === vote}
+          />
         ))}
       </div>
     </div>
