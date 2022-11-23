@@ -6,6 +6,8 @@ declare global {
     interface ProcessEnv {
       // Put type definitions for process.env variables here
       NEXT_PUBLIC_PRIVY_APP_ID: string;
+      DATABASE_URL: string;
+      COMMUNITY_TOKEN: string;
     }
   }
 }

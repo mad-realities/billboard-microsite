@@ -47,7 +47,7 @@ export const NavBar = () => {
             </Link>
           ))}
         </div>
-        <div className="place-items-end">
+        {/* <div className="place-items-end">
           {(() => {
             if (!authenticated) {
               return (
@@ -63,7 +63,7 @@ export const NavBar = () => {
               );
             }
           })()}
-        </div>
+        </div> */}
       </div>
     </nav>
   );

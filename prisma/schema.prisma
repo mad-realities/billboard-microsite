@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Vote {
+  id String @id @default(uuid())
+  communityId String
+  voteSlug String
+  timestamp DateTime @default(now())
+  scriptRun ScriptRun @relation(fields: [scriptRunId], references: [id])
+  scriptRunId String
+}
+
+model ScriptRun {
+  id String @id @default(uuid())
+  timestamp DateTime @default(now())
+  votes Vote[]
+}
