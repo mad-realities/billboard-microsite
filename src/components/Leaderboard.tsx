@@ -2,18 +2,29 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "./design-system";
 import { useRouter } from "next/router";
-import { SQUAD } from "../client/constants";
+import { CONTACT_PHONE_NUMBER, SQUAD } from "../client/constants";
 
-const Leaderboard = () => {
+interface LeaderboardProps {
+  votes: { [key: string]: number };
+}
+
+const Leaderboard = ({ votes }: LeaderboardProps) => {
   const [vote, setVote] = useState<string | null>(null);
+
+  const onVote = (id: string) => {
+    console.log(navigator.userAgent);
+  };
+
+  const sortedList = Object.keys(SQUAD).sort((a, b) => votes[`VOTE:${b}`] - votes[`VOTE:${a}`]);
 
   return (
     <div className="w-full">
       <div className="flex flex-col divide-y divide-mr-sky-blue">
-        {Object.keys(SQUAD).map((squadMembeId) => (
+        {sortedList.map((squadMembeId) => (
           <LeaderboardRow
+            voteCount={votes[`VOTE:${squadMembeId}`]}
             key={squadMembeId}
-            onClick={() => setVote(squadMembeId)}
+            onClick={() => onVote(squadMembeId)}
             id={squadMembeId}
             votedFor={squadMembeId === vote}
           />
@@ -27,9 +38,10 @@ interface LeaderboardRowProps {
   id: string;
   onClick: () => void;
   votedFor: boolean;
+  voteCount: number;
 }
 
-const LeaderboardRow = ({ onClick, id, votedFor }: LeaderboardRowProps) => {
+const LeaderboardRow = ({ onClick, id, votedFor, voteCount }: LeaderboardRowProps) => {
   const router = useRouter();
   const padding = "p-2";
 
@@ -42,12 +54,18 @@ const LeaderboardRow = ({ onClick, id, votedFor }: LeaderboardRowProps) => {
         <div className={`${padding} text-left `}>
           <Image src={image} alt="Mad Realities wordmark logo" width={100} height={100} />
         </div>
+
         <div className={`${padding} grow text-left text-2xl`}>{name}</div>
+        <div>
+          <p className={`text-xl`}>Votes: {voteCount}</p>
+        </div>
       </div>
-      <div className={`${padding} content-end text-right`}>
-        <Button color={votedFor ? "mr-pink" : "mr-sky-blue"} size="lg" onPress={onClick}>
-          Vote
-        </Button>
+      <div className={`${padding} flex flex-row content-end text-right`}>
+        <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`}>
+          <Button color={votedFor ? "mr-pink" : "mr-sky-blue"} size="lg">
+            Vote
+          </Button>
+        </a>
       </div>
     </div>
   );

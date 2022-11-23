@@ -9,24 +9,28 @@ export const SQUAD: {
     image: string;
   };
 } = {
-  "1": {
+  ALICE: {
     name: "Alice",
     image: "/alice.png",
   },
-  "2": {
+  DEVIN: {
     name: "Devin",
     image: "/devin.png",
   },
-  "3": {
+  SARAH: {
     name: "Sarah",
     image: "/sarah.png",
   },
-  "4": {
+  SHREY: {
     name: "Shrey",
     image: "/shrey.png",
   },
-  "5": {
+  DAVID: {
     name: "David",
     image: "/david.jpeg",
+  },
+  EVAN: {
+    name: "Evan",
+    image: "/evan.png",
   },
 };
