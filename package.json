@@ -32,6 +32,7 @@
     "get-graphql-schema": "^2.1.2",
     "imagekitio-react": "^2.0.0",
     "next": "^13.0.0",
+    "node-cron": "^3.0.2",
     "node-fetch": "^2.6.1",
     "pigeon-maps": "^0.21.3",
     "prisma": "^4.6.1",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
     "@trivago/prettier-plugin-sort-imports": "^3.4.0",
+    "@types/node-cron": "^3.0.6",
     "@types/react": "^18.0.24",
     "@types/react-relay": "^14.1.2",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
