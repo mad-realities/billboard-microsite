@@ -16,7 +16,7 @@ function VerificationApp({ Component, pageProps }: AppProps) {
         <>
           <Head>
             <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
-            <title>Nextjs Skeleton App</title>
+            <title>Mad Realities Billboard</title>
           </Head>
           <div className="sticky bg-mr-navy">
             <NavBar />
