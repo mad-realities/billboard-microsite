@@ -21,7 +21,11 @@ function createNVotes(n: number, vote: { community_id: string; keyword: string }
   return votes;
 }
 
-async function main() {
+export async function runScript() {
+  // random number of miliseconds between 5 seconds and 2 minutes
+  const randomDelay = Math.floor(Math.random() * 120000) + 5000;
+  await delay(randomDelay);
+
   // get latest script run from prisma
   const latest_script_run = await prisma.scriptRun.findFirst({
     orderBy: {
@@ -69,4 +73,6 @@ async function main() {
   }
 }
 
-main();
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
