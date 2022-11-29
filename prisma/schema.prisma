@@ -17,8 +17,8 @@ model Vote {
   communityId String
   instagramHandle String
   timestamp DateTime @default(now())
-  scriptRun ScriptRun @relation(fields: [scriptRunId], references: [id])
-  scriptRunId String
+  scriptRun ScriptRun? @relation(fields: [scriptRunId], references: [id])
+  scriptRunId String?
 }
 
 model ScriptRun {
