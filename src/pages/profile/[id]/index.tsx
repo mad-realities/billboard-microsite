@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "../../../components/design-system";
 import { usePrivy } from "@privy-io/react-auth";
 import { useWindowSize } from "../../../client/hooks";
+import { InstagramEmbed } from "react-social-media-embed";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -35,14 +36,9 @@ const ProfileCard = ({ id }: { id: string }) => {
         </Button>
       </div> */}
       <div className="w-500 h-600 sm:h-300 m-10 flex grow flex-col items-center justify-around gap-10 rounded-xl border bg-gradient-to-r from-mr-lilac to-mr-sky-blue text-3xl text-white">
-        <Image
-          src={sm.image}
-          alt="Mad Realities wordmark logo"
-          width={300}
-          height={200}
-          className={`rounded-lg ${margin} border-4`}
-        />
-        <div className={`${margin} text-4xl`}>{sm.name}</div>
+        <InstagramEmbed url={`https://www.instagram.com/${id}`} width={328} />
+
+        <div className={`${margin} text-4xl`}>{id}</div>
         <div className={`${margin}`}>
           <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`}>
             <Button color={"mr-navy"} size="lg">
