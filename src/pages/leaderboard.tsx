@@ -13,15 +13,15 @@ type Props = {
 export const getServerSideProps = async (): Promise<Props> => {
   // query votes from prisma, group by vote slug and count
   const votes = await prisma.vote.groupBy({
-    by: ["voteSlug"],
+    by: ["instagramHandle"],
     _count: {
-      voteSlug: true,
+      instagramHandle: true,
     },
   });
 
   // convert to object
   const votesObj = votes.reduce((acc, vote) => {
-    acc[vote.voteSlug] = vote._count.voteSlug;
+    acc[vote.instagramHandle] = vote._count.instagramHandle;
     return acc;
   }, {} as { [voteSlug: string]: number });
 
