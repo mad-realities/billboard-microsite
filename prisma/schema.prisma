@@ -15,7 +15,7 @@ datasource db {
 model Vote {
   id String @id @default(uuid())
   communityId String
-  voteSlug String
+  instagramHandle String
   timestamp DateTime @default(now())
   scriptRun ScriptRun @relation(fields: [scriptRunId], references: [id])
   scriptRunId String

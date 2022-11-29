@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { getVotesMapSinceDate } from "./script";
+import { getVotesSinceDate } from "./community";
+import { triggerCommunityMessageZap } from "./zapier";
 
 dotenv.config({
   path: ".env.local",
@@ -21,10 +22,21 @@ function createNVotes(n: number, vote: { community_id: string; keyword: string }
   return votes;
 }
 
-export async function runScript() {
+async function createEmptyScriptRun() {
+  const response = await prisma.scriptRun.create({
+    data: {},
+  });
+
+  return response;
+}
+
+export async function runScript(withDelay = false) {
   // random number of miliseconds between 5 seconds and 2 minutes
-  const randomDelay = Math.floor(Math.random() * 120000) + 5000;
-  await delay(randomDelay);
+  if (withDelay) {
+    const randomDelay = Math.floor(Math.random() * 120000) + 5000;
+    console.log("Waiting", randomDelay, "ms");
+    await delay(randomDelay);
+  }
 
   // get latest script run from prisma
   const latest_script_run = await prisma.scriptRun.findFirst({
@@ -35,29 +47,27 @@ export async function runScript() {
 
   if (latest_script_run) {
     const dateSinceLastRun = new Date(latest_script_run.timestamp);
-    const user_keyword_counts = await getVotesMapSinceDate(keywords, dateSinceLastRun);
-    console.log("user_keyword_counts", user_keyword_counts);
-    const userVotes = Object.keys(user_keyword_counts).map((community_id) => {
-      const keyword_counts = user_keyword_counts[community_id];
-      const votes = Object.keys(keyword_counts).map((keyword) => {
-        const vote = keyword_counts[keyword];
-        return createNVotes(vote, { community_id, keyword });
-      });
-      return votes;
+    console.log("Last script ran at", dateSinceLastRun.toLocaleString());
+    const userMap = await getVotesSinceDate(dateSinceLastRun);
+    console.log("userMap", userMap);
+    const userVotes = Object.keys(userMap).map((community_id) => {
+      return {
+        community_id,
+        vote: userMap[community_id].igHandle,
+        timestamp: userMap[community_id].timestamp,
+      };
     });
 
-    const votes = userVotes.flat().flat();
-
-    // create new script run
+    // // create new script run
     const new_script_run = await prisma.scriptRun.create({
       data: {
         timestamp: new Date(),
         votes: {
           createMany: {
-            data: votes.map((vote) => ({
+            data: userVotes.map((vote) => ({
+              instagramHandle: vote.vote,
+              timestamp: vote.timestamp,
               communityId: vote.community_id,
-              voteSlug: vote.keyword,
-              timestamp: new Date(),
             })),
           },
         },
@@ -67,12 +77,29 @@ export async function runScript() {
       },
     });
 
+    const zapierPayload = new_script_run.votes.map((vote) => ({
+      fanId: userMap[vote.communityId].fanId,
+      text: getTextForVote(vote.instagramHandle),
+    }));
+
+    if (zapierPayload.length > 0) {
+      await triggerCommunityMessageZap(zapierPayload);
+    }
+
     console.log("new_script_run", new_script_run);
   } else {
-    console.log("No script runs yet");
+    console.log("No script runs yet, creating empty script run.");
+    const new_script_run = await createEmptyScriptRun();
+    console.log("Created new script run", new_script_run);
   }
+}
+
+function getTextForVote(igHandle: string) {
+  return `You voted for https://www.instagram.com/${igHandle}/ ! To change your vote, text VOTE: followed by the Instagram handle of the creator you want to vote for.`;
 }
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+runScript();
