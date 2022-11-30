@@ -4,3 +4,7 @@
 
 1. run `npx vercel link`
 2. run `vercel env pull .env.local`
+
+# To update prisma schema
+
+1. run `npm run prisma generate`
