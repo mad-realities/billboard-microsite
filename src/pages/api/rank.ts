@@ -2,6 +2,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../prisma";
 
 export const loadRank = async (offset: number, limit: number) => {
+  // exclude instagram handles that are in the shadow ban list
+  const shadowBans = await prisma.shadowBanList.findMany();
+  const shadowBanHandles = shadowBans.map((shadowBan) => shadowBan.instagramHandle);
+
   const voteCounts = await prisma.vote.groupBy({
     by: ["instagramHandle"],
     _count: {
@@ -19,6 +23,11 @@ export const loadRank = async (offset: number, limit: number) => {
     ],
     take: limit,
     skip: offset,
+    where: {
+      instagramHandle: {
+        notIn: shadowBanHandles,
+      },
+    },
   });
 
   // convert voteCounts to a list with rank and instagram handle

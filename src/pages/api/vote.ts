@@ -3,7 +3,7 @@ import { prisma } from "../../prisma";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
-    res.setHeader("Allow", ["POT"]);
+    res.setHeader("Allow", ["POST"]);
     res.status(405).end("Method Not Allowed");
   } else {
     try {
