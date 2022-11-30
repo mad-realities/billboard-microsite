@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 
 interface Props {
@@ -9,7 +11,7 @@ interface Props {
 
 const defaultProps = {
   onEndWindowSeconds: 2,
-  fontSize: 32,
+  //   fontSize: 32,
 };
 
 function getCountdownString(current: Date, end: Date) {
@@ -52,11 +54,7 @@ function CountdownTimer({ endDatetime, onEnd, onEndWindowSeconds, fontSize }: Pr
     setTriggered(false);
   }, [endDatetime]);
 
-  return (
-    <div>
-      <div style={{ fontSize }}>{getCountdownString(currentTime, endDatetime)}</div>
-    </div>
-  );
+  return <>{getCountdownString(currentTime, endDatetime)}</>;
 }
 
 CountdownTimer.defaultProps = defaultProps;
