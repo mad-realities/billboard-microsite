@@ -24,10 +24,11 @@ module.exports = {
         "mr-orange": "#FF994B",
       },
       fontFamily: {
-        // sans: ["Suisse Intl"],
+        sans: ["Saira Semi Condensed"],
         mono: ['"Lilita One"'],
       },
       fontWeight: {
+        regular: 500,
         semibold: 700,
         bold: 800,
       },

@@ -44,14 +44,14 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
   };
 
   return (
-    <div className="flex w-full flex-col items-center	gap-2 text-white">
-      <div className="flex w-full flex-col items-center	gap-2 text-white">
+    <div className="flex w-full flex-col items-center gap-2 text-white">
+      <div className="flex w-full flex-col items-center gap-2 text-white">
         <Subheader>
           <div className="flex w-full flex-row">
-            <div className="text-xs">LEADERBOARD</div>
+            <div className="text-sm">LEADERBOARD</div>
             <div className="flex-grow"></div>
             <div className="place-items-end">
-              <div className="text-xs">00:04:20 UNTIL WINNER CHOSEN</div>
+              <div className="text-sm">00:04:20 UNTIL WINNER CHOSEN</div>
             </div>
           </div>
         </Subheader>
