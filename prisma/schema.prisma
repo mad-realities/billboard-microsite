@@ -21,6 +21,10 @@ model Vote {
   scriptRunId String?
 }
 
+model ShadowBanList {
+  instagramHandle String @id @unique
+}
+
 model ScriptRun {
   id String @id @default(uuid())
   timestamp DateTime @default(now())
