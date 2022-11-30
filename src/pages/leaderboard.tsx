@@ -6,6 +6,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { InstagramLeaderboardRow } from "../components/Leaderboard";
+import CountdownTimer from "../components/Countdown";
 
 const pageSize = 20;
 
@@ -51,7 +52,9 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="text-sm">LEADERBOARD</div>
             <div className="flex-grow"></div>
             <div className="place-items-end">
-              <div className="text-sm">00:04:20 UNTIL WINNER CHOSEN</div>
+              <div className="text-sm">
+                <CountdownTimer endDatetime={new Date("2022-12-08")} onEnd={console.log} />
+              </div>
             </div>
           </div>
         </Subheader>
