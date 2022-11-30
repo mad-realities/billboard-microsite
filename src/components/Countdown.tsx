@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 
 interface Props {
@@ -54,7 +52,7 @@ function CountdownTimer({ endDatetime, onEnd, onEndWindowSeconds, fontSize }: Pr
     setTriggered(false);
   }, [endDatetime]);
 
-  return <>{getCountdownString(currentTime, endDatetime)}</>;
+  return <div suppressHydrationWarning>{getCountdownString(currentTime, endDatetime)}</div>;
 }
 
 CountdownTimer.defaultProps = defaultProps;
