@@ -19,7 +19,7 @@ const IndexPage = () => {
         <div className="text-sm">YOU’RE HERE. YOU’RE THERE. YOU’RE EVERYWHERE.</div>
       </Subheader>
       <Image src="/cabs.png" alt="Mad Realities wordmark logo" width={400} height={300} />
-      <Subheader>
+      <Subheader flipped>
         <div className="text-sm font-semibold">WHOSE FACE WILL END UP AROUND NYC ON SUNDAY?</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
