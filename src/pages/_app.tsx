@@ -4,6 +4,7 @@ import NavBar from "../components/nav/NavBar";
 import Image from "next/image";
 
 import "../styles/tailwind.css";
+import Link from "next/link";
 
 function VerificationApp({ Component, pageProps }: AppProps) {
   return (
@@ -23,7 +24,9 @@ function VerificationApp({ Component, pageProps }: AppProps) {
 
       <div className="mx-2 flex h-full grow rounded-xl border border-white">
         <div className="align-center flex w-auto flex-grow flex-col items-center p-1">
-          <Image src="/MAD-FAMOUS.png" alt="Mad Realities wordmark logo" width={400} height={150} className="mb-8" />
+          <Link href="/">
+            <Image src="/MAD-FAMOUS.png" alt="Mad Realities wordmark logo" width={400} height={150} className="mb-8" />
+          </Link>
           <Component {...pageProps} />
         </div>
       </div>

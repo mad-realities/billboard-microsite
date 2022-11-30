@@ -14,7 +14,7 @@ export const NavBar = () => {
     <nav className="z-50 flex flex-wrap items-center justify-between rounded-lg p-2 text-mr-white">
       <div className="flex w-auto flex-grow place-content-end items-center">
         <div className="mr-6">
-          <Link href="/">
+          <Link href="https://madrealities.xyz" target="_blank">
             <Image src="/MAD-REALITIES.png" alt="Mad Realities wordmark logo" width={120} height={57} />
           </Link>
         </div>
