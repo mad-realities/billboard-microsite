@@ -25,7 +25,7 @@ function VerificationApp({ Component, pageProps }: AppProps) {
       <div className="mx-2 flex h-full grow rounded-xl border border-white">
         <div className="align-center flex w-auto flex-grow flex-col items-center p-1">
           <Link href="/">
-            <Image src="/MAD-FAMOUS.png" alt="Mad Realities wordmark logo" width={400} height={150} className="mb-8" />
+            <Image src="/MAD-FAMOUS.png" alt="Mad Realities wordmark logo" width={400} height={75} className="mb-0" />
           </Link>
           <Component {...pageProps} />
         </div>
