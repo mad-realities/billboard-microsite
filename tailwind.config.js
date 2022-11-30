@@ -23,6 +23,14 @@ module.exports = {
         "mr-hot-pink": "#FF1F8C",
         "mr-orange": "#FF994B",
       },
+      fontFamily: {
+        // sans: ["Suisse Intl"],
+        mono: ['"Lilita One"'],
+      },
+      fontWeight: {
+        semibold: 700,
+        bold: 800,
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],
