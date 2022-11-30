@@ -10,17 +10,11 @@ interface LeaderboardProps {
 }
 
 const Leaderboard = ({ sortedRows }: LeaderboardProps) => {
-  const [vote, setVote] = useState<string | null>(null);
-
-  const onVote = (id: string) => {
-    console.log(navigator.userAgent);
-  };
-
   return (
     <div className="w-full">
       <div className="flex flex-col divide-y divide-mr-sky-blue">
         {sortedRows.map((id) => (
-          <InstagramLeaderboardRow key={id.handle} onClick={() => onVote(id.handle)} id={id.handle} rank={id.rank} />
+          <InstagramLeaderboardRow key={id.handle} id={id.handle} rank={id.rank} />
         ))}
       </div>
     </div>
@@ -29,13 +23,13 @@ const Leaderboard = ({ sortedRows }: LeaderboardProps) => {
 
 interface LeaderboardRowProps {
   id: string;
-  onClick: () => void;
+  // onClick: () => void;
   votedFor: boolean;
   voteCount?: number;
   rank: string;
 }
 
-const InstagramLeaderboardRow = ({ onClick, id, rank }: Omit<LeaderboardRowProps, "votedFor">) => {
+export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, "votedFor">) => {
   const router = useRouter();
   const padding = "p-2";
 
@@ -59,7 +53,7 @@ const InstagramLeaderboardRow = ({ onClick, id, rank }: Omit<LeaderboardRowProps
   );
 };
 
-const LeaderboardRow = ({ onClick, id, votedFor, voteCount }: LeaderboardRowProps) => {
+const LeaderboardRow = ({ id, votedFor, voteCount }: LeaderboardRowProps) => {
   const router = useRouter();
   const padding = "p-2";
 
