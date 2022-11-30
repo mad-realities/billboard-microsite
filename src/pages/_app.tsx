@@ -11,7 +11,7 @@ function VerificationApp({ Component, pageProps }: AppProps) {
     <div
       className="flex min-h-screen flex-col bg-cover"
       style={{
-        backgroundImage: "url('/space.png')",
+        backgroundImage: "url('/billboard_starry.png')",
       }}
     >
       <Head>
