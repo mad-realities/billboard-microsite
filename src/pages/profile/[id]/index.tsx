@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { CONTACT_PHONE_NUMBER, SQUAD } from "../../../client/constants";
 import Image from "next/image";
 import { Button } from "../../../components/design-system";
-import { usePrivy } from "@privy-io/react-auth";
 import { useWindowSize } from "../../../client/hooks";
 import { InstagramEmbed } from "react-social-media-embed";
+import BillboardButton from "../../../components/design-system/BillboardButton";
+import Subheader from "../../../components/design-system/Subheader";
 
 const ProfilePage = () => {
   const router = useRouter();
@@ -15,30 +16,52 @@ const ProfilePage = () => {
 };
 
 const ProfileCard = ({ id }: { id: string }) => {
-  const { authenticated } = usePrivy();
   const sm = SQUAD[id];
   const size = useWindowSize();
   const margin = "m-5";
   const router = useRouter();
 
-  const vote = () => {
-    if (authenticated) {
-      alert("nice, slay");
-    } else {
-      alert("hey? you need to login first");
-    }
-  };
   return (
     <div className="flex grow flex-col items-center justify-around rounded-xl text-3xl text-white">
+      <Subheader>
+        <div>Profile</div>
+      </Subheader>
+      <div className="flex w-full flex-row gap-2">
+        <BillboardButton fill color="mr-yellow">
+          NOMINATE
+        </BillboardButton>
+        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
+          LEADERBOARD
+        </BillboardButton>
+      </div>
+      <div className="align-center m-2 flex flex-col items-center justify-center gap-10 rounded-xl border border-white p-10">
+        <div className="text-xl2">
+          <a>
+            <span className="text-mr-yellow underline">@{id}</span>
+          </a>
+          <span> is in...</span>
+        </div>
+
+        <div className="text-center text-xl">2. The more nomintations the higher chances</div>
+        <div className="text-xl">3. See your friend on the big screen</div>
+        <div className="flex w-full flex-row gap-2">
+          <BillboardButton fill color="mr-sky-blue">
+            <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`}>VOTE</a>
+          </BillboardButton>
+          <BillboardButton fill color="mr-sky-blue" onPress={() => router.push("/leaderboard")}>
+            SHARE
+          </BillboardButton>
+        </div>
+      </div>
       {/* <div className={`${margin}`}>
         <Button color={"mr-sky-blue"} size="lg" onPress={() => router.push(`/profile/${id}/edit`)}>
           Edit
         </Button>
       </div> */}
-      <div className="w-500 h-600 sm:h-300 m-10 flex grow flex-col items-center justify-around gap-10 rounded-xl border bg-gradient-to-r from-mr-lilac to-mr-sky-blue text-3xl text-white">
-        <InstagramEmbed url={`https://www.instagram.com/${id}`} width={328} />
+      <div className="">
+        {/* <InstagramEmbed url={`https://www.instagram.com/${id}`} width={328} /> */}
 
-        <div className={`${margin} text-4xl`}>{id}</div>
+        {/* <div className={`${margin} text-4xl`}>{id}</div> */}
         <div className={`${margin}`}>
           <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`}>
             <Button color={"mr-navy"} size="lg">

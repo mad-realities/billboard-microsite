@@ -3,6 +3,7 @@ import { InferGetServerSidePropsType } from "next";
 import { PrismaClient } from "@prisma/client";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { useRouter } from "next/router";
+import Subheader from "../components/design-system/Subheader";
 
 const prisma = new PrismaClient();
 
@@ -57,19 +58,22 @@ const LeaderboardPage = ({ voteCounts, lastUpdated }: InferGetServerSidePropsTyp
 
   return (
     <div className="flex w-full flex-col items-center	gap-1 py-8 text-white">
-      <div className="flex w-full flex-row">
-        <div className="text-xs">LEADERBOARD</div>
-        <div className="flex-grow"></div>
-        <div className="place-items-end">
-          <div className="text-xs">00:04:20 UNTIL WINNER CHOSEN</div>
+      <Subheader>
+        <div className="flex w-full flex-row">
+          <div className="text-xs">LEADERBOARD</div>
+          <div className="flex-grow"></div>
+          <div className="place-items-end">
+            <div className="text-xs">00:04:20 UNTIL WINNER CHOSEN</div>
+          </div>
         </div>
-      </div>
+      </Subheader>
+
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-yellow">
           NOMINATE
         </BillboardButton>
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
-          LEADERBOARD
+          WAIT WHAT?
         </BillboardButton>
       </div>
       <div className="w-full grow rounded-lg border-4 border-double border-mr-pink bg-mr-black">
