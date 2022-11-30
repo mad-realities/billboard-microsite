@@ -10,6 +10,7 @@
     "pretty-quick": "pretty-quick --staged",
     "prisma": "dotenv -e .env.local prisma",
     "relay": "node ./node_modules/relay-compiler/cli.js",
+    "script": "npx ts-node --skip-project",
     "start": "next start",
     "tidy": "prettier --write .",
     "type-check": "tsc --noEmit",
