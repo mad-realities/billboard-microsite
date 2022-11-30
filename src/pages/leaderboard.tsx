@@ -4,8 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { useRouter } from "next/router";
 import Subheader from "../components/design-system/Subheader";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 type Props = {
   props: {
@@ -57,7 +56,7 @@ const LeaderboardPage = ({ voteCounts, lastUpdated }: InferGetServerSidePropsTyp
   }));
 
   return (
-    <div className="flex w-full flex-col items-center	gap-1 py-8 text-white">
+    <div className="flex w-full flex-col items-center	gap-2 text-white">
       <Subheader>
         <div className="flex w-full flex-row">
           <div className="text-xs">LEADERBOARD</div>

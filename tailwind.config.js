@@ -8,6 +8,9 @@ module.exports = {
       backgroundImage: {
         my_bg_image: "url('../../public/space.png')",
       },
+      fontSize: {
+        "2xs": "0.6rem",
+      },
       colors: {
         "mr-black": "#000000",
         "mr-navy": "#090037",

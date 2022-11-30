@@ -39,14 +39,17 @@ const InstagramLeaderboardRow = ({ onClick, id, rank }: Omit<LeaderboardRowProps
   const router = useRouter();
   const padding = "p-2";
 
+  const idStringLength = id.length;
+  const handleClasses = idStringLength > 20 ? "text-xs break-words" : idStringLength > 15 ? "text-sm" : "text-md";
+
   return (
-    <div className="flex w-full flex-row items-center hover:bg-mr-navy">
-      <div className="group flex flex-1 flex-row items-center" onClick={() => router.push(`/profile/${id}`)}>
+    <div className="flex w-full flex-row hover:bg-mr-navy">
+      <div className="flex flex-1 flex-row items-center" onClick={() => router.push(`/profile/${id}`)}>
         <div className={`${padding} text-left text-sm`}>#{rank}</div>
-        <div className={`${padding} text-md flex-1 text-left`}>@{id}</div>
+        <div className={`${padding} text-md flex-1 text-left ${handleClasses}`}>@{id}</div>
       </div>
-      <div className={`${padding} place-items-end text-right`}>
-        <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`}>
+      <div className={`${padding} flex-3`}>
+        <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`} className="w-full">
           <SmallBillboardButton color={"mr-sky-blue"} fill>
             Vote
           </SmallBillboardButton>
