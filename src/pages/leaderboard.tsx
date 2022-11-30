@@ -23,7 +23,7 @@ export const getServerSideProps = async (): Promise<Props> => {
   return {
     props: {
       initialRows: results,
-    }, // will be passed to the page component as props
+    },
   };
 };
 
@@ -78,15 +78,6 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
           >
             {rows.map((row) => (
               <InstagramLeaderboardRow key={row.rank} rank={row.rank.toString()} id={row.instagramHandle} />
-              // <div
-              //   key={row.instagramHandle}
-              //   className="flex w-full flex-row items-center justify-between border-b border-gray-200 p-4"
-              // >
-              //   <div className="flex flex-row items-center gap-5">
-              //     <span>{row.rank} </span>
-              //     <span> {row.instagramHandle}</span>
-              //   </div>
-              // </div>
             ))}
           </InfiniteScroll>
         </div>
