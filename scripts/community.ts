@@ -48,6 +48,7 @@ function get_community_ids_that_messaged_since_date_from_chats(since_date: Date,
 
 async function get_community_ids_that_messaged_since_date(since_date: Date) {
   const chats = await get_50_latest_chats();
+  console.log("chats", chats);
   const community_ids = get_community_ids_that_messaged_since_date_from_chats(since_date, chats["data"]);
   if (community_ids.length == 50) console.log("More than 50 chats since", since_date);
   return community_ids;
@@ -56,6 +57,7 @@ async function get_community_ids_that_messaged_since_date(since_date: Date) {
 async function get_50_latest_chats() {
   const url = "https://api.community.com/client-dashboard/messaging/chats?page_number=1&page_size=50";
   const response = await fetch(url, { method: "GET", headers: headers });
+  console.log("response", response);
   if (response.status !== 200) throw response.statusText;
   return await response.json();
 }
