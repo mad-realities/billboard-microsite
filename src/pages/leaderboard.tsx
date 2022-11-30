@@ -1,12 +1,14 @@
 import Leaderboard from "../components/Leaderboard";
 import { InferGetServerSidePropsType } from "next";
 import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import BillboardButton from "../components/design-system/BillboardButton";
+import { useRouter } from "next/router";
+import Subheader from "../components/design-system/Subheader";
+import { prisma } from "../prisma";
 
 type Props = {
   props: {
-    votes: { [voteSlug: string]: number };
+    voteCounts: { [voteSlug: string]: number };
     lastUpdated: string | null;
   };
 };
@@ -34,24 +36,47 @@ export const getServerSideProps = async (): Promise<Props> => {
 
   return {
     props: {
-      votes: votesObj,
+      voteCounts: votesObj,
       lastUpdated: lastUpdated?.timestamp ? lastUpdated?.timestamp.toString() : null,
     }, // will be passed to the page component as props
   };
 };
 
-const LeaderboardPage = ({ votes, lastUpdated }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const LeaderboardPage = ({ voteCounts, lastUpdated }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
+
+  // sort votes by count into array
+  const sortedVotes = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
+
+  // convert to leaderboard row format
+  const sortedRows = sortedVotes.map((vote, index) => ({
+    rank: (index + 1).toString(),
+    handle: vote[0],
+    voteCount: vote[1],
+  }));
+
   return (
-    <div className="flex flex-col items-center gap-10	py-8 text-white">
-      <div className="text-4xl text-white">Leaderboard</div>
-      {lastUpdated && (
-        <p className="text-2xl text-white">
-          {" "}
-          <>Last Updated: {new Date(lastUpdated).toLocaleTimeString()} </>
-        </p>
-      )}
-      <div className="w-11/12 grow rounded-lg border-4 border-double border-mr-pink bg-mr-black">
-        <Leaderboard votes={votes} />
+    <div className="flex w-full flex-col items-center	gap-2 text-white">
+      <Subheader>
+        <div className="flex w-full flex-row">
+          <div className="text-xs">LEADERBOARD</div>
+          <div className="flex-grow"></div>
+          <div className="place-items-end">
+            <div className="text-xs">00:04:20 UNTIL WINNER CHOSEN</div>
+          </div>
+        </div>
+      </Subheader>
+
+      <div className="flex w-full flex-row gap-2">
+        <BillboardButton fill color="mr-yellow">
+          NOMINATE
+        </BillboardButton>
+        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
+          WAIT WHAT?
+        </BillboardButton>
+      </div>
+      <div className="w-full grow rounded-lg border-4 border-double border-mr-pink bg-mr-black">
+        <Leaderboard sortedRows={sortedRows} />
       </div>
     </div>
   );

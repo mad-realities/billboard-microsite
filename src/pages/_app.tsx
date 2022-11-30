@@ -1,33 +1,33 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import PrivyRelayProvider from "../components/auth/PrivyRelayProvider";
 import NavBar from "../components/nav/NavBar";
-import { RelayEnvironmentProvider } from "react-relay";
-import { createRelayEnvironment } from "../client";
+import Image from "next/image";
 
 import "../styles/tailwind.css";
 
 function VerificationApp({ Component, pageProps }: AppProps) {
-  const relayEnvironment = createRelayEnvironment();
-
   return (
-    <RelayEnvironmentProvider environment={relayEnvironment}>
-      <PrivyRelayProvider>
-        <>
-          <Head>
-            <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
-            <title>Mad Realities Billboard</title>
-          </Head>
-          <div className="sticky bg-mr-navy">
-            <NavBar />
-          </div>
+    <div
+      className="flex min-h-screen flex-col bg-cover"
+      style={{
+        backgroundImage: "url('/space.png')",
+      }}
+    >
+      <Head>
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+        <title>Mad Realities Billboard</title>
+      </Head>
+      <div className="sticky">
+        <NavBar />
+      </div>
 
-          <div className="min-h-screen bg-mr-navy">
-            <Component {...pageProps} />
-          </div>
-        </>
-      </PrivyRelayProvider>
-    </RelayEnvironmentProvider>
+      <div className="mx-2 flex h-full grow rounded-xl border border-white">
+        <div className="align-center flex w-auto flex-grow flex-col items-center p-1">
+          <Image src="/MAD-FAMOUS.png" alt="Mad Realities wordmark logo" width={400} height={150} className="mb-8" />
+          <Component {...pageProps} />
+        </div>
+      </div>
+    </div>
   );
 }
 export default VerificationApp;

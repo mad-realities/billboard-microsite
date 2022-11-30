@@ -5,12 +5,18 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      backgroundImage: {
+        my_bg_image: "url('../../public/space.png')",
+      },
+      fontSize: {
+        "2xs": "0.6rem",
+      },
       colors: {
         "mr-black": "#000000",
         "mr-navy": "#090037",
         "mr-sky-blue": "#00B9F1",
         "mr-lime": "#4EC800",
-        "mr-yellow": "#DBFF00",
+        "mr-yellow": "#F8D84A",
         "mr-white": "#FFFFFF",
         "mr-lilac": "#D99BFF",
         "mr-pink": "#FB6DF0",
