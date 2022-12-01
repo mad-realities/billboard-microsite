@@ -6,11 +6,13 @@ import Subheader from "../components/design-system/Subheader";
 import { useEffect, useState } from "react";
 import { CONTACT_PHONE_NUMBER } from "../client/constants";
 import { getSmsHref } from "../client/utils";
+import { getLinkPreview } from "../linkPreviewConfig";
 
 const Vote = () => {
   const router = useRouter();
   const [handle, setHandle] = useState("");
   const [error, setError] = useState("");
+  const linkPreview = getLinkPreview("VOTE");
 
   // check if handle is one word
   const handleIsValid = handle.split(" ").length === 1;
@@ -25,6 +27,7 @@ const Vote = () => {
 
   return (
     <div className="align-center item-around flex h-full w-auto flex-grow grow flex-col items-center gap-3 p-1 text-white">
+      {linkPreview}
       <Subheader>
         <div className="text-2xs">NOMINATE YOUR FRIEND TO BE ON THE BILLBOARD</div>
       </Subheader>

@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        my_bg_image: "url('../../public/space.png')",
+        "star-texture": "url('../../public/billboard_starry_small.jpg')",
       },
       fontSize: {
         "2xs": "0.6rem",
@@ -24,7 +24,7 @@ module.exports = {
         "mr-orange": "#FF994B",
       },
       fontFamily: {
-        sans: ["Saira Semi Condensed"],
+        sans: ["Londrina Solid"],
         mono: ['"Lilita One"'],
       },
       fontWeight: {

@@ -9,6 +9,8 @@ import { prisma } from "../../../prisma";
 import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../client/utils";
 import { RWebShare } from "react-web-share";
 import { loadRankForHandle } from "../../api/rank";
+import Head from "next/head";
+import { getLinkPreview } from "../../../linkPreviewConfig";
 
 type Props = {
   props: {
@@ -58,12 +60,13 @@ const ProfileCard = ({
   prompt,
   hostname,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const margin = "m-5";
   const router = useRouter();
-  console.log(`${hostname}/profile/${handle}`);
+  const url = `https://${hostname}/profile/${handle}`;
+  const linkPreview = getLinkPreview("PROFILE", handle, rank);
 
   return (
     <div className="flex grow flex-col items-center gap-2 rounded-xl text-3xl text-white">
+      {linkPreview}
       <Subheader>
         <div>Personal Profile</div>
       </Subheader>
@@ -108,7 +111,7 @@ const ProfileCard = ({
           <RWebShare
             data={{
               // text: "Like humans, flamingos make friends for life",
-              url: `https://${hostname}/profile/${handle}`,
+              url,
               // title: "Share this article on Flamingos",
             }}
             // onClick={() => router.push("/leaderboard")}
