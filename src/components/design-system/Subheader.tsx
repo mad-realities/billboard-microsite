@@ -12,7 +12,7 @@ export default function Subheader({ children, flipped }: SubheaderProps) {
         "w-full",
         "flex-col",
         "bg-[url('/subheader.png')]",
-        "bg-contain",
+        "bg-cover",
         "bg-no-repeat",
         "min-h-[24px]",
         "bg-bottom",
