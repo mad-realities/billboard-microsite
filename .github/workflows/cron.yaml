@@ -16,7 +16,7 @@ jobs:
           node-version: 16
       - name: Install requirements
         run: |
-          npm --prefix $GITHUB_WORKSPACE/scripts install
+          npm install
       - name: Compile Typescript
         run: |
           tsc scripts/script.ts
