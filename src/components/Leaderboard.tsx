@@ -4,6 +4,8 @@ import { Button } from "./design-system";
 import { useRouter } from "next/router";
 import { CONTACT_PHONE_NUMBER, SQUAD } from "../client/constants";
 import SmallBillboardButton from "./design-system/SmallBillboardButton";
+import { cutOffStringIfTooLong, getSmsHref } from "../client/utils";
+import { useWindowSize } from "../client/hooks";
 
 interface LeaderboardProps {
   sortedRows: { rank: string; handle: string }[];
@@ -23,7 +25,6 @@ const Leaderboard = ({ sortedRows }: LeaderboardProps) => {
 
 interface LeaderboardRowProps {
   id: string;
-  // onClick: () => void;
   votedFor: boolean;
   voteCount?: number;
   rank: string;
@@ -33,17 +34,18 @@ export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, 
   const router = useRouter();
   const padding = "p-2";
 
-  const idStringLength = id.length;
-  const handleClasses = idStringLength > 20 ? "text-xs break-words" : idStringLength > 15 ? "text-sm" : "text-md";
+  const windowSize = useWindowSize();
 
   return (
-    <div className="flex w-full flex-row hover:bg-mr-navy">
+    <div className="flex  w-full flex-row hover:bg-mr-navy">
       <div className="flex flex-1 flex-row items-center" onClick={() => router.push(`/profile/${id}`)}>
         <div className={`${padding} text-left text-sm`}>#{rank}</div>
-        <div className={`${padding} text-md flex-1 text-left ${handleClasses}`}>@{id}</div>
+        <div className={`${padding} text-md flex-1 text-left`}>
+          @{windowSize.width && windowSize.width > 800 ? id : cutOffStringIfTooLong(id, 20)}
+        </div>
       </div>
       <div className={`${padding} flex-3`}>
-        <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`} className="w-full">
+        <a href={getSmsHref(id)} className="w-full">
           <SmallBillboardButton color={"mr-sky-blue"} fill>
             Vote
           </SmallBillboardButton>
@@ -73,7 +75,7 @@ const LeaderboardRow = ({ id, votedFor, voteCount }: LeaderboardRowProps) => {
         </div>
       </div>
       <div className={`${padding} flex flex-row content-end text-right`}>
-        <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${id}`}>
+        <a href={getSmsHref(id)}>
           <Button color={votedFor ? "mr-pink" : "mr-sky-blue"} size="lg">
             Vote
           </Button>
