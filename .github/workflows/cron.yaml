@@ -1,0 +1,27 @@
+name: Detect new votes
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test scenario tags'
+        required: true 
+        type: string
+#   schedule:
+#     - cron: "0-59/5 * * * *"
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install requirements
+        run: |
+          npm install dotenv node-fetch
+      - name: Run script
+        run: |
+          set TIMESTAMP=date +"%Y-%m-%dT%H:%M:%S%z"
+          node scripts/script.js
+          echo "::set-output name=last_timestamp::$TIMESTAMP"
+        env:
+          COMMUNITY_TOKEN: ${{ secrets.COMMUNITY_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

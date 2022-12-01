@@ -8,12 +8,9 @@ dotenv.config({
 let headers = {
   Authorization: `Bearer ${process.env.COMMUNITY_TOKEN}`,
   "Content-Type": "application/json",
-  //  'Origin': 'https://dashboard.community.com',
-  //  'Referer': 'https://dashboard.community.com/',
   "User-Agent":
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
   Accept: "*/*",
-  // 'Host': 'api.community.com',
 };
 
 type CommunityMessage = {
@@ -204,7 +201,6 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
 }
 
 async function main() {
-  // const keywords = ["VOTE:ALICE"];
   const dateSince = addDays(new Date(), -1);
   // const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
 
@@ -212,14 +208,3 @@ async function main() {
   console.log("voteMap", voteMap);
   // await triggerCommunityMessageZap(payload);
 }
-
-const teamIds = [
-  "ce477e15-5bdf-4ed1-879a-0eff21eb4f1e", // Alice
-  "58704615-37e5-4148-804c-e675f5107968", // David
-  "564fadaf-6af2-4659-902d-f9e3a9b7f0ed", // Devin
-  "823f0845-433e-4c11-b651-dd784c4987b7", // Shrey
-  "e6794798-ccf7-41dd-837c-41e07205ba8b", // Sarah
-  "586dad10-b767-4939-bbb7-a75cb55977e5", // Evan
-];
-
-// main();
