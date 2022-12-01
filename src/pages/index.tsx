@@ -37,7 +37,7 @@ const IndexPage = () => {
   );
 
   const MADCTA = (
-    <div className="flex flex-col items-center gap-4 rounded-xl border border-white p-10 pt-8">
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-white p-3 pt-8">
       <div className="text-4xl text-mr-yellow">Reality is MAD</div>
       <div className="text-4xl text-mr-yellow">Join ours instead.</div>
 
@@ -50,12 +50,12 @@ const IndexPage = () => {
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-hot-pink">
           <a href="https://madrealities.xyz" target="_blank" rel="noreferrer">
-            <span className="text-2xl font-regular uppercase tracking-wide">GET UPDATES</span>
+            <span className="text-xl font-regular uppercase tracking-wide">GET UPDATES</span>
           </a>
         </BillboardButton>
         <BillboardButton fill color="transparent" transparentAccent="mr-sky-blue">
           <a href="https://my.community.com/madrealities?t=SUP" target="_blank" rel="noreferrer">
-            <span className="text-2xl font-regular uppercase tracking-wide">LEARN MORE</span>
+            <span className="text-xl font-regular uppercase tracking-wide">LEARN MORE</span>
           </a>
         </BillboardButton>
       </div>
@@ -63,15 +63,15 @@ const IndexPage = () => {
   );
 
   const FOOTER = (
-    <div className="m-2 flex w-3/4 flex-row gap-2">
-      <SmallBillboardButton fill color="mr-sky-blue">
+    <div className="my-2 flex flex-row gap-2">
+      <SmallBillboardButton fill color="mr-sky-blue" className="w-auto">
         <a href="https://madrealities.xyz/Terms-of-Service" target="_blank" rel="noreferrer">
-          <span className="text-md font-regular uppercase tracking-wide">TERMS + CONDITIONS</span>
+          <span className="mx-10 text-sm font-regular uppercase tracking-wide">TERMS</span>
         </a>
       </SmallBillboardButton>
       <SmallBillboardButton fill color="mr-lime">
         <a href="https://my.community.com/madrealities?t=HELP" target="_blank" rel="noreferrer">
-          <span className="text-md font-regular uppercase tracking-wide">CONTACT SUPPORT</span>
+          <span className="mx-1 text-sm font-regular uppercase tracking-wide">CONTACT SUPPORT</span>
         </a>
       </SmallBillboardButton>
     </div>
@@ -102,7 +102,7 @@ const IndexPage = () => {
       {MADCTA}
       {FOOTER}
 
-      {/* <ol className="list-inside list-decimal text-center text-xl">
+      {/* <ol className="text-xl text-center list-decimal list-inside">
         <li className="m-4">Nominate your friend</li>
         <li className="m-4">The more nomintations the higher chances</li>
         <li className="m-4">See your friend on the big screen</li>
