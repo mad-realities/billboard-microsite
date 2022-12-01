@@ -14,7 +14,6 @@ export default function MyMap() {
     <Marker key={i} anchor={[billboard[0], billboard[1]]} color="red" onClick={() => console.log(i, billboard)} />
   ));
 
-  console.log(markers);
   return (
     <div className="align-center flex w-full flex-col content-center items-center justify-center p-10">
       <div className="flex w-11/12 ">

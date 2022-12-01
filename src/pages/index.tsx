@@ -3,12 +3,16 @@ import Image from "next/image";
 import { useWindowSize } from "../client/hooks";
 import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
+import Head from "next/head";
+import { getLinkPreview } from "../linkPreviewConfig";
 
 const IndexPage = () => {
   const router = useRouter();
+  const linkPreview = getLinkPreview("LANDING");
 
   return (
     <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-2 p-3 text-white">
+      {linkPreview}
       <Subheader>
         <span className="text-[18px] uppercase">You&apos;re here. You&apos;re there. You&apos;re everywhere.</span>
       </Subheader>

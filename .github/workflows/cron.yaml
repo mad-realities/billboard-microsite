@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     inputs:
       tags:
-        description: 'Test scenario tags'
-        required: true 
+        description: "Test scenario tags"
+        required: true
         type: string
 #   schedule:
 #     - cron: "0-59/5 * * * *"
