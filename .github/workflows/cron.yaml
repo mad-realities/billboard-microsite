@@ -1,10 +1,7 @@
 name: Detect new votes
 on:
-  push:
-    branches:
-      - shrey/cron-deploy
-#   schedule:
-#     - cron: "0-59/5 * * * *"
+  schedule:
+    - cron: "0-59/5 * * * *"
 jobs:
   cron:
     runs-on: ubuntu-latest
