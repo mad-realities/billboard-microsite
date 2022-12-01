@@ -1,25 +1,49 @@
 import React from "react";
 import { Map, Marker } from "pigeon-maps";
 import { stamenToner } from "pigeon-maps/providers";
-
-// const billboards = [
-//   [40.719873, -74.001863],
-//   [40.6892, 74.0445],
-//   [40.719874, -74.001862],
-// ];
+import Subheader from "../components/design-system/Subheader";
+import BillboardButton from "../components/design-system/BillboardButton";
+import { useRouter } from "next/router";
+import SmallBillboardButton from "../components/design-system/SmallBillboardButton";
 
 export default function MyMap() {
-  const [center] = React.useState([40.719873, -74.001863]);
-  // const markers = billboards.map((billboard, i) => (
-  //   <Marker key={i} anchor={[billboard[0], billboard[1]]} color="red" onClick={() => console.log(i, billboard)} />
-  // ));
+  // billboard location: 1540 Broadway, New York, NY 10001
+  const [center] = React.useState([40.749981, -73.98806]);
+  const router = useRouter();
+
+  function mapsSelector() {
+    const lat = center[0];
+    const lng = center[1];
+    if (
+      /* if we're on iOS, open in Apple Maps */
+      navigator.platform.indexOf("iPhone") != -1 ||
+      navigator.platform.indexOf("iPad") != -1 ||
+      navigator.platform.indexOf("iPod") != -1
+    )
+      window.open(`maps://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`);
+    /* else use Google */ else window.open(`https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`);
+  }
 
   return (
-    <div className="align-center flex w-full flex-col content-center items-center justify-center p-10">
-      <div className="flex w-11/12 ">
-        <Map height={300} defaultCenter={[center[0], center[1]]} defaultZoom={13} provider={stamenToner}>
-          <Marker width={50} anchor={[center[0], center[1]]} color="red" onClick={() => console.log("hello")} />
+    <div className="align-center flex w-full flex-col items-center gap-5  p-10">
+      <Subheader>BILLBOARD LOCATION</Subheader>
+      <div className="flex w-full flex-row gap-2">
+        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
+          NOMINATE
+        </BillboardButton>
+        <BillboardButton fill color="transparent" onPress={() => router.push("/leaderboard")}>
+          LEADERBOARD
+        </BillboardButton>
+      </div>
+      <div className="w-full ">
+        <Map height={600} defaultCenter={[center[0], center[1]]} defaultZoom={13} provider={stamenToner}>
+          <Marker width={25} anchor={[center[0], center[1]]} color="red" onClick={() => console.log("hello")} />
         </Map>
+      </div>
+      <div>
+        <SmallBillboardButton fill color="mr-sky-blue" onPress={() => mapsSelector()}>
+          DIRECTIONS
+        </SmallBillboardButton>
       </div>
     </div>
   );
