@@ -74,7 +74,7 @@ const ProfileCard = ({
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
           NOMINATE
         </BillboardButton>
-        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
+        <BillboardButton fill color="transparent" onPress={() => router.push("/leaderboard")}>
           LEADERBOARD
         </BillboardButton>
       </div>

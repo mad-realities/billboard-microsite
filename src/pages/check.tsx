@@ -29,39 +29,33 @@ const Vote = () => {
     <div className="align-center item-around flex h-full w-full flex-grow grow flex-col items-center gap-3 p-1 text-white">
       {linkPreview}
       <Subheader>
-        <div className="text-2xs">NOMINATE YOUR FRIEND TO BE ON THE BILLBOARD</div>
+        <div>CHECK RANK</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
-        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
+        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
+          NOMINATE
+        </BillboardButton>
+        <BillboardButton fill color="transparent" onPress={() => router.push("/leaderboard")}>
           LEADERBOARD
         </BillboardButton>
-        <BillboardButton fill color="transparent" onPress={() => router.push("/check")}>
-          CHECK RANK
-        </BillboardButton>
       </div>
-      <div className="text-xl">1. Nominate your friend</div>
+      <div className="text-xl">WHAT IS THEIR INSTAGRAM HANDLE?</div>
       <div className="flex w-3/4 flex-col gap-2">
         <input
           placeholder="MADREALITIES"
           onInput={(e) => setHandle(e.currentTarget.value)}
           className=" block w-full rounded-lg border border-4 border-double border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
         />
-        <BillboardButton fill color="mr-sky-blue">
-          {handleIsValid ? (
-            <a
-              href={getSmsHref(handle)}
-              className="w-full"
-              onClick={() => {
-                if (handleIsValid) {
-                  router.push("/profile/" + handle);
-                }
-              }}
-            >
-              TEXT TO CAST VOTE {"->"}
-            </a>
-          ) : (
-            <>TEXT TO CAST VOTE {"->"}</>
-          )}
+        <BillboardButton
+          fill
+          color="mr-sky-blue"
+          onPress={() => {
+            if (handleIsValid) {
+              router.push("/profile/" + handle);
+            }
+          }}
+        >
+          GET RANK {"->"}
         </BillboardButton>
       </div>
       <span className="text-mr-pink"> {error} </span>
