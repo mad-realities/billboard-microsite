@@ -1,6 +1,11 @@
 name: Detect new votes
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test scenario tags'
+        required: true 
+        type: string
 #   schedule:
 #     - cron: "0-59/5 * * * *"
 jobs:
