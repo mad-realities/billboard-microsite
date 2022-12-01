@@ -7,6 +7,7 @@ import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { InstagramLeaderboardRow } from "../components/Leaderboard";
 import CountdownTimer from "../components/Countdown";
+import { getLinkPreview } from "../linkPreviewConfig";
 
 const pageSize = 20;
 
@@ -44,8 +45,11 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
     }
   };
 
+  const linkPreview = getLinkPreview("LEADERBOARD");
+
   return (
     <div className="flex w-full flex-col items-center gap-2 text-white">
+      {linkPreview}
       <div className="flex w-full flex-col items-center gap-2 text-white">
         <Subheader>
           <div className="flex w-full flex-row">

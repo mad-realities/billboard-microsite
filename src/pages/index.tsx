@@ -3,18 +3,16 @@ import Image from "next/image";
 import { useWindowSize } from "../client/hooks";
 import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
+import Head from "next/head";
+import { getLinkPreview } from "../linkPreviewConfig";
 
 const IndexPage = () => {
   const router = useRouter();
-  // useEffect(() => {
-  //   const { pathname } = router;
-  //   if (pathname == "/") {
-  //     router.push("/leaderboard");
-  //   }
-  // }, []);
+  const linkPreview = getLinkPreview("LANDING");
 
   return (
     <div className="align-center item-around flex h-full w-auto flex-grow grow flex-col items-center gap-1 p-1 text-white">
+      {linkPreview}
       <Subheader>
         <div className="text-sm">YOU’RE HERE. YOU’RE THERE. YOU’RE EVERYWHERE.</div>
       </Subheader>
