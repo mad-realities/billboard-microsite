@@ -1,9 +1,7 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useWindowSize } from "../client/hooks";
 import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
-import Head from "next/head";
 import { getLinkPreview } from "../linkPreviewConfig";
 
 const IndexPage = () => {

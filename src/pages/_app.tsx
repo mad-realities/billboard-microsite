@@ -1,7 +1,6 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import NavBar from "../components/nav/NavBar";
-import Image from "next/image";
 
 import "../styles/tailwind.css";
 import Link from "next/link";
