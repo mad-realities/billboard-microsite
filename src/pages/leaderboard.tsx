@@ -67,8 +67,8 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
           <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
             NOMINATE
           </BillboardButton>
-          <BillboardButton fill color="mr-yellow" onPress={() => router.push("/")}>
-            WAIT WHAT?
+          <BillboardButton fill color="transparent" onPress={() => router.push("/check")}>
+            CHECK RANK
           </BillboardButton>
         </div>
         <div className="w-full grow rounded-lg border-4 border-double border-mr-pink">
