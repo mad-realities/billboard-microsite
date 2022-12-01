@@ -20,7 +20,8 @@ export interface ButtonProps extends Pick<AriaButtonProps<"button">, "isDisabled
     | "mr-lilac"
     | "mr-pink"
     | "mr-hot-pink"
-    | "mr-orange";
+    | "mr-orange"
+    | "transparent";
   leftIcon?: IconName;
   rightIcon?: IconName;
   /** @default "md" */
@@ -82,6 +83,7 @@ export const Button = (props: ButtonProps) => {
             .with("mr-pink", () => "border-mr-pink text-mr-pink hover:bg-mr-black")
             .with("mr-hot-pink", () => "border-mr-hot-pink text-mr-hot-pink hover:bg-mr-black")
             .with("mr-orange", () => "border-mr-orange text-mr-orange hover:bg-mr-black")
+            .with("transparent", () => "bg-transparent")
             .otherwise(() => "border-mr-black text-mr-black hover:bg-mr-black hover:text-mr-white"),
         ],
         (style === "default" || style === undefined) &&
@@ -95,6 +97,7 @@ export const Button = (props: ButtonProps) => {
             .with("mr-pink", () => "bg-mr-pink text-mr-black")
             .with("mr-hot-pink", () => "bg-mr-hot-pink text-mr-black")
             .with("mr-orange", () => "bg-mr-orange text-mr-black")
+            .with("transparent", () => "bg-transparent")
             .otherwise(() => "bg-mr-black text-mr-white"),
         match(size)
           .with("sm", () => "h-8 px-1 text-sm font-semibold")
