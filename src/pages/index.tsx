@@ -5,13 +5,14 @@ import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import Head from "next/head";
 import { getLinkPreview } from "../linkPreviewConfig";
+import SmallBillboardButton from "../components/design-system/SmallBillboardButton";
 
 const IndexPage = () => {
   const router = useRouter();
   const linkPreview = getLinkPreview("LANDING");
 
   const HOWITWORKS = (
-    <div className="flex flex-col items-center gap-2 rounded border border-white p-2">
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-white p-10">
       <div className="text-4xl text-mr-yellow">HOW IT WORKS</div>
 
       <div className="mt-3 text-center text-2xl text-mr-lime"> NOMINATE </div>
@@ -38,7 +39,7 @@ const IndexPage = () => {
   );
 
   const MADCTA = (
-    <div className="flex flex-col items-center gap-2 rounded border border-white p-2 pt-8">
+    <div className="flex flex-col items-center gap-4 rounded-xl border border-white p-10 pt-8">
       <div className="text-4xl text-mr-yellow">Reality is MAD</div>
       <div className="text-4xl text-mr-yellow">Join ours instead.</div>
 
@@ -49,13 +50,32 @@ const IndexPage = () => {
       </div>
 
       <div className="flex w-full flex-row gap-2">
-        <BillboardButton fill color="mr-hot-pink" onPress={() => router.push("/vote")}>
-          <span className="text-2xl font-regular uppercase tracking-wide">Nominate</span>
+        <BillboardButton fill color="mr-hot-pink">
+          <a href="https://madrealities.xyz" target="_blank" rel="noreferrer">
+            <span className="text-2xl font-regular uppercase tracking-wide">GET UPDATES</span>
+          </a>
         </BillboardButton>
-        <BillboardButton fill color="mr-pink" onPress={() => router.push("/leaderboard")}>
-          <span className="text-2xl font-regular uppercase tracking-wide">Leaderboard</span>
+        <BillboardButton fill color="transparent" transparentAccent="mr-sky-blue">
+          <a href="https://my.community.com/madrealities?t=SUP" target="_blank" rel="noreferrer">
+            <span className="text-2xl font-regular uppercase tracking-wide">LEARN MORE</span>
+          </a>
         </BillboardButton>
       </div>
+    </div>
+  );
+
+  const FOOTER = (
+    <div className="m-2 flex w-3/4 flex-row gap-2">
+      <SmallBillboardButton fill color="mr-sky-blue">
+        <a href="https://madrealities.xyz/Terms-of-Service" target="_blank" rel="noreferrer">
+          <span className="text-lg font-regular uppercase tracking-wide">TERMS + CONDITIONS</span>
+        </a>
+      </SmallBillboardButton>
+      <SmallBillboardButton fill color="mr-lime">
+        <a href="https://my.community.com/madrealities?t=HELP" target="_blank" rel="noreferrer">
+          <span className="text-lg font-regular uppercase tracking-wide">CONTACT SUPPORT</span>
+        </a>
+      </SmallBillboardButton>
     </div>
   );
 
@@ -82,6 +102,8 @@ const IndexPage = () => {
       <Image src="/polygon.png" alt="Mad Realities wordmark logo" width={30} height={10} />
       {HOWITWORKS}
       {MADCTA}
+      {FOOTER}
+
       {/* <ol className="list-inside list-decimal text-center text-xl">
         <li className="m-4">Nominate your friend</li>
         <li className="m-4">The more nomintations the higher chances</li>
