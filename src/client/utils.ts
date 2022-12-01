@@ -23,5 +23,5 @@ export function cutOffStringIfTooLong(string: string, length: number) {
 }
 
 export function getSmsHref(handle: string) {
-  return `sms:${CONTACT_PHONE_NUMBER}?&body=VOTE:${handle}`;
+  return `sms:${CONTACT_PHONE_NUMBER}?&body=VOTE: ${handle}`;
 }
