@@ -1,4 +1,8 @@
 name: Detect new votes
+on:
+  push:
+    branches:
+      - shrey/cron-deploy
 # on:
 #   schedule:
 #     - cron: "0-59/5 * * * *"
@@ -8,14 +12,15 @@ jobs:
     environment: preview
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Install requirements
         run: |
           npm install dotenv node-fetch
       - name: Run script
         run: |
-          set TIMESTAMP=date +"%Y-%m-%dT%H:%M:%S%z"
           node scripts/script.js
-          echo "::set-output name=last_timestamp::$TIMESTAMP"
         env:
           COMMUNITY_TOKEN: ${{ secrets.COMMUNITY_TOKEN }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
