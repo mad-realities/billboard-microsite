@@ -33,7 +33,7 @@ export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, 
   const windowSize = useWindowSize();
 
   return (
-    <div className="flex  w-full flex-row hover:bg-mr-navy">
+    <div className="flex w-full max-w-md flex-row hover:bg-mr-navy">
       <div className="flex flex-1 flex-row items-center" onClick={() => router.push(`/profile/${id}`)}>
         <div className={`${padding} text-left text-sm`}>#{rank}</div>
         <div className={`${padding} text-md flex-1 text-left`}>

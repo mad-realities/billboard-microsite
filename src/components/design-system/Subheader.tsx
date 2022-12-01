@@ -14,10 +14,10 @@ export default function Subheader({ children, flipped }: SubheaderProps) {
         "bg-[url('/subheader.png')]",
         "bg-contain",
         "bg-no-repeat",
-        "min-h-[40px]",
+        "min-h-[24px]",
         "bg-bottom",
         "pr-[16%]",
-        "pb-3",
+        "pb-2",
         flipped && "rotate-180",
       ])}
     >

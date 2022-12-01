@@ -12,7 +12,7 @@ function VerificationApp({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
         <title>Mad Realities Billboard</title>
       </Head>
-      <div className="mx-auto my-2 max-w-lg">
+      <div className="mx-auto my-2 w-full max-w-lg">
         <NavBar />
         <div className="flex h-full w-full px-2 ">
           <div className="align-center flex w-auto flex-grow grow flex-col items-center rounded-xl border border-white p-1 text-white">

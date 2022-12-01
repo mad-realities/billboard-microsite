@@ -25,7 +25,7 @@ const Vote = () => {
     <div className="align-center item-around flex h-full w-full flex-grow grow flex-col items-center gap-3 p-1 text-white">
       {linkPreview}
       <Subheader>
-        <div>CHECK RANK</div>
+        <div className="text-sm">CHECK RANK</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
@@ -40,7 +40,7 @@ const Vote = () => {
         <input
           placeholder="MADREALITIES"
           onInput={(e) => setHandle(e.currentTarget.value)}
-          className=" block w-full rounded-lg border border-4 border-double border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
+          className=" block w-full rounded-lg border border-2 border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
         />
         <BillboardButton
           fill
