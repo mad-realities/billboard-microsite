@@ -1,6 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../prisma";
 
+export const loadRankForHandle = async (handle: string) => {
+  const results = await loadRank(0, 10000);
+  return results.find((result) => result.instagramHandle === handle);
+};
+
 export const loadRank = async (offset: number, limit: number) => {
   // exclude instagram handles that are in the shadow ban list
   const shadowBans = await prisma.shadowBanList.findMany();

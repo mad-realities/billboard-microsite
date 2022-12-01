@@ -67,9 +67,9 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             WAIT WHAT?
           </BillboardButton>
         </div>
-        <div className="w-full grow rounded-lg border-4 border-double border-mr-pink bg-mr-black">
+        <div className="w-full grow rounded-lg border-4 border-double border-mr-pink">
           <InfiniteScroll
-            dataLength={rows.length} //This is important field to render the next data
+            dataLength={rows.length}
             next={getMore}
             hasMore={hasMore}
             loader={<h4>Loading...</h4>}

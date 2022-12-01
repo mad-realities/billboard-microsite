@@ -43,6 +43,7 @@
     "react-relay": "^14.1.0",
     "react-social-media-embed": "^2.2.9",
     "react-spinners": "^0.13.6",
+    "react-web-share": "^2.0.2",
     "tailwind-merge": "^1.8.0",
     "ts-pattern": "^4.0.6",
     "vercel": "^28.4.12"
