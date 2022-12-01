@@ -11,8 +11,6 @@ const prisma = new PrismaClient({
   datasources: { db: { url: process.env.DATABASE_URL } },
 });
 
-const keywords = ["VOTE:ALICE", "VOTE:DAVID", "VOTE:SHREY", "VOTE:SARAH", "VOTE:EVAN", "VOTE:DEVIN"];
-
 function createNVotes(n: number, vote: { community_id: string; keyword: string }) {
   // return an array of length n with the vote as the element
   const votes = [];
@@ -25,6 +23,35 @@ function createNVotes(n: number, vote: { community_id: string; keyword: string }
 async function createEmptyScriptRun() {
   const response = await prisma.scriptRun.create({
     data: {},
+  });
+
+  return response;
+}
+
+async function saveVotesToDB(
+  votes: {
+    community_id: string;
+    vote: string;
+    timestamp: Date;
+  }[],
+) {
+  // create new script run
+  const response = await prisma.scriptRun.create({
+    data: {
+      timestamp: new Date(),
+      votes: {
+        createMany: {
+          data: votes.map((vote) => ({
+            instagramHandle: vote.vote,
+            timestamp: vote.timestamp,
+            communityId: vote.community_id,
+          })),
+        },
+      },
+    },
+    include: {
+      votes: true,
+    },
   });
 
   return response;
@@ -48,45 +75,34 @@ export async function runScript(withDelay = false) {
   if (latest_script_run) {
     const dateSinceLastRun = new Date(latest_script_run.timestamp);
     console.log("Last script ran at", dateSinceLastRun.toLocaleString());
-    const userMap = await getVotesSinceDate(dateSinceLastRun);
-    console.log("userMap", userMap);
-    const userVotes = Object.keys(userMap).map((community_id) => {
+
+    // getVotesSinceDate picks up the latest vote per communityId since the last script run
+    const userVotesMap = await getVotesSinceDate(dateSinceLastRun);
+    console.log("userMap", userVotesMap);
+
+    const userVotes = Object.keys(userVotesMap).map((community_id) => {
       return {
         community_id,
-        vote: userMap[community_id].igHandle,
-        timestamp: userMap[community_id].timestamp,
+        vote: userVotesMap[community_id].igHandle,
+        timestamp: userVotesMap[community_id].timestamp,
       };
     });
 
-    // // create new script run
-    const new_script_run = await prisma.scriptRun.create({
-      data: {
-        timestamp: new Date(),
-        votes: {
-          createMany: {
-            data: userVotes.map((vote) => ({
-              instagramHandle: vote.vote,
-              timestamp: vote.timestamp,
-              communityId: vote.community_id,
-            })),
-          },
-        },
-      },
-      include: {
-        votes: true,
-      },
-    });
+    // fetch instagram data for each user
 
-    const zapierPayload = new_script_run.votes.map((vote) => ({
-      fanId: userMap[vote.communityId].fanId,
+    // create new script run
+    const scriptRun = await saveVotesToDB(userVotes);
+
+    const zapierPayload = scriptRun.votes.map((vote) => ({
+      fanId: userVotesMap[vote.communityId].fanId,
       text: getTextForVote(vote.instagramHandle),
     }));
 
-    if (zapierPayload.length > 0) {
-      await triggerCommunityMessageZap(zapierPayload);
-    }
+    // if (zapierPayload.length > 0) {
+    //   await triggerCommunityMessageZap(zapierPayload);
+    // }
 
-    console.log("new_script_run", new_script_run);
+    console.log("Final Push", scriptRun);
   } else {
     console.log("No script runs yet, creating empty script run.");
     const new_script_run = await createEmptyScriptRun();

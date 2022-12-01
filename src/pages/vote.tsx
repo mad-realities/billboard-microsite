@@ -29,11 +29,11 @@ const Vote = () => {
         <div className="text-2xs">NOMINATE YOUR FRIEND TO BE ON THE BILLBOARD</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
-        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
-          NOMINATE
-        </BillboardButton>
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
           LEADERBOARD
+        </BillboardButton>
+        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/")}>
+          WAIT WHAT?
         </BillboardButton>
       </div>
       <div className="text-xl">1. Nominate your friend</div>

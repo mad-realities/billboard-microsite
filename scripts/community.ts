@@ -128,7 +128,13 @@ function getMessagesWithSpecificWord(
   } = {};
   Object.keys(ids_to_messages).forEach((community_id) => {
     const messages = ids_to_messages[community_id];
-    const messages_with_word = messages.filter((msg) => msg.text.toLowerCase().includes(word.toLowerCase()));
+    const messages_with_word = messages.filter((msg) =>
+      msg.text
+        // remove extra spaces and lowercase
+        .replace(/^\s+|\s+$/g, "")
+        .toLowerCase()
+        .includes(word.toLowerCase()),
+    );
     ids_to_messages_with_word[community_id] = messages_with_word;
   });
   return ids_to_messages_with_word;
@@ -148,13 +154,17 @@ async function getCommunityIdMessageMapSinceDate(communityIds: string[], dateSin
   return communityIdMessageMap;
 }
 
-function getIdToVoteHandleMap(mostRecentMessages: { [communityId: string]: CommunityMessage }) {
+function getIdToVoteHandleMap(mostRecentMessages: { [communityId: string]: CommunityMessage }, keyword: string) {
   const idsToInstgramHandleVote: { [communityId: string]: { igHandle: string; timestamp: Date } } = {};
   Object.keys(mostRecentMessages).forEach((community_id) => {
     if (mostRecentMessages[community_id]) {
       const message = mostRecentMessages[community_id];
       const messageText = message.text;
-      const vote = messageText.toLowerCase().split("vote:")[1];
+      const vote = messageText
+        // remove extra spaces and lowercase
+        .replace(/^\s+|\s+$/g, "")
+        .toLowerCase()
+        .split(keyword)[1];
       idsToInstgramHandleVote[community_id] = { igHandle: vote, timestamp: new Date(message.created_at) };
     }
   });
@@ -171,7 +181,7 @@ function getMostRecentMessagePerMember(communityIdMessageMap: { [communityId: st
   return communityIdMostRecentMessageMap;
 }
 
-export async function getVotesSinceDate(dateSince: Date) {
+export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   // includes fan subscription id and community id
   const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
   const communityIdToFanSubscriptionId: { [communityId: string]: string } = {};
@@ -180,9 +190,9 @@ export async function getVotesSinceDate(dateSince: Date) {
   });
   const communityIds = community_ids.map((c) => c.communityId);
   const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(communityIds, dateSince);
-  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, "VOTE:");
+  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, keyword);
   const communityIdMostRecentMessageMap = getMostRecentMessagePerMember(communityIdMessageWithWordMap);
-  const idsToInstgramHandleVote = getIdToVoteHandleMap(communityIdMostRecentMessageMap);
+  const idsToInstgramHandleVote = getIdToVoteHandleMap(communityIdMostRecentMessageMap, keyword);
   const idToFanIdAndVote: { [communityId: string]: { fanId: string; igHandle: string; timestamp: Date } } = {};
   Object.keys(idsToInstgramHandleVote).forEach((communityId) => {
     const fanId = communityIdToFanSubscriptionId[communityId];

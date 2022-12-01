@@ -60,10 +60,10 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
         </Subheader>
 
         <div className="flex w-full flex-row gap-2">
-          <BillboardButton fill color="mr-yellow">
+          <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
             NOMINATE
           </BillboardButton>
-          <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
+          <BillboardButton fill color="mr-yellow" onPress={() => router.push("/")}>
             WAIT WHAT?
           </BillboardButton>
         </div>
