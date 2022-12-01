@@ -93,15 +93,6 @@ export async function runScript(withDelay = false) {
     // create new script run
     const scriptRun = await saveVotesToDB(userVotes);
 
-    const zapierPayload = scriptRun.votes.map((vote) => ({
-      fanId: userVotesMap[vote.communityId].fanId,
-      text: getTextForVote(vote.instagramHandle),
-    }));
-
-    // if (zapierPayload.length > 0) {
-    //   await triggerCommunityMessageZap(zapierPayload);
-    // }
-
     console.log("Final Push", scriptRun);
   } else {
     console.log("No script runs yet, creating empty script run.");
