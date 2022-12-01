@@ -1,10 +1,7 @@
 import { useRouter } from "next/router";
-import Image from "next/image";
-import { useWindowSize } from "../client/hooks";
 import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import { useEffect, useState } from "react";
-import { CONTACT_PHONE_NUMBER } from "../client/constants";
 import { getSmsHref } from "../client/utils";
 import { getLinkPreview } from "../linkPreviewConfig";
 

@@ -1,15 +1,10 @@
 import { useRouter } from "next/router";
-import { CONTACT_PHONE_NUMBER, SQUAD } from "../../../client/constants";
-import { Button } from "../../../components/design-system";
-import { useWindowSize } from "../../../client/hooks";
 import BillboardButton from "../../../components/design-system/BillboardButton";
 import Subheader from "../../../components/design-system/Subheader";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { prisma } from "../../../prisma";
 import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../client/utils";
 import { RWebShare } from "react-web-share";
 import { loadRankForHandle } from "../../api/rank";
-import Head from "next/head";
 import { getLinkPreview } from "../../../linkPreviewConfig";
 
 type Props = {

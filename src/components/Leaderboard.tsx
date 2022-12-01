@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Button } from "./design-system";
 import { useRouter } from "next/router";
-import { CONTACT_PHONE_NUMBER, SQUAD } from "../client/constants";
 import SmallBillboardButton from "./design-system/SmallBillboardButton";
 import { cutOffStringIfTooLong, getSmsHref } from "../client/utils";
 import { useWindowSize } from "../client/hooks";
@@ -49,36 +45,6 @@ export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, 
           <SmallBillboardButton color={"mr-sky-blue"} fill>
             Vote
           </SmallBillboardButton>
-        </a>
-      </div>
-    </div>
-  );
-};
-
-const LeaderboardRow = ({ id, votedFor, voteCount }: LeaderboardRowProps) => {
-  const router = useRouter();
-  const padding = "p-2";
-
-  const image = SQUAD[id].image;
-  const name = SQUAD[id].name;
-
-  return (
-    <div className="flex w-full flex-row items-center hover:bg-mr-navy">
-      <div className="group flex w-full flex-row items-center " onClick={() => router.push(`/profile/${id}`)}>
-        <div className={`${padding} text-left `}>
-          <Image src={image} alt="Mad Realities wordmark logo" width={100} height={100} />
-        </div>
-
-        <div className={`${padding} grow text-left text-2xl`}>{name}</div>
-        <div>
-          <p className={`text-xl`}>Votes: {voteCount}</p>
-        </div>
-      </div>
-      <div className={`${padding} flex flex-row content-end text-right`}>
-        <a href={getSmsHref(id)}>
-          <Button color={votedFor ? "mr-pink" : "mr-sky-blue"} size="lg">
-            Vote
-          </Button>
         </a>
       </div>
     </div>

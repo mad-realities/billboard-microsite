@@ -21,7 +21,7 @@ export const LINK_PREVIEW_CONFIG = {
     image: "/cabs.png",
   },
   PROFILE: {
-    title: (handle: string, rank: number) => "MAD FAMOUS: THE BILLBOARD",
+    title: (_handle: string, _rank: number) => "MAD FAMOUS: THE BILLBOARD",
     url: (handle: string) => `${hostname}/profile/${handle}`,
     description: "Text to vote!",
     image: "/cabs.png",

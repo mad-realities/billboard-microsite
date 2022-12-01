@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { getVotesSinceDate } from "./community";
-import { triggerCommunityMessageZap } from "./zapier";
 
 dotenv.config({
   path: ".env.local",
@@ -10,15 +9,6 @@ dotenv.config({
 const prisma = new PrismaClient({
   datasources: { db: { url: process.env.DATABASE_URL } },
 });
-
-function createNVotes(n: number, vote: { community_id: string; keyword: string }) {
-  // return an array of length n with the vote as the element
-  const votes = [];
-  for (let i = 0; i < n; i++) {
-    votes.push(vote);
-  }
-  return votes;
-}
 
 async function createEmptyScriptRun() {
   const response = await prisma.scriptRun.create({
@@ -99,10 +89,6 @@ export async function runScript(withDelay = false) {
     const new_script_run = await createEmptyScriptRun();
     console.log("Created new script run", new_script_run);
   }
-}
-
-function getTextForVote(igHandle: string) {
-  return `You voted for https://www.instagram.com/${igHandle}/ ! To change your vote, text VOTE: followed by the Instagram handle of the creator you want to vote for.`;
 }
 
 function delay(ms: number) {

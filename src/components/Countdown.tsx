@@ -4,12 +4,10 @@ interface Props {
   endDatetime: Date;
   onEnd: () => void;
   onEndWindowSeconds?: number;
-  fontSize?: number;
 }
 
 const defaultProps = {
   onEndWindowSeconds: 2,
-  //   fontSize: 32,
 };
 
 function getCountdownString(current: Date, end: Date) {
@@ -28,7 +26,7 @@ function getCountdownString(current: Date, end: Date) {
 
   return dayString + hourString + minString + secString;
 }
-function CountdownTimer({ endDatetime, onEnd, onEndWindowSeconds, fontSize }: Props & typeof defaultProps) {
+function CountdownTimer({ endDatetime, onEnd, onEndWindowSeconds }: Props & typeof defaultProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [triggered, setTriggered] = useState<boolean>(false);
 

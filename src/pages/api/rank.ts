@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "../../prisma";
+import { prisma } from "../../server/prisma";
 
 export const loadRankForHandle = async (handle: string) => {
   const results = await loadRank(0, 10000);

@@ -10,18 +10,6 @@
 }
 
 @font-face {
-  font-family: "Saira Semi Condensed";
-  src: url("../../public/fonts/SairaSemiCondensed-Regular.ttf");
-  font-weight: 500;
-}
-
-@font-face {
-  font-family: "Saira Semi Condensed";
-  src: url("../../public/fonts/SairaSemiCondensed-SemiBold.ttf");
-  font-weight: 700;
-}
-
-@font-face {
   font-family: "Londrina Solid";
   src: url("../../public/fonts/LondrinaSolid-Thin.ttf");
   font-weight: 100;
