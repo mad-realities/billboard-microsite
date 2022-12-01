@@ -17,6 +17,9 @@ jobs:
       - name: Install requirements
         run: |
           npm install dotenv node-fetch
+      - name: List files
+        run: |
+          ls scripts
       - name: Run script
         run: |
           node scripts/script.js
