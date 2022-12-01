@@ -66,12 +66,12 @@ const IndexPage = () => {
     <div className="m-2 flex w-3/4 flex-row gap-2">
       <SmallBillboardButton fill color="mr-sky-blue">
         <a href="https://madrealities.xyz/Terms-of-Service" target="_blank" rel="noreferrer">
-          <span className="text-lg font-regular uppercase tracking-wide">TERMS + CONDITIONS</span>
+          <span className="text-md font-regular uppercase tracking-wide">TERMS + CONDITIONS</span>
         </a>
       </SmallBillboardButton>
       <SmallBillboardButton fill color="mr-lime">
         <a href="https://my.community.com/madrealities?t=HELP" target="_blank" rel="noreferrer">
-          <span className="text-lg font-regular uppercase tracking-wide">CONTACT SUPPORT</span>
+          <span className="text-md font-regular uppercase tracking-wide">CONTACT SUPPORT</span>
         </a>
       </SmallBillboardButton>
     </div>
