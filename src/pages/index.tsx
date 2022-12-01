@@ -10,13 +10,13 @@ const IndexPage = () => {
   return (
     <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-2 p-3 text-white">
       <Subheader>
-        <span className="text-[18px] uppercase">You're here. You're there. You're everywhere.</span>
+        <span className="text-[18px] uppercase">You&apos;re here. You&apos;re there. You&apos;re everywhere.</span>
       </Subheader>
       <div className="relative h-[340px] w-full">
         <Image src="/cabs.png" alt="Mad Realities wordmark logo" fill />
       </div>
       <Subheader flipped>
-        <div className="text-right text-[19px] uppercase">You're on a billboard in Times Square.</div>
+        <div className="text-right text-[19px] uppercase">You&apos;re on a billboard in Times Square.</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
