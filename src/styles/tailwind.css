@@ -20,3 +20,27 @@
   src: url("../../public/fonts/SairaSemiCondensed-SemiBold.ttf");
   font-weight: 700;
 }
+
+@font-face {
+  font-family: "Londrina Solid";
+  src: url("../../public/fonts/LondrinaSolid-Thin.ttf");
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: "Londrina Solid";
+  src: url("../../public/fonts/LondrinaSolid-Light.ttf");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Londrina Solid";
+  src: url("../../public/fonts/LondrinaSolid-Regular.ttf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Londrina Solid";
+  src: url("../../public/fonts/LondrinaSolid-Black.ttf");
+  font-weight: 900;
+}
