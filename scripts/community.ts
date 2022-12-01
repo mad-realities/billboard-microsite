@@ -23,6 +23,14 @@ type CommunityMessage = {
   text: string;
 };
 
+type MessageHistoryResponse = {
+  data: CommunityMessage[];
+};
+
+type ChatsResponse = {
+  data: any[];
+};
+
 function addDays(date: Date, days: number) {
   var result = new Date(date);
   result.setDate(result.getDate() + days);
@@ -50,21 +58,21 @@ async function get_community_ids_that_messaged_since_date(since_date: Date) {
   return community_ids;
 }
 
-async function get_50_latest_chats() {
+async function get_50_latest_chats(): Promise<ChatsResponse> {
   const url = "https://api.community.com/client-dashboard/messaging/chats?page_number=1&page_size=50";
   const response = await fetch(url, { method: "GET", headers: headers });
   if (response.status !== 200) throw response.statusText;
-  return await response.json();
+  return (await response.json()) as ChatsResponse;
 }
 
-async function get_message_history(community_id: string) {
+async function get_message_history(community_id: string): Promise<MessageHistoryResponse> {
   // For some odd reason, the community web client queries with a date 1 day in the future in UTC
   const queryDate = addDays(new Date(), 1);
   const queryDateString = queryDate.toISOString();
   const url = `https://api.community.com/client-dashboard/v2/edefb05a-ec9b-40ac-a3fd-7b2459d195cb/fans/${community_id}/message-history?end_date=${queryDateString}&page_size=50&tags\[not\]=auto-response`;
   const response = await fetch(url, { method: "GET", headers: headers });
   if (response.status !== 200) throw response.statusText;
-  return await response.json();
+  return (await response.json()) as MessageHistoryResponse;
 }
 
 async function get_inbound_message_history_since_date(community_id: string, since_date: Date) {

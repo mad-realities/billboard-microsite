@@ -16,16 +16,10 @@ jobs:
           node-version: 16
       - name: Install requirements
         run: |
-          npm install dotenv node-fetch typescript
-      - name: List files
-        run: |
-          ls scripts
+          npm --prefix $GITHUB_WORKSPACE/scripts install
       - name: Compile Typescript
         run: |
           tsc scripts/script.ts
-      - name: List files
-        run: |
-          ls scripts
       - name: Run script
         run: |
           node scripts/script.js

@@ -1,0 +1,16 @@
+{
+  "name": "cron-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "node-fetch": "^3.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "engines": {
+    "node": "^16.8.1",
+    "npm": "^8.19.2"
+  }
+}
