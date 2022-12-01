@@ -1,4 +1,4 @@
-import Image from "next/image";
+import clsx from "clsx";
 
 type SubheaderProps = {
   children: React.ReactNode;
@@ -7,12 +7,21 @@ type SubheaderProps = {
 
 export default function Subheader({ children, flipped }: SubheaderProps) {
   return (
-    <div className="w-full flex-col text-sm">
-      {flipped ? <></> : <div className="ml-1 w-5/6 translate-y-5">{children}</div>}
-      <div className={`${flipped ? "rotate-180" : ""}`}>
-        <Image src={"/subheader.png"} alt="Mad Realities wordmark logo" width={800} height={7} />
-      </div>
-      {flipped ? <div className="ml-1 w-5/6 translate-y-[-20px] translate-x-12">{children}</div> : <></>}
+    <div
+      className={clsx([
+        "w-full",
+        "flex-col",
+        "bg-[url('/subheader.png')]",
+        "bg-contain",
+        "bg-no-repeat",
+        "min-h-[40px]",
+        "bg-bottom",
+        "pr-[16%]",
+        "pb-3",
+        flipped && "rotate-180",
+      ])}
+    >
+      <div className={clsx(flipped && "rotate-180")}>{children}</div>
     </div>
   );
 }
