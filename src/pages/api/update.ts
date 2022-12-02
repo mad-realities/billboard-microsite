@@ -33,8 +33,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           res.status(200).json(scriptResponse);
         }
       }
-    } catch {
-      res.status(500).end("Server Error");
+    } catch (e) {
+      res.status(500).end("Server Error" + e);
     }
   }
 };
