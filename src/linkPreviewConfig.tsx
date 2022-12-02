@@ -24,7 +24,7 @@ export const LINK_PREVIEW_CONFIG = {
   PROFILE: {
     title: (_handle: string, _rank: number) => {
       if (_rank) {
-        return `${_handle} is in #${ordinal_suffix_of(_rank)} place!`;
+        return `@${_handle} is in ${ordinal_suffix_of(_rank)} place!`;
       } else {
         return `${_handle} is not on the leaderboard yet!`;
       }
