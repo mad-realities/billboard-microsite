@@ -88,6 +88,11 @@ export async function runScript(withDelay = false) {
       };
     });
 
+    // remove leading @ from each vote in userVotes
+    userVotes.forEach((vote) => {
+      vote.vote = vote.vote.replace("@", "");
+    });
+
     // filter out invalid handles
     const validUserVotes = userVotes.filter((vote) => validInstagramHandle(vote.vote));
 

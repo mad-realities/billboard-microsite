@@ -56,9 +56,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="text-sm">LEADERBOARD</div>
             <div className="flex-grow"></div>
             <div className="place-items-end">
-              <div className="text-sm">
-                <CountdownTimer endDatetime={new Date("2022-12-08")} onEnd={console.log} />
-              </div>
+              <div className="text-sm">UPDATES EVERY 5 MIN</div>
             </div>
           </div>
         </Subheader>
@@ -71,6 +69,10 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
+        <div className="text-7xl font-bold">
+          <CountdownTimer endDatetime={new Date("2022-12-08")} onEnd={console.log} />
+        </div>
+        <div>UNTIL VOTING CLOSES FOR THIS WEEK&apos;S BILLBOARD</div>
         <div className="w-full grow rounded-lg border-4 border-double border-mr-offwhite">
           <InfiniteScroll
             dataLength={rows.length}
