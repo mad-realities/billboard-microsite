@@ -8,7 +8,7 @@ import SmallBillboardButton from "../components/design-system/SmallBillboardButt
 
 export default function MyMap() {
   // billboard location: 1540 Broadway, New York, NY 10001
-  const [center] = React.useState([40.749981, -73.98806]);
+  const [center] = React.useState([40.7581352, -73.9850678]);
   const router = useRouter();
 
   function mapsSelector() {
