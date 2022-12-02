@@ -4,6 +4,7 @@ import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import { getLinkPreview } from "../linkPreviewConfig";
 import SmallBillboardButton from "../components/design-system/SmallBillboardButton";
+import Link from "next/link";
 
 const IndexPage = () => {
   const router = useRouter();
@@ -65,9 +66,9 @@ const IndexPage = () => {
   const FOOTER = (
     <div className="my-2 flex flex-row gap-2">
       <SmallBillboardButton fill color="mr-sky-blue" className="w-auto">
-        <a href="https://madrealities.xyz/Terms-of-Service" target="_blank" rel="noreferrer">
+        <Link href="/tcs">
           <span className="mx-10 text-sm font-regular uppercase tracking-wide">TERMS</span>
-        </a>
+        </Link>
       </SmallBillboardButton>
       <SmallBillboardButton fill color="mr-lime">
         <a href="https://my.community.com/madrealities?t=HELP" target="_blank" rel="noreferrer">
