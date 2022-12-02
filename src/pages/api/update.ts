@@ -23,7 +23,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const lastMinute = new Date(now.getTime() - 60 * 1000);
         const scriptWasRun = latestScriptRun && latestScriptRun.timestamp > lastMinute;
         if (scriptWasRun) {
-          res.status(200).json({ message: "Can't run script within 1 minute of last run." });
+          res.status(200).json({
+            message:
+              "Can't run script within 1 minute of last run which was at: " +
+              new Date(latestScriptRun.timestamp).toLocaleTimeString(),
+          });
         } else {
           const scriptResponse = await runScript();
           res.status(200).json(scriptResponse);
