@@ -8,6 +8,7 @@ import BillboardButton from "../components/design-system/BillboardButton";
 import { InstagramLeaderboardRow } from "../components/Leaderboard";
 import CountdownTimer from "../components/Countdown";
 import { getLinkPreview } from "../linkPreviewConfig";
+import UpdateCounter from "../components/UpdateCounter";
 
 const pageSize = 20;
 
@@ -56,8 +57,11 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="text-sm">LEADERBOARD</div>
             <div className="flex-grow"></div>
             <div className="place-items-end">
-              <div className="text-sm">
-                <CountdownTimer endDatetime={new Date("2022-12-08")} onEnd={console.log} />
+              <div className="flex flex-row gap-1 text-sm">
+                <div>UPDATES IN: </div>
+                <div>
+                  <UpdateCounter />
+                </div>
               </div>
             </div>
           </div>
@@ -71,6 +75,10 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
+        <div className="text-7xl font-bold">
+          <CountdownTimer endDatetime={new Date("2022-12-08")} onEnd={console.log} />
+        </div>
+        <div>UNTIL VOTING CLOSES FOR THIS WEEK&apos;S BILLBOARD</div>
         <div className="w-full grow rounded-lg border-4 border-double border-mr-offwhite">
           <InfiniteScroll
             dataLength={rows.length}
