@@ -29,7 +29,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
       rank: rank ? rank.rank : 0,
       handle: id as string,
       hasVote: rank ? true : false,
-      prompt: "MOST ELIGIBLE BACHELOR",
+      prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
       hostname: hostname || "",
     }, // will be passed to the page component as props
   };
@@ -47,7 +47,7 @@ const ProfileCard = ({
   const linkPreview = getLinkPreview("PROFILE", handle, rank);
 
   return (
-    <div className="flex grow flex-col items-center gap-2 rounded-xl text-3xl text-white">
+    <div className="flex grow flex-col items-center gap-2 rounded-xl text-3xl">
       {linkPreview}
       <Subheader>
         <div>Personal Profile</div>

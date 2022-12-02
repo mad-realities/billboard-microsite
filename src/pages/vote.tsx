@@ -23,10 +23,10 @@ const Vote = () => {
   }, [handleIsValid]);
 
   return (
-    <div className="align-center item-around flex h-full w-full flex-grow grow flex-col items-center gap-3 p-1 text-white">
+    <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-3 p-1 text-white">
       {linkPreview}
       <Subheader>
-        <div className="text-sm">NOMINATE YOUR FRIEND TO BE ON THE BILLBOARD</div>
+        <div className="text-[18px] uppercase">Nominate your friend to be on the billboard</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
@@ -36,14 +36,14 @@ const Vote = () => {
           CHECK RANK
         </BillboardButton>
       </div>
-      <div className="text-xl">1. Nominate your friend</div>
+      <div className="text-xl">Nominate your friend</div>
       <div className="flex w-3/4 flex-col gap-2">
         <input
           placeholder="MADREALITIES"
           onInput={(e) => setHandle(e.currentTarget.value)}
           className=" block w-full rounded-lg border border-2 border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
         />
-        <BillboardButton fill color="mr-sky-blue">
+        <BillboardButton fill color="mr-sky-blue" rightIcon="ArrowRight">
           {handleIsValid ? (
             <a
               href={getSmsHref(handle)}
@@ -54,10 +54,10 @@ const Vote = () => {
                 }
               }}
             >
-              TEXT TO CAST VOTE {"->"}
+              TEXT TO CAST VOTE
             </a>
           ) : (
-            <>TEXT TO CAST VOTE {"->"}</>
+            <>TEXT TO CAST VOTE</>
           )}
         </BillboardButton>
       </div>
