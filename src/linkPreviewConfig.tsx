@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { ordinal_suffix_of } from "./client/utils";
 
 const hostname = "https://billboard-microsite.vercel.app";
 export const LINK_PREVIEW_CONFIG = {
@@ -21,7 +22,13 @@ export const LINK_PREVIEW_CONFIG = {
     image: "/mad_famous_link_preview.png",
   },
   PROFILE: {
-    title: (_handle: string, _rank: number) => "MAD FAMOUS: THE BILLBOARD",
+    title: (_handle: string, _rank: number) => {
+      if (_rank) {
+        return `${_handle} is in #${ordinal_suffix_of(_rank)} place!`;
+      } else {
+        return `${_handle} is not on the leaderboard yet!`;
+      }
+    },
     url: (handle: string) => `${hostname}/profile/${handle}`,
     description: "Text to vote!",
     image: "/mad_famous_link_preview.png",

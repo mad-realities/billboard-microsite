@@ -23,19 +23,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
   const hostname = context.req.headers.host;
 
   const rank = await loadRankForHandle(id as string);
-  // const votes = await prisma.vote.groupBy({
-  //   by: ["instagramHandle"],
-  //   _count: {
-  //     instagramHandle: true,
-  //   },
-  //   orderBy: {
-  //     _count: {
-  //       instagramHandle: "desc",
-  //     },
-  //   },
-  // });
-
-  // const rank = votes.findIndex((vote) => vote.instagramHandle === id) + 1;
 
   return {
     props: {
