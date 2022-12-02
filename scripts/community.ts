@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import { delay } from "./script";
 
 dotenv.config({
   path: ".env.local",
@@ -153,6 +154,8 @@ const getMostRecentMessage = (messages: CommunityMessage[]) => {
 async function getCommunityIdMessageMapSinceDate(communityIds: string[], dateSince: Date) {
   const communityIdMessageMap: { [communityId: string]: CommunityMessage[] } = {};
   for (const cid of communityIds) {
+    // sleep for random amount of time to avoid rate limiting (max 100 requests per minute)
+    await delay(Math.random() * 600);
     const messages = await get_inbound_message_history_since_date(cid, dateSince);
     communityIdMessageMap[cid] = messages;
   }
