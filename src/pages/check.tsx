@@ -22,7 +22,7 @@ const Vote = () => {
   }, [handleIsValid]);
 
   return (
-    <div className="align-center item-around flex h-full w-full flex-grow grow flex-col items-center gap-3 p-1 text-white">
+    <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-3 p-1">
       {linkPreview}
       <Subheader>
         <div className="text-sm">CHECK RANK</div>
@@ -40,7 +40,7 @@ const Vote = () => {
         <input
           placeholder="MADREALITIES"
           onInput={(e) => setHandle(e.currentTarget.value)}
-          className=" block w-full rounded-lg border border-2 border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
+          className=" block w-full rounded-lg border-2 border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
         />
         <BillboardButton
           fill

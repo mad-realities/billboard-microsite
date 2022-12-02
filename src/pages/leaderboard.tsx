@@ -48,9 +48,9 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
   const linkPreview = getLinkPreview("LEADERBOARD");
 
   return (
-    <div className="flex w-full flex-col items-center gap-2 text-white">
+    <div className="flex w-full flex-col items-center gap-2">
       {linkPreview}
-      <div className="flex w-full flex-col items-center gap-2 text-white">
+      <div className="flex w-full flex-col items-center gap-2">
         <Subheader>
           <div className="flex w-full flex-row">
             <div className="text-sm">LEADERBOARD</div>
@@ -71,7 +71,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
-        <div className="w-full grow rounded-lg border-4 border-double border-mr-pink">
+        <div className="w-full grow rounded-lg border-4 border-double border-mr-offwhite">
           <InfiniteScroll
             dataLength={rows.length}
             next={getMore}

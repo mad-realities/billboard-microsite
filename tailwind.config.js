@@ -18,6 +18,7 @@ module.exports = {
         "mr-lime": "#4EC800",
         "mr-yellow": "#F8D84A",
         "mr-white": "#FFFFFF",
+        "mr-offwhite": "#EAE4CE",
         "mr-lilac": "#D99BFF",
         "mr-pink": "#FB6DF0",
         "mr-hot-pink": "#FF1F8C",
