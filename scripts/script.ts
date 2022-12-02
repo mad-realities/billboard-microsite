@@ -122,11 +122,12 @@ export async function runScript(withDelay = false) {
     // create new script run
     const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
 
-    console.log("Final Push", scriptRun);
+    return scriptRun;
   } else {
     console.log("No script runs yet, creating empty script run.");
     const new_script_run = await createEmptyScriptRun();
     console.log("Created new script run", new_script_run);
+    return new_script_run;
   }
 }
 

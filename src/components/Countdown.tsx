@@ -74,7 +74,7 @@ function CountdownTimer({ endDatetime, onEnd, onEndWindowSeconds }: Props & type
     setTriggered(false);
   }, [endDatetime]);
 
-  return <div suppressHydrationWarning>{getSimpleCountdownString(currentTime, endDatetime)}</div>;
+  return <div suppressHydrationWarning>{getCountdownString(currentTime, endDatetime)}</div>;
 }
 
 CountdownTimer.defaultProps = defaultProps;
