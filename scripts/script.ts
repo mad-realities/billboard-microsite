@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { getVotesSinceDate } from "./community";
-
+import { isValidUsername } from "./igData";
 dotenv.config({
   path: ".env.local",
 });
@@ -9,6 +9,16 @@ dotenv.config({
 const prisma = new PrismaClient({
   datasources: { db: { url: process.env.DATABASE_URL } },
 });
+
+/**
+ * Your handle can't exceed 30 characters
+ * It can only contain letters, numbers, and periods
+ * It can't contain symbols or punctuation marks
+ * It needs to be unique
+ */
+function validInstagramHandle(handle: string) {
+  return handle.length <= 30 && /^[a-zA-Z0-9._]+$/.test(handle);
+}
 
 async function createEmptyScriptRun() {
   const response = await prisma.scriptRun.create({
@@ -78,10 +88,34 @@ export async function runScript(withDelay = false) {
       };
     });
 
-    // fetch instagram data for each user
+    // filter out invalid handles
+    const validUserVotes = userVotes.filter((vote) => validInstagramHandle(vote.vote));
+
+    // filter out handles that don't exist
+    const validUserVotesWithExistingHandles: {
+      community_id: string;
+      vote: string;
+      timestamp: Date;
+    }[] = [];
+    for (const vote of validUserVotes) {
+      try {
+        const isValid = await isValidUsername(vote.vote);
+        if (isValid) {
+          validUserVotesWithExistingHandles.push(vote);
+        } else {
+          console.log("Invalid handle", vote.vote);
+        }
+      } catch (e) {
+        console.log("Error checking if username", vote.vote, "exists.", "Error:", e);
+        console.log("Since instagram check isn't working, we'll just assume it's valid");
+
+        // since instagram check failed, we'll assume the handle is valid
+        validUserVotesWithExistingHandles.push(vote);
+      }
+    }
 
     // create new script run
-    const scriptRun = await saveVotesToDB(userVotes);
+    const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
 
     console.log("Final Push", scriptRun);
   } else {
@@ -91,7 +125,7 @@ export async function runScript(withDelay = false) {
   }
 }
 
-function delay(ms: number) {
+export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
