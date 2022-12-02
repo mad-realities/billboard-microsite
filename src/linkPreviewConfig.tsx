@@ -4,7 +4,7 @@ const hostname = "https://billboard-microsite.vercel.app";
 export const LINK_PREVIEW_CONFIG = {
   LANDING: {
     title: "MAD FAMOUS: THE BILLBOARD",
-    image: "/cabs.png",
+    image: "/mad_famous_link_preview.png",
     description: "",
     url: `${hostname}/`,
   },
@@ -12,24 +12,24 @@ export const LINK_PREVIEW_CONFIG = {
     title: "MAD FAMOUS: THE BILLBOARD",
     description: "The Leaderboard",
     url: `${hostname}/leaderboard`,
-    image: "/cabs.png",
+    image: "/mad_famous_link_preview.png",
   },
   VOTE: {
     title: "MAD FAMOUS: THE BILLBOARD",
     description: "Vote here!",
     url: `${hostname}/vote`,
-    image: "/cabs.png",
+    image: "/mad_famous_link_preview.png",
   },
   PROFILE: {
     title: (_handle: string, _rank: number) => "MAD FAMOUS: THE BILLBOARD",
     url: (handle: string) => `${hostname}/profile/${handle}`,
     description: "Text to vote!",
-    image: "/cabs.png",
+    image: "/mad_famous_link_preview.png",
   },
   RANK: {
     title: "MAD FAMOUS: THE BILLBOARD",
     description: "Check your rank!",
-    image: "/cabs.png",
+    image: "/mad_famous_link_preview.png",
     url: `${hostname}/`,
   },
 };
@@ -48,7 +48,7 @@ export function getLinkPreview(page: keyof typeof LINK_PREVIEW_CONFIG, handle?: 
       <meta property="og:title" content={title} />
       <meta name="twitter:card" content="summary" />
       <meta property="og:description" content={config.description} />
-      <meta property="og:image" content="/cabs.png" />
+      <meta property="og:image" content="/mad_famous_link_preview.png" />
     </Head>
   );
 }
