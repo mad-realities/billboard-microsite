@@ -8,6 +8,7 @@ import BillboardButton from "../components/design-system/BillboardButton";
 import { InstagramLeaderboardRow } from "../components/Leaderboard";
 import CountdownTimer from "../components/Countdown";
 import { getLinkPreview } from "../linkPreviewConfig";
+import UpdateCounter from "../components/UpdateCounter";
 
 const pageSize = 20;
 
@@ -56,7 +57,12 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="text-sm">LEADERBOARD</div>
             <div className="flex-grow"></div>
             <div className="place-items-end">
-              <div className="text-sm">UPDATES EVERY 5 MIN</div>
+              <div className="flex flex-row gap-1 text-sm">
+                <div>UPDATES IN: </div>
+                <div>
+                  <UpdateCounter />
+                </div>
+              </div>
             </div>
           </div>
         </Subheader>
