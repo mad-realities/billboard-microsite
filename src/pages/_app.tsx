@@ -10,7 +10,8 @@ function VerificationApp({ Component, pageProps }: AppProps) {
     <div className="flex min-h-screen flex-col bg-star-texture bg-contain">
       <Head>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
-        <title>Mad Realities Billboard</title>
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <title>MAD FAMOUS by Mad Realities</title>
       </Head>
       <div className="mx-auto my-2 w-full max-w-md text-mr-offwhite">
         <NavBar />
