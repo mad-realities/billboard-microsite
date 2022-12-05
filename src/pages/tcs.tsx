@@ -37,15 +37,18 @@ export default function TermsAndConditions() {
 
       <div className="text-bold text-center text-xl">Mad Famous: The Billboard Drop 1 Rules</div>
       <div className="text-sm">
-        Mad Realities is allowing users to nominate and vote for any one [instagram user] to win the ability (winner
-        must not violate any policy listed in Prohibited Uses below) to be featured on a Billboard in Times Square. Any
-        one [instagram handle] may be added to our leaderboard (nominees must not violate any policy listed in
-        Prohibited Uses below), or voted for, by the act of texting [VOTE: [instagram handle] to 917-810-3314. “Voting”
-        opens on Mondays at 7 PM ET (subject to change). “Voting” closes on Wednesdays at 11:59 PM ET (subject to
-        change). Winners will be notified and consent will be required before the billboard is submitted. If they are
-        unable to respond, the [user] with the next highest votes will be notified and consent will be required. And so
-        on. Winners who consent will be able to select an image to be displayed for (1) Sunday afternoon [times subject
-        to change] at 1540 Broadway.
+        Mad Realities is allowing users to nominate and vote for an [instagram user] to win the ability (winner must not
+        violate any policy listed in Prohibited Uses below) to be featured on a Billboard in Times Square. Any
+        [instagram handle] may be added to our leaderboard (nominees must not violate any policy listed in Prohibited
+        Uses below), or voted for, by the act of texting [VOTE: [insert instagram handle] to 917-810-3314]. Text must be
+        properly formatted to count: there must be a space between the colon and instagram handle, instagram handle must
+        not include the &apos;@&apos; symbol, and no brackets should be included in the text. “Voting” opens on Mondays
+        at 7 PM ET (subject to change). “Voting” closes on Wednesdays at 1:00 PM ET (subject to change). “Winners” will
+        be notified and consent will be required before the billboard is submitted. If they are unable to respond within
+        2 hours, the [user] with the next highest votes will be notified and consent will be required. And so on.
+        “Winners” who consent will be able to select an image to be displayed for (1) Sunday afternoon [times subject to
+        change] at 1540 Broadway. Anyone may remove their place on the leaderboard by texting 5 to 917-810-3314, or by
+        contacting sup@madrealities.xyz directly.
       </div>
 
       <div className="text-bold text-center text-xl">General Conditions</div>
