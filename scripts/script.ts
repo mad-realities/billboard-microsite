@@ -2,21 +2,12 @@ import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { getVotesSinceDate } from "./community";
 import { isValidUsername } from "./igData";
-import { amplitude } from "./amplitude";
+import { incrementCount } from "./datadog";
+import { triggerCommunityMessageZap } from "./zapier";
 
 dotenv.config({
   path: ".env.local",
 });
-
-type ScriptEvent = {
-  scriptRunId: string;
-  votes: {
-    community_id: string;
-    vote: string;
-    timestamp: Date;
-  }[];
-  timestamp: Date;
-};
 
 const prisma = new PrismaClient({
   datasources: { db: { url: process.env.DATABASE_URL } },
@@ -131,14 +122,15 @@ export async function runScript(withDelay = false) {
       }
     }
 
-    const scriptEvent: ScriptEvent = {
-      scriptRunId: latest_script_run.id,
-      votes: validUserVotesWithExistingHandles,
-      timestamp: new Date(latest_script_run.timestamp),
-    };
+    const zapierPayload = validUserVotesWithExistingHandles.map((val) => ({
+      fanId: userVotesMap[val.community_id].fanId,
+      text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. Check your votes "RANK": https://billboard.madrealities.xyz/profile/${val.vote}`,
+    }));
 
-    amplitude.track("Run Script", scriptEvent);
-    amplitude.track("Votes", { count: validUserVotesWithExistingHandles.length });
+    triggerCommunityMessageZap(zapierPayload);
+
+    incrementCount("scriptRuns", 1);
+    incrementCount("votes", validUserVotesWithExistingHandles.length);
 
     // create new script run
     const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
