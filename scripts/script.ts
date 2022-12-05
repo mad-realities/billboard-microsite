@@ -160,16 +160,15 @@ export async function runScript(withDelay = false) {
     });
 
     triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
-
     incrementCount("scriptRuns", 1);
     incrementCount("votes", validUserVotesWithExistingHandles.length);
-    validUserVotesWithExistingHandles.forEach((vote) => {
+    for (const vote of validUserVotesWithExistingHandles) {
       mixpanelClient.track(VOTED, {
         community_id: vote.community_id,
         username: vote.vote,
         timestamp: vote.timestamp,
       });
-    });
+    }
 
     // create new script run
     const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
