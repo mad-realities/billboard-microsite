@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { delay } from "./script";
+import { amplitude } from "./amplitude";
 
 dotenv.config({
   path: ".env.local",
@@ -196,6 +197,12 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   community_ids.forEach((member) => {
     communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
   });
+  amplitude.track("Community Conversations in Window", {
+    start: dateSince,
+    end: new Date(),
+    count: community_ids.length,
+  });
+
   const communityIds = community_ids.map((c) => c.communityId);
   const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(communityIds, dateSince);
   const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, keyword);
@@ -219,3 +226,5 @@ async function main() {
   console.log("voteMap", voteMap);
   // await triggerCommunityMessageZap(payload);
 }
+
+// main();

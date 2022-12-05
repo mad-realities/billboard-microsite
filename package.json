@@ -22,6 +22,7 @@
     "lint"
   ],
   "dependencies": {
+    "@amplitude/analytics-browser": "^1.6.4",
     "@prisma/client": "^4.6.1",
     "@radix-ui/react-icons": "^1.1.1",
     "@types/node-fetch": "^2.6.2",
