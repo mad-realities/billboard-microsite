@@ -4,8 +4,11 @@ import NavBar from "../components/nav/NavBar";
 
 import "../styles/tailwind.css";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 function BillboardApp({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
   return (
     <div className="flex min-h-screen flex-col bg-star-texture bg-contain">
       <Head>
@@ -13,17 +16,23 @@ function BillboardApp({ Component, pageProps }: AppProps) {
         <link rel="shortcut icon" href="/favicon.ico" />
         <title>MAD FAMOUS by Mad Realities</title>
       </Head>
-      <div className="mx-auto my-2 w-full max-w-md text-mr-offwhite">
-        <NavBar />
-        <div className="flex h-full w-full px-2 ">
-          <div className="align-center flex w-auto grow flex-col items-center rounded-xl border border-white p-1">
-            <Link href="/">
-              <h1 className="pr-3 text-justify text-[88px] uppercase italic leading-none">Mad Famous</h1>
-            </Link>
-            <Component {...pageProps} />
+      {router.pathname.includes("preview") ? (
+        <div className="align-center flex w-full flex-col items-center text-mr-offwhite">
+          <Component {...pageProps} />
+        </div>
+      ) : (
+        <div className="mx-auto my-2 w-full max-w-md text-mr-offwhite">
+          <NavBar />
+          <div className="flex h-full w-full px-2 ">
+            <div className="align-center flex w-auto grow flex-col items-center rounded-xl border border-white p-1">
+              <Link href="/">
+                <h1 className="pr-3 text-justify text-[88px] uppercase italic leading-none">Mad Famous</h1>
+              </Link>
+              <Component {...pageProps} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
