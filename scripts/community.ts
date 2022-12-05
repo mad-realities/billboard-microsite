@@ -54,14 +54,26 @@ function get_community_ids_that_messaged_since_date_from_chats(since_date: Date,
 }
 
 async function get_community_ids_that_messaged_since_date(since_date: Date) {
-  const chats = await get_50_latest_chats();
+  let pageNumber = 1;
+  const chats = await get_50_chats(pageNumber);
   const community_ids = get_community_ids_that_messaged_since_date_from_chats(since_date, chats["data"]);
-  if (community_ids.length == 50) console.log("More than 50 chats since", since_date);
+
+  if (community_ids.length == 50) {
+    // there are more than 50 chats, so we need to get the rest
+    while (true) {
+      pageNumber++;
+      const next_page_chats = await get_50_chats(pageNumber);
+      community_ids.push(...get_community_ids_that_messaged_since_date_from_chats(since_date, next_page_chats["data"]));
+      if (next_page_chats["data"].length < 50) {
+        break;
+      }
+    }
+  }
   return community_ids;
 }
 
-async function get_50_latest_chats(): Promise<ChatsResponse> {
-  const url = "https://api.community.com/client-dashboard/messaging/chats?page_number=1&page_size=50";
+async function get_50_chats(page_number: number = 1): Promise<ChatsResponse> {
+  const url = `https://api.community.com/client-dashboard/messaging/chats?page_number=${page_number}&page_size=50`;
   const response = await fetch(url, { method: "GET", headers: headers });
   if (response.status !== 200) throw response.statusText;
   return (await response.json()) as ChatsResponse;
@@ -220,11 +232,12 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
 
 async function main() {
   const dateSince = addDays(new Date(), -1);
-  // const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
-
-  const voteMap = await getVotesSinceDate(dateSince);
-  console.log("voteMap", voteMap);
-  // await triggerCommunityMessageZap(payload);
+  console.log(dateSince);
+  const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
+  console.log(community_ids, community_ids.length);
+  const ids = community_ids.map((c) => c.communityId);
+  const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(ids, dateSince);
+  console.log(communityIdMessageMap);
 }
 
 // main();
