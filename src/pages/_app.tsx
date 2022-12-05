@@ -5,7 +5,7 @@ import NavBar from "../components/nav/NavBar";
 import "../styles/tailwind.css";
 import Link from "next/link";
 
-function VerificationApp({ Component, pageProps }: AppProps) {
+function BillboardApp({ Component, pageProps }: AppProps) {
   return (
     <div className="flex min-h-screen flex-col bg-star-texture bg-contain">
       <Head>
@@ -27,4 +27,4 @@ function VerificationApp({ Component, pageProps }: AppProps) {
     </div>
   );
 }
-export default VerificationApp;
+export default BillboardApp;

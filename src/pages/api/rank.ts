@@ -6,7 +6,7 @@ export const loadRankForHandle = async (handle: string) => {
   return results.find((result) => result.instagramHandle === handle);
 };
 
-export const loadRank = async (offset: number, limit: number) => {
+export const loadRank = async (offset: number, limit: number, includeCount?: boolean) => {
   // exclude instagram handles that are in the shadow ban list
   const shadowBans = await prisma.shadowBanList.findMany();
   const shadowBanHandles = shadowBans.map((shadowBan) => shadowBan.instagramHandle);
@@ -65,10 +65,18 @@ export const loadRank = async (offset: number, limit: number) => {
 
   // convert voteCounts to a list with rank and instagram handle
   const results = sortedVoteCounts.map((voteCount, index) => {
-    return {
-      rank: offset + index + 1,
-      instagramHandle: voteCount.instagramHandle,
-    };
+    if (includeCount) {
+      return {
+        rank: offset + index + 1,
+        instagramHandle: voteCount.instagramHandle,
+        count: voteCount.count,
+      };
+    } else {
+      return {
+        rank: offset + index + 1,
+        instagramHandle: voteCount.instagramHandle,
+      };
+    }
   });
 
   // get the slice of results we want

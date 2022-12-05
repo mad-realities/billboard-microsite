@@ -10,6 +10,10 @@ import { useEffect } from "react";
 import { CLICKED_SHARE, CLICKED_VOTE, mixpanelClient, VISITED_PROFILE } from "../../../client/mixpanel";
 
 type Props = {
+  redirect?: {
+    permanent: boolean;
+    destination: string;
+  };
   props: {
     hasVote: boolean;
     rank: number;
@@ -23,6 +27,24 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
   // aggregate votes per handle and return ranking
   const { id } = context.query;
   const hostname = context.req.headers.host;
+
+  const removeLeadingAt = id && id.toString().replace("@", "");
+
+  if (removeLeadingAt !== id) {
+    return {
+      redirect: {
+        permanent: true,
+        destination: `/profile/${removeLeadingAt}`,
+      },
+      props: {
+        rank: 0,
+        handle: id as string,
+        hasVote: false,
+        prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
+        hostname: hostname || "",
+      },
+    };
+  }
 
   const rank = await loadRankForHandle(id as string);
 
