@@ -148,13 +148,16 @@ function getMessagesWithSpecificWord(
   } = {};
   Object.keys(ids_to_messages).forEach((community_id) => {
     const messages = ids_to_messages[community_id];
-    const messages_with_word = messages.filter((msg) =>
-      msg.text
-        // remove extra spaces and lowercase
-        .replace(/^\s+|\s+$/g, "")
-        .toLowerCase()
-        .includes(word.toLowerCase()),
-    );
+    const messages_with_word = messages.filter((msg) => {
+      const messageText = msg.text.replace(/^\s+|\s+$/g, "").toLowerCase();
+
+      if (needsFollowUpWord) {
+        return messageText.includes(word.toLowerCase()) && hasWordAfterKeyword(messageText, word);
+      } else {
+        return messageText.includes(word.toLowerCase());
+      }
+    });
+
     ids_to_messages_with_word[community_id] = messages_with_word;
   });
   return ids_to_messages_with_word;
