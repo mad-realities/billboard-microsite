@@ -141,19 +141,23 @@ function getMessagesWithSpecificWord(
     [community_id: string]: CommunityMessage[];
   },
   word: string,
+  needsFollowUpWord: boolean = false,
 ) {
   const ids_to_messages_with_word: {
     [community_id: string]: CommunityMessage[];
   } = {};
   Object.keys(ids_to_messages).forEach((community_id) => {
     const messages = ids_to_messages[community_id];
-    const messages_with_word = messages.filter((msg) =>
-      msg.text
-        // remove extra spaces and lowercase
-        .replace(/^\s+|\s+$/g, "")
-        .toLowerCase()
-        .includes(word.toLowerCase()),
-    );
+    const messages_with_word = messages.filter((msg) => {
+      const messageText = msg.text.replace(/^\s+|\s+$/g, "").toLowerCase();
+
+      if (needsFollowUpWord) {
+        return messageText.includes(word.toLowerCase()) && hasWordAfterKeyword(messageText, word);
+      } else {
+        return messageText.includes(word.toLowerCase());
+      }
+    });
+
     ids_to_messages_with_word[community_id] = messages_with_word;
   });
   return ids_to_messages_with_word;
@@ -202,6 +206,43 @@ function getMostRecentMessagePerMember(communityIdMessageMap: { [communityId: st
   return communityIdMostRecentMessageMap;
 }
 
+export async function getMessagesSinceDate(dateSince: Date) {
+  const communityIds = await get_community_ids_that_messaged_since_date(dateSince);
+  const communityIdToFanSubscriptionId: { [communityId: string]: string } = {};
+  communityIds.forEach((member) => {
+    communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
+  });
+  const communityIdsOnly = communityIds.map((member) => member.communityId);
+  const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(communityIdsOnly, dateSince);
+  return { communityIdMessageMap, communityIdToFanSubscriptionId };
+}
+
+export async function getKeywordMessages(
+  communityIdMessageMap: { [communityId: string]: CommunityMessage[] },
+  keyword: string,
+  needsFollowUpWord: boolean = false,
+) {
+  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, keyword);
+  return communityIdMessageWithWordMap;
+}
+
+export async function getVotesFromMessages(
+  communityIdMessageMap: { [communityId: string]: CommunityMessage[] },
+  communityIdToFanSubscriptionId: { [communityId: string]: string },
+  voteKeyword = "vote: ",
+) {
+  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, voteKeyword);
+  const communityIdMostRecentMessageMap = getMostRecentMessagePerMember(communityIdMessageWithWordMap);
+  const idsToInstgramHandleVote = getIdToVoteHandleMap(communityIdMostRecentMessageMap, voteKeyword);
+  const idToFanIdAndVote: { [communityId: string]: { fanId: string; igHandle: string; timestamp: Date } } = {};
+  Object.keys(idsToInstgramHandleVote).forEach((communityId) => {
+    const fanId = communityIdToFanSubscriptionId[communityId];
+    const vote = idsToInstgramHandleVote[communityId];
+    idToFanIdAndVote[communityId] = { fanId, ...vote };
+  });
+  return idToFanIdAndVote;
+}
+
 export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   // includes fan subscription id and community id
   const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
@@ -226,14 +267,34 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   return idToFanIdAndVote;
 }
 
+function hasWordAfterKeyword(str: string, keyword: string) {
+  str = str.replace(/^\s+|\s+$/g, "");
+  const index = str.indexOf(keyword);
+  if (index === -1) {
+    return false;
+  } else if (index + keyword.length === str.length) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 async function main() {
-  const dateSince = addDays(new Date(), -1);
-  console.log(dateSince);
-  const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
-  console.log(community_ids, community_ids.length);
-  const ids = community_ids.map((c) => c.communityId);
-  const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(ids, dateSince);
-  console.log(communityIdMessageMap);
+  const str1 = "vote    ";
+  const str2 = "word vote dpromise word";
+  const str3 = "vote";
+
+  console.log(str1, hasWordAfterKeyword(str1, "vote "));
+  console.log(str2, hasWordAfterKeyword(str2, "vote "));
+  console.log(str3, hasWordAfterKeyword(str3, "vote "));
+
+  // const dateSince = addDays(new Date(), -1);
+  // console.log(dateSince);
+  // const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
+  // console.log(community_ids, community_ids.length);
+  // const ids = community_ids.map((c) => c.communityId);
+  // const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(ids, dateSince);
+  // console.log(communityIdMessageMap);
 }
 
 // main();

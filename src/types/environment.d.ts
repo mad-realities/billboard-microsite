@@ -9,6 +9,7 @@ declare global {
       COMMUNITY_TOKEN: string;
       API_SECRET: string;
       UPDATE_SECRET: string;
+      NODE_ENV: string;
     }
   }
 }

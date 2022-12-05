@@ -1,5 +1,9 @@
 import { client, v2 } from "@datadog/datadog-api-client";
+import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 
+dotenv.config({
+  path: ".env.local",
+});
 const datadog = new v2.MetricsApi(client.createConfiguration());
 
 // TODO: Submitting metrics via the Datadog HTTP API does not perform the same batching optimizations
@@ -19,7 +23,7 @@ export const incrementCount = async (metricName: string, value: number) => {
               value,
             },
           ],
-          tags: [process.env.NODE_ENV, "billboard", "v1"],
+          tags: [process.env.NODE_ENV || "", "billboard", "v1"],
         },
       ],
     },
@@ -41,7 +45,7 @@ export const trackGauge = async (metricName: string, value: number) => {
               value,
             },
           ],
-          tags: [process.env.NODE_ENV, "billboard", "v1"],
+          tags: [process.env.NODE_ENV || "", "billboard", "v1"],
         },
       ],
     },
