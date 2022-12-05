@@ -89,7 +89,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
         <div className="text-5xl font-bold">
           <CountdownTimer endDatetime={new Date("December 07, 2022 13:00:00")} onEnd={console.log} />
         </div>
-        <div>UNTIL VOTING CLOSES FOR THIS WEEK&apos;S BILLBOARD</div>
+        <div>UNTIL VOTING CLOSES FOR THE BILLBOARD</div>
         <div className="w-full grow rounded-lg border-4 border-double border-mr-offwhite">
           <InfiniteScroll
             dataLength={rows.length}
