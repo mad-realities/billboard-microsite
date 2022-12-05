@@ -297,4 +297,4 @@ async function main() {
   // console.log(communityIdMessageMap);
 }
 
-main();
+// main();

@@ -140,7 +140,7 @@ export async function runScript(withDelay = false) {
 
     const successfulZapierPayload = validUserVotesWithExistingHandles.map((val) => ({
       fanId: communityIdToFanSubscriptionId[val.community_id],
-      text: `SUCCESS! :white_check_mark: Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
+      text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
     }));
 
     triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
