@@ -24,11 +24,12 @@ export const loadRank = async (offset: number, limit: number, includeCount?: boo
   });
 
   // get the most recent vote for each community id
-  const communityIds = new Set();
+  const communityIdsAndVote = new Set();
   const mostRecentVotes = [];
   for (const vote of votes) {
-    if (!communityIds.has(vote.communityId)) {
-      communityIds.add(vote.communityId);
+    const key = vote.communityId + vote.instagramHandle;
+    if (!communityIdsAndVote.has(key)) {
+      communityIdsAndVote.add(key);
       mostRecentVotes.push(vote);
     }
   }
