@@ -103,7 +103,7 @@ const ProfileCard = ({
           color: "white",
         }}
       >
-        <Image src="/PreviewCard2.png" alt="Link Preview Card" width={800} height={400} style={{ width: "100%" }} />
+        <Image src="/PreviewCard2.png" alt="Link Preview Card" width={1366} height={768} style={{ width: "100%" }} />
         <div
           className="text-center"
           style={{
