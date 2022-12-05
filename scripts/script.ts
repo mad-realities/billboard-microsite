@@ -89,21 +89,24 @@ export async function runScript(withDelay = false) {
     const userVotesMap = await getVotesFromMessages(communityIdMessageMap, communityIdToFanSubscriptionId);
     console.log("userMap", userVotesMap);
 
-    const userVotes = Object.keys(userVotesMap).map((community_id) => {
-      return {
-        community_id,
-        vote: userVotesMap[community_id].igHandle,
-        timestamp: userVotesMap[community_id].timestamp,
-      };
-    });
+    const allUserVotes = Object.keys(userVotesMap)
+      .map((community_id) => {
+        const userVotes = userVotesMap[community_id];
+        return userVotes.map((vote) => ({
+          community_id,
+          vote: vote.igHandle,
+          timestamp: vote.timestamp,
+        }));
+      })
+      .flat();
 
     // remove leading @ from each vote in userVotes
-    userVotes.forEach((vote) => {
+    allUserVotes.forEach((vote) => {
       vote.vote = vote.vote.replace("@", "");
     });
 
     // filter out invalid handles
-    const validUserVotes = userVotes.filter((vote) => validInstagramHandle(vote.vote));
+    const validUserVotes = allUserVotes.filter((vote) => validInstagramHandle(vote.vote));
 
     // filter out handles that don't exist
     const validUserVotesWithExistingHandles: {
@@ -138,10 +141,23 @@ export async function runScript(withDelay = false) {
       text: `Oops! That didn't work... If you're trying to vote for an existing candidate or nominate a new one, use the format below:\n\nVOTE: [insert IG username]\n\nText "3" for help voting.`,
     }));
 
-    const successfulZapierPayload = validUserVotesWithExistingHandles.map((val) => ({
-      fanId: communityIdToFanSubscriptionId[val.community_id],
-      text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
-    }));
+    // seen
+    const communityIdToVoteCount: { [communityId: string]: boolean } = {};
+
+    const successfulZapierPayload = validUserVotesWithExistingHandles.map((val) => {
+      if (communityIdToVoteCount[val.community_id]) {
+        return {
+          fanId: communityIdToFanSubscriptionId[val.community_id],
+          text: `SUCCESS! You also voted for ${val.vote}. You can see the rank of their username by clicking the link below. https://billboard.madrealities.xyz/profile/${val.vote}`,
+        };
+      } else {
+        communityIdToVoteCount[val.community_id] = true;
+        return {
+          fanId: communityIdToFanSubscriptionId[val.community_id],
+          text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
+        };
+      }
+    });
 
     triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
 
