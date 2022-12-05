@@ -23,7 +23,7 @@ const Vote = () => {
   }, [handleIsValid]);
 
   return (
-    <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-3 p-1 text-white">
+    <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-3 p-1 text-mr-offwhite">
       {linkPreview}
       <Subheader>
         <div className="text-[18px] uppercase">Nominate your friend to be on the billboard</div>
@@ -36,12 +36,12 @@ const Vote = () => {
           CHECK RANK
         </BillboardButton>
       </div>
-      <div className="text-xl">Nominate your friend</div>
+      <div className="text-center text-xl">WHO&apos;S FACE SHOULD BE ON A BILLBOARD IN TIMES SQUARE?</div>
       <div className="flex w-3/4 flex-col gap-2">
         <input
-          placeholder="MADREALITIES"
+          placeholder="enter instagram username here"
           onInput={(e) => setHandle(e.currentTarget.value)}
-          className=" block w-full rounded-lg border border-2 border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
+          className=" block w-full rounded-lg border border-4 border-double border-mr-offwhite bg-transparent p-2.5 text-center text-sm text-mr-offwhite placeholder-mr-offwhite"
         />
         <BillboardButton fill color="mr-sky-blue" rightIcon="ArrowRight">
           {handleIsValid ? (

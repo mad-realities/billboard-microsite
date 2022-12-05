@@ -1,7 +1,7 @@
 import { InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { loadRank } from "./api/rank";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
@@ -75,7 +75,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
-        <div className="text-7xl font-bold">
+        <div className="text-5xl font-bold">
           <CountdownTimer endDatetime={new Date("2022-12-08")} onEnd={console.log} />
         </div>
         <div>UNTIL VOTING CLOSES FOR THIS WEEK&apos;S BILLBOARD</div>

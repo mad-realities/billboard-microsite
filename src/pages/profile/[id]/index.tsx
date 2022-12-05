@@ -50,7 +50,7 @@ const ProfileCard = ({
     <div className="flex grow flex-col items-center gap-2 rounded-xl text-3xl">
       {linkPreview}
       <Subheader>
-        <div>Personal Profile</div>
+        <div>PERSONAL PROFILE</div>
       </Subheader>
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
