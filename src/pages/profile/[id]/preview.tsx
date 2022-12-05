@@ -4,7 +4,6 @@ import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../c
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
 import Image from "next/image";
-import { getLinkPreviewUrl } from "../../api/preview";
 
 type Props = {
   redirect?: {
@@ -78,14 +77,14 @@ const ProfileCard = ({
 
       {hasVote ? (
         <>
-          <div className="text-center text-6xl">{ordinal_suffix_of(rank)}</div>
+          <div className="text-center text-8xl">{ordinal_suffix_of(rank)}</div>
           <div className="text-center">
             <span className="font-bold">{prompt}</span>
           </div>
         </>
       ) : (
         <>
-          <div className="text-center text-6xl">No Votes :(</div>
+          <div className="text-center text-8xl">No Votes :(</div>
           <div className="text-center">
             <span className="font-bold">{prompt}</span>
           </div>
@@ -95,6 +94,7 @@ const ProfileCard = ({
   );
   return (
     <div className="flex grow flex-col items-center gap-5 rounded-xl text-3xl">
+      {linkPreview}
       <div
         className="text-center"
         style={{

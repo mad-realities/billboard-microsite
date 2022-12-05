@@ -8,8 +8,7 @@ dotenv.config({
 export async function getLinkPreviewUrl(handle: string) {
   try {
     if (!process.env.HTML_TO_CSS_API_KEY || !process.env.HTML_TO_CSS_USER_ID) {
-      console.log(process.env.HTML_TO_CSS_API_KEY);
-      console.log(process.env.HTML_TO_CSS_USER_ID);
+      console.log("You don't have the HTML_TO_CSS_API_KEY or HTML_TO_CSS_USER_ID");
       return "/mad_famous_link_preview.png";
     } else {
       const url = "https://hcti.io/v1/image";
@@ -25,7 +24,7 @@ export async function getLinkPreviewUrl(handle: string) {
           "Content-Type": "application/json",
         },
       };
-      const response = await axios.post(url, payload, { ...headers, timeout: 10000 });
+      const response = await axios.post(url, payload, { ...headers, timeout: 40000 });
       const data = response.data;
       return data["url"];
     }

@@ -75,6 +75,7 @@ const ProfileCard = ({
   const router = useRouter();
   const url = `https://${hostname}/profile/${handle}`;
   const linkPreview = getLinkPreview("PROFILE", handle, rank, linkPreviewUrl);
+  console.log(linkPreviewUrl);
 
   const text = (
     <>
