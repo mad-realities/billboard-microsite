@@ -8,10 +8,16 @@ import Link from "next/link";
 import { CONTACT_PHONE_NUMBER } from "../client/constants";
 import { formatPhoneNumber } from "../client/utils";
 import VideoPlayer from "../components/VideoPlayer";
+import { mixpanelClient, VISITED_HOME } from "../client/mixpanel";
+import { useEffect } from "react";
 
 const IndexPage = () => {
   const router = useRouter();
   const linkPreview = getLinkPreview("LANDING");
+
+  useEffect(() => {
+    mixpanelClient.track(VISITED_HOME);
+  }, []);
 
   const HOWITWORKS = (
     <div className="flex flex-col items-center gap-4 rounded-xl border border-white p-10">
@@ -19,28 +25,30 @@ const IndexPage = () => {
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Nominate</div>
       <div className="text-center text-xl">
-        Nominations open on Mondays at 7pm ET. Vote for friends (or yourself) to get on a billboard in Times Square.{" "}
+        Nominate your friends (or yourself) for a chance to be featured on a billboard in Times Square.{" "}
       </div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Rack up Votes</div>
       <div className="text-center text-xl">
-        Whoever has the most votes before Fridays at 11:59 PM ET will get their face on the next billboard.{" "}
+        The higher the votes, the higher the chances, so make it to the top of the leaderboard by this Wednesday at 1 PM
+        ET.{" "}
       </div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Get Mad Famous</div>
       <div className="text-center text-xl">
-        Stop by this{" "}
+        Winner’s face will go live on{" "}
         <Link href={"/map"} className="text-mr-sky-blue underline">
-          billboard
+          the big screen in Times Square
         </Link>{" "}
-        in Times Square on Sundays from 6-8pm to see this week’s winner revealed on the big screen.{" "}
+        this Sunday from 6-8pm.{" "}
       </div>
 
-      <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Repeat</div>
-      <div className="text-center text-xl">This stage will be active for 2 weeks starting Monday, December 5th.</div>
+      {/* <div className="mt-3 text-3xl text-center uppercase text-mr-lime">Repeat</div>
+      <div className="text-xl text-center">This stage will be active for 2 weeks starting Monday, December 5th.</div> */}
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Questions?</div>
       <div className="text-center text-xl">Text “HELP” to {formatPhoneNumber(CONTACT_PHONE_NUMBER)}.</div>
+      <div className="text-center text-xl">*Terms and Conditions apply*</div>
     </div>
   );
 
@@ -49,10 +57,10 @@ const IndexPage = () => {
       <div className="text-4xl text-mr-yellow">Reality is MAD</div>
       <div className="text-4xl text-mr-yellow">Join ours instead.</div>
 
-      <div className="text-center text-xl">Mad Realities creates stages, you influence the outcome.</div>
+      <div className="text-center text-xl">Mad Realities creates the stage, you influence the outcome.</div>
 
       <div className="text-center text-xl">
-        Sign up for text updates on future drops, IRL events, and other cool secrets.
+        Sign up for updates on future drops, IRL events, and other cool secrets.
       </div>
 
       <div className="flex w-full flex-row gap-2">
@@ -93,7 +101,7 @@ const IndexPage = () => {
       </Subheader>
       <div
         // className="relative h-[340px] w-full"
-        className="relative  w-full"
+        className="relative w-full"
       >
         <VideoPlayer playback_id="d7n3IuLlolLJ1gxNVnkWh8os2Vjyk8O009gsWvQOPXv4" />
         {/* <Image src="/cabs.png" alt="Mad Realities wordmark logo" fill /> */}
