@@ -10,6 +10,7 @@ declare global {
       API_SECRET: string;
       UPDATE_SECRET: string;
       NODE_ENV: string;
+      NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN: string;
     }
   }
 }
