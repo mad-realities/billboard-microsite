@@ -4,7 +4,7 @@ import { getKeywordMessages, getMessagesSinceDate, getVotesFromMessages, getVote
 import { isValidUsername } from "./igData";
 import { incrementCount } from "./datadog";
 import { triggerCommunityMessageZap } from "./zapier";
-
+import { mixpanelClient, VOTED } from "../src/client/mixpanel";
 dotenv.config({
   path: ".env.local",
 });
@@ -163,6 +163,13 @@ export async function runScript(withDelay = false) {
 
     incrementCount("scriptRuns", 1);
     incrementCount("votes", validUserVotesWithExistingHandles.length);
+    validUserVotesWithExistingHandles.forEach((vote) => {
+      mixpanelClient.track(VOTED, {
+        community_id: vote.community_id,
+        username: vote.vote,
+        timestamp: vote.timestamp,
+      });
+    });
 
     // create new script run
     const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
