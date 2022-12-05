@@ -3,6 +3,7 @@ import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-
 import { getVotesSinceDate } from "./community";
 import { isValidUsername } from "./igData";
 import { amplitude } from "./amplitude";
+import { triggerCommunityMessageZap } from "./zapier";
 
 dotenv.config({
   path: ".env.local",
@@ -130,6 +131,13 @@ export async function runScript(withDelay = false) {
         validUserVotesWithExistingHandles.push(vote);
       }
     }
+
+    const zapierPayload = validUserVotesWithExistingHandles.map((val) => ({
+      fanId: userVotesMap[val.community_id].fanId,
+      text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. Check your votes "RANK": https://billboard.madrealities.xyz/profile/${val.vote}`,
+    }));
+
+    triggerCommunityMessageZap(zapierPayload);
 
     const scriptEvent: ScriptEvent = {
       scriptRunId: latest_script_run.id,
