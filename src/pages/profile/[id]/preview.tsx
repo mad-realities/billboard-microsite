@@ -4,6 +4,7 @@ import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../c
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
 import Image from "next/image";
+import { getLinkPreviewUrl } from "../../api/preview";
 
 type Props = {
   redirect?: {
@@ -65,6 +66,7 @@ const ProfileCard = ({
   const router = useRouter();
   const url = `https://${hostname}/profile/${handle}`;
   const linkPreview = getLinkPreview("PROFILE", handle, rank);
+
   const text = (
     <div className="flex grow flex-col items-center gap-3 rounded-xl">
       <div className="text-3xl">
@@ -78,7 +80,6 @@ const ProfileCard = ({
         <>
           <div className="text-center text-6xl">{ordinal_suffix_of(rank)}</div>
           <div className="text-center">
-            <span className="">for </span>
             <span className="font-bold">{prompt}</span>
           </div>
         </>

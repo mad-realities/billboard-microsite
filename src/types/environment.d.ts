@@ -10,6 +10,8 @@ declare global {
       API_SECRET: string;
       UPDATE_SECRET: string;
       NODE_ENV: string;
+      HTML_TO_CSS_USER_ID: string;
+      HTML_TO_CSS_API_KEY: string;
     }
   }
 }

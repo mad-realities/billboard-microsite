@@ -6,6 +6,7 @@ import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../c
 import { RWebShare } from "react-web-share";
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
+import { getLinkPreviewUrl } from "../../api/preview";
 
 type Props = {
   redirect?: {
@@ -18,6 +19,7 @@ type Props = {
     handle: string;
     prompt: string;
     hostname: string;
+    linkPreviewUrl: string;
   };
 };
 
@@ -40,11 +42,13 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
         hasVote: false,
         prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
         hostname: hostname || "",
+        linkPreviewUrl: "",
       },
     };
   }
 
   const rank = await loadRankForHandle(id as string);
+  const linkPreviewUrl = await getLinkPreviewUrl(id as string);
 
   return {
     props: {
@@ -53,6 +57,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
       hasVote: rank ? true : false,
       prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
       hostname: hostname || "",
+      linkPreviewUrl: linkPreviewUrl,
     }, // will be passed to the page component as props
   };
 };
@@ -63,10 +68,11 @@ const ProfileCard = ({
   hasVote,
   prompt,
   hostname,
+  linkPreviewUrl,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const url = `https://${hostname}/profile/${handle}`;
-  const linkPreview = getLinkPreview("PROFILE", handle, rank);
+  const linkPreview = getLinkPreview("PROFILE", handle, rank, linkPreviewUrl);
 
   const text = (
     <>
