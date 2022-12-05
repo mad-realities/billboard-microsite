@@ -8,6 +8,7 @@ declare global {
       NEXT_PUBLIC_PRIVY_APP_ID: string;
       DATABASE_URL: string;
       COMMUNITY_TOKEN: string;
+      AMPLITUDE_API_KEY: string;
     }
   }
 }
