@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { runScript } from "../../../scripts/script";
 import { prisma } from "../../server/prisma";
-import { amplitude } from "../../../scripts/amplitude";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "GET") {
@@ -36,9 +35,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
       }
     } catch (e) {
-      amplitude.track("Update API Error", {
-        error: e,
-      });
       res.status(500).end("Server Error" + e);
     }
   }
