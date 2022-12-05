@@ -1,4 +1,5 @@
 import { CONTACT_PHONE_NUMBER } from "./constants";
+import { CLICKED_VOTE, mixpanelClient, VOTED } from "./mixpanel";
 
 export function ordinal_suffix_of(i: number) {
   const j = i % 10,

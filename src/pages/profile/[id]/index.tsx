@@ -6,6 +6,8 @@ import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../c
 import { RWebShare } from "react-web-share";
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
+import { useEffect } from "react";
+import { CLICKED_SHARE, CLICKED_VOTE, mixpanelClient, VISITED_PROFILE } from "../../../client/mixpanel";
 
 type Props = {
   props: {
@@ -45,6 +47,26 @@ const ProfileCard = ({
   const router = useRouter();
   const url = `https://${hostname}/profile/${handle}`;
   const linkPreview = getLinkPreview("PROFILE", handle, rank);
+
+  useEffect(() => {
+    mixpanelClient.track(VISITED_PROFILE, {
+      username: handle,
+      rank: rank,
+      hasVote: hasVote,
+    });
+  }, [handle, rank, hasVote]);
+
+  function clickedShare() {
+    mixpanelClient.track(CLICKED_SHARE);
+  }
+
+  function clickedVote() {
+    mixpanelClient.track(CLICKED_VOTE, {
+      username: handle,
+      rank: rank,
+      hasVote: hasVote,
+    });
+  }
 
   return (
     <div className="flex grow flex-col items-center gap-2 rounded-xl text-3xl">
@@ -88,7 +110,9 @@ const ProfileCard = ({
 
         <div className="flex w-full flex-row gap-2">
           <BillboardButton fill color="mr-sky-blue">
-            <a href={getSmsHref(handle)}>VOTE</a>
+            <a href={getSmsHref(handle)} onClick={clickedVote}>
+              VOTE
+            </a>
           </BillboardButton>
           <RWebShare
             data={{
@@ -96,7 +120,7 @@ const ProfileCard = ({
               url,
               // title: "Share this article on Flamingos",
             }}
-            // onClick={() => router.push("/leaderboard")}
+            onClick={() => clickedShare()}
           >
             <BillboardButton fill color="mr-sky-blue">
               SHARE
