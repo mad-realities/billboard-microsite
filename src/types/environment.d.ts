@@ -7,9 +7,10 @@ declare global {
       // Put type definitions for process.env variables here
       DATABASE_URL: string;
       COMMUNITY_TOKEN: string;
-      NEXT_PUBLIC_AMPLITUDE_API_KEY: string;
       API_SECRET: string;
       UPDATE_SECRET: string;
+      NODE_ENV: string;
+      NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN: string;
     }
   }
 }

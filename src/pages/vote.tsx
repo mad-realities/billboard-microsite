@@ -4,6 +4,7 @@ import Subheader from "../components/design-system/Subheader";
 import { useEffect, useState } from "react";
 import { getSmsHref } from "../client/utils";
 import { getLinkPreview } from "../linkPreviewConfig";
+import { mixpanelClient, VISITED_NOMINATE } from "../client/mixpanel";
 
 const Vote = () => {
   const router = useRouter();
@@ -13,6 +14,9 @@ const Vote = () => {
 
   // check if handle is one word
   const handleIsValid = handle.split(" ").length === 1;
+  useEffect(() => {
+    mixpanelClient.track(VISITED_NOMINATE);
+  }, []);
 
   useEffect(() => {
     if (handleIsValid) {

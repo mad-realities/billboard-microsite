@@ -7,10 +7,16 @@ import SmallBillboardButton from "../components/design-system/SmallBillboardButt
 import Link from "next/link";
 import { CONTACT_PHONE_NUMBER } from "../client/constants";
 import { formatPhoneNumber } from "../client/utils";
+import { mixpanelClient, VISITED_HOME } from "../client/mixpanel";
+import { useEffect } from "react";
 
 const IndexPage = () => {
   const router = useRouter();
   const linkPreview = getLinkPreview("LANDING");
+
+  useEffect(() => {
+    mixpanelClient.track(VISITED_HOME);
+  }, []);
 
   const HOWITWORKS = (
     <div className="flex flex-col items-center gap-4 rounded-xl border border-white p-10">

@@ -3,6 +3,7 @@ import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import { useEffect, useState } from "react";
 import { getLinkPreview } from "../linkPreviewConfig";
+import { mixpanelClient, VISITED_CHECK_RANK } from "../client/mixpanel";
 
 const Vote = () => {
   const router = useRouter();
@@ -20,6 +21,10 @@ const Vote = () => {
       setError("Instagram handle must be valid!");
     }
   }, [handleIsValid]);
+
+  useEffect(() => {
+    mixpanelClient.track(VISITED_CHECK_RANK);
+  }, []);
 
   return (
     <div className="align-center item-around flex h-full w-full grow flex-col items-center gap-3 p-1">
