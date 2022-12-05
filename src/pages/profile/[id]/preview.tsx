@@ -69,7 +69,7 @@ const ProfileCard = ({
 
   const text = (
     <div className="flex grow flex-col items-center gap-3 rounded-xl">
-      <div className="text-3xl">
+      <div className="text-4xl">
         <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
           <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
         </a>
