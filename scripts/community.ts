@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { delay } from "./script";
+import { exec } from "child_process";
 
 dotenv.config({
   path: ".env.local",
@@ -196,6 +197,7 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   community_ids.forEach((member) => {
     communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
   });
+  // console.log("Found " + community_ids.length + " members that messaged since " + dateSince);
   const communityIds = community_ids.map((c) => c.communityId);
   const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(communityIds, dateSince);
   const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, keyword);
@@ -211,11 +213,77 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   return idToFanIdAndVote;
 }
 
-async function main() {
-  const dateSince = addDays(new Date(), -1);
-  // const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
+export async function getFanSubscriptionIdFromSignupLink(signupLink: string) {
+  const response = await fetch(signupLink, { method: "GET", headers });
+  if (response.status !== 200) throw response.statusText;
+  const url = response.url;
 
-  const voteMap = await getVotesSinceDate(dateSince);
-  console.log("voteMap", voteMap);
-  // await triggerCommunityMessageZap(payload);
+  // get last token of url
+  const fanSubscriptionId = url.split("/").pop();
+  return fanSubscriptionId;
 }
+
+export async function activateCommunityFanSubscription(fanSubscriptionId: string) {
+  try {
+    const url = `https://api.community.com/fan-subscription/${fanSubscriptionId}/activate`;
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+        // Referer: "https://in.community.com/",
+        // Origin: "https://in.community.com",
+      },
+      body: JSON.stringify({
+        device_type: "Mac OS X 10.15.7",
+        first_name: "[Test]",
+        last_name: fanSubscriptionId,
+        gender: "male",
+        dob: "1999-04-30",
+        location: {
+          city: "New York",
+          state: "New York",
+          state_code: "NY",
+          country: "United States",
+          country_code: "US",
+          zip_code: "",
+          lat: 40.7127753,
+          lng: -74.0059728,
+        },
+        email: `${fanSubscriptionId}@email.com`,
+        client_terms: [],
+      }),
+    });
+
+    if (response.status !== 200) throw response.statusText;
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    console.log("ERROR:", e);
+  }
+}
+
+async function main() {
+  const text = await getFanSubscriptionIdFromSignupLink("https://m.community.com/o4AWjn1FL5qDjlE");
+  console.log(text);
+  if (text) {
+    const response = await activateCommunityFanSubscription(text);
+    console.log(response);
+  }
+}
+
+// main();
+
+// curl 'https://api.community.com/fan-subscription/190e82f7-03ce-4f67-b314-881ef81074fa/activate' \
+// -X 'PUT' \
+// -H 'Accept: */*' \
+// -H 'Content-Type: application/json' \
+// -H 'Origin: https://in.community.com' \
+// -H 'Content-Length: 313' \
+// -H 'Accept-Language: en-US,en;q=0.9' \
+// -H 'Host: api.community.com' \
+// -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15' \
+// -H 'Referer: https://in.community.com/' \
+// -H 'Accept-Encoding: gzip, deflate, br' \
+// -H 'Connection: keep-alive' \
+// --data-binary '{"device_type":"Mac OS X 10.15.7","first_name":"Test","last_name":"Test","gender":"male","dob":"1999-04-30","location":{"city":"New York","state":"New York","state_code":"NY","country":"United States","country_code":"US","zip_code":"","lat":40.7127753,"lng":-74.0059728},"email":"test@test.com","client_terms":[]}'
