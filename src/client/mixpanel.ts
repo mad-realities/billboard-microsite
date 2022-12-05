@@ -4,7 +4,8 @@ import mixpanel from "mixpanel-browser";
 
 // Enabling the debug mode flag is useful during implementation,
 // but it's re"3b5c32cad6dea5e56999749830a854b7"commended you remove it for production
-mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN, { debug: true });
+
+mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN || "", { debug: true });
 export const mixpanelClient = mixpanel;
 
 export const VISITED_HOME = "Visited home";
