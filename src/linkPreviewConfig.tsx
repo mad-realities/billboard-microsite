@@ -54,7 +54,7 @@ export function getLinkPreview(page: keyof typeof LINK_PREVIEW_CONFIG, handle?: 
       {/* <meta property="fb:app_id" content="your fb app id" /> */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={config.description} />
-      <meta property="og:image" content="/mad_famous_link_preview.png" />
+      <meta property="og:image" content="https://billboard-microsite.vercel.app/mad_famous_link_preview.png" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:site" content={url} />
