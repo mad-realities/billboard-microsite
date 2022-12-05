@@ -138,6 +138,7 @@ export async function runScript(withDelay = false) {
     };
 
     amplitude.track("Run Script", scriptEvent);
+    amplitude.track("Votes", { count: validUserVotesWithExistingHandles.length });
 
     // create new script run
     const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
