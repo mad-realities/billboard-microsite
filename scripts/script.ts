@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { getVotesSinceDate } from "./community";
+import { getKeywordMessages, getMessagesSinceDate, getVotesFromMessages, getVotesSinceDate } from "./community";
 import { isValidUsername } from "./igData";
 import { amplitude } from "./amplitude";
 import { triggerCommunityMessageZap } from "./zapier";
@@ -89,8 +89,14 @@ export async function runScript(withDelay = false) {
     const dateSinceLastRun = new Date(latest_script_run.timestamp);
     console.log("Last script ran at", dateSinceLastRun.toLocaleString());
 
+    // get messages since date
+    const { communityIdMessageMap, communityIdToFanSubscriptionId } = await getMessagesSinceDate(dateSinceLastRun);
+
+    const voteMessages = await getKeywordMessages(communityIdMessageMap, "vote ");
+    console.log("voteMessages", voteMessages);
+
     // getVotesSinceDate picks up the latest vote per communityId since the last script run
-    const userVotesMap = await getVotesSinceDate(dateSinceLastRun);
+    const userVotesMap = await getVotesFromMessages(communityIdMessageMap, communityIdToFanSubscriptionId);
     console.log("userMap", userVotesMap);
 
     const userVotes = Object.keys(userVotesMap).map((community_id) => {
