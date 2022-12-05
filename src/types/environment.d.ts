@@ -12,6 +12,7 @@ declare global {
       NODE_ENV: string;
       HTML_TO_CSS_USER_ID: string;
       HTML_TO_CSS_API_KEY: string;
+      NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN: string;
     }
   }
 }
