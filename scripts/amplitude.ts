@@ -4,5 +4,5 @@ dotenv.config({
   path: ".env.local",
 });
 
-amplitude.init(process.env.AMPLITUDE_API_KEY);
+amplitude.init(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
 export { amplitude };
