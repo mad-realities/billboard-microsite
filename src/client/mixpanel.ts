@@ -1,13 +1,10 @@
 import mixpanel from "mixpanel-browser";
 // or with require() syntax:
 // const mixpanel = require('mixpanel-browser');
-import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 
 // Enabling the debug mode flag is useful during implementation,
 // but it's re"3b5c32cad6dea5e56999749830a854b7"commended you remove it for production
-dotenv.config({
-  path: ".env.local",
-});
+
 mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN || "", { debug: true });
 export const mixpanelClient = mixpanel;
 
