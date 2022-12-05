@@ -25,7 +25,7 @@ export default function MyMap() {
   }
 
   return (
-    <div className="align-center flex w-full flex-col items-center gap-5  p-10">
+    <div className="align-center flex w-full flex-col items-center gap-5 p-3">
       <Subheader>BILLBOARD LOCATION</Subheader>
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>

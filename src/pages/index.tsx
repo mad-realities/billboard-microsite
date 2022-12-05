@@ -18,21 +18,25 @@ const IndexPage = () => {
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Nominate</div>
       <div className="text-center text-xl">
-        On Mondays at 7 PM ET, a leaderboard opens. Nominate friends (or yourself) for a chance at 15 seconds of fame.{" "}
+        Nominations open on Mondays at 7pm ET. Vote for friends (or yourself) to get on a billboard in Times Square.{" "}
       </div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Rack up Votes</div>
       <div className="text-center text-xl">
-        Whoever has the most votes before Wednesdays at 11:59 PM ET will end up on the next billboard.
+        Whoever has the most votes before Fridays at 11:59 PM ET will get their face on the next billboard.{" "}
       </div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Get Mad Famous</div>
       <div className="text-center text-xl">
-        Go to <a>this billboard </a> in Times Square on Sunday from 6-8pm to see the winner on the big screen.
+        Stop by this{" "}
+        <Link href={"/map"} className="text-mr-sky-blue underline">
+          billboard
+        </Link>{" "}
+        in Times Square on Sundays from 6-8pm to see this week’s winner revealed on the big screen.{" "}
       </div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Repeat</div>
-      <div className="text-center text-xl">This drop will run for 2 weeks starting Monday, December 5th.</div>
+      <div className="text-center text-xl">This stage will be active for 2 weeks starting Monday, December 5th.</div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Questions?</div>
       <div className="text-center text-xl">Text “HELP” to {formatPhoneNumber(CONTACT_PHONE_NUMBER)}.</div>
@@ -52,12 +56,12 @@ const IndexPage = () => {
 
       <div className="flex w-full flex-row gap-2">
         <BillboardButton fill color="mr-hot-pink">
-          <a href="https://madrealities.xyz" target="_blank" rel="noreferrer">
+          <a href="https://my.community.com/madrealities?t=SUP" target="_blank" rel="noreferrer">
             <span className="text-xl font-regular uppercase tracking-wide">Get Updates</span>
           </a>
         </BillboardButton>
         <BillboardButton fill color="transparent" transparentAccent="mr-sky-blue">
-          <a href="https://my.community.com/madrealities?t=SUP" target="_blank" rel="noreferrer">
+          <a href="https://madrealities.xyz/" target="_blank" rel="noreferrer">
             <span className="text-xl font-regular uppercase tracking-wide">Learn More</span>
           </a>
         </BillboardButton>
@@ -96,7 +100,7 @@ const IndexPage = () => {
         <BillboardButton fill color="mr-yellow" onPress={() => router.push("/vote")}>
           <span className="text-2xl font-regular uppercase tracking-wide">Nominate</span>
         </BillboardButton>
-        <BillboardButton fill color="mr-yellow" onPress={() => router.push("/leaderboard")}>
+        <BillboardButton fill color="transparent" onPress={() => router.push("/leaderboard")}>
           <span className="text-2xl font-regular uppercase tracking-wide">Leaderboard</span>
         </BillboardButton>
       </div>

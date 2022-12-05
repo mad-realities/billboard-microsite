@@ -38,9 +38,9 @@ const Vote = () => {
       <div className="text-xl">WHAT IS THEIR INSTAGRAM HANDLE?</div>
       <div className="flex w-3/4 flex-col gap-2">
         <input
-          placeholder="MADREALITIES"
+          placeholder="enter username here"
           onInput={(e) => setHandle(e.currentTarget.value)}
-          className=" block w-full rounded-lg border-2 border-white bg-transparent p-2.5 text-center text-sm text-mr-pink placeholder-mr-pink"
+          className=" block w-full rounded-lg border-4 border-double border-mr-offwhite bg-transparent p-2.5 text-center text-sm text-mr-offwhite placeholder-mr-offwhite"
         />
         <BillboardButton
           fill
@@ -51,7 +51,7 @@ const Vote = () => {
             }
           }}
         >
-          GET RANK {"->"}
+          GET RANK
         </BillboardButton>
       </div>
       <span className="text-mr-pink"> {error} </span>
