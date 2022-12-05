@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Map, Marker } from "pigeon-maps";
 import { stamenToner } from "pigeon-maps/providers";
 import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { useRouter } from "next/router";
 import SmallBillboardButton from "../components/design-system/SmallBillboardButton";
+import { mixpanelClient, VISITED_MAP } from "../client/mixpanel";
 
 export default function MyMap() {
   // billboard location: 1540 Broadway, New York, NY 10001
   const [center] = React.useState([40.7581352, -73.9850678]);
   const router = useRouter();
+
+  useEffect(() => {
+    mixpanelClient.track(VISITED_MAP);
+  });
 
   function mapsSelector() {
     const lat = center[0];

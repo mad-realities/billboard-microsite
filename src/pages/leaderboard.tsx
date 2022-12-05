@@ -9,6 +9,7 @@ import { InstagramLeaderboardRow } from "../components/Leaderboard";
 import CountdownTimer from "../components/Countdown";
 import { getLinkPreview } from "../linkPreviewConfig";
 import UpdateCounter from "../components/UpdateCounter";
+import { mixpanelClient, SCROLLED_LEADERBOARD, VISITED_LEADERBOARD } from "../client/mixpanel";
 
 const pageSize = 20;
 
@@ -35,13 +36,23 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
   const [rows, setRows] = useState(initialRows);
   const [hasMore, setHasMore] = useState(true);
 
+  useEffect(() => {
+    mixpanelClient.track(VISITED_LEADERBOARD);
+  }, []);
+
   const getMore = async () => {
     const res = await fetch(`/api/rank?offset=${rows.length}&limit=${pageSize}`);
     const newRowsResponse = await res.json();
     const newRows = newRowsResponse["results"];
     if (newRows.length === 0) {
       setHasMore(false);
+      mixpanelClient.track(SCROLLED_LEADERBOARD, {
+        hasMore: false,
+      });
     } else {
+      mixpanelClient.track(SCROLLED_LEADERBOARD, {
+        hasMore: true,
+      });
       setRows((rows) => [...rows, ...newRows]);
     }
   };
