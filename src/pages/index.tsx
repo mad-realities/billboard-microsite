@@ -7,6 +7,7 @@ import SmallBillboardButton from "../components/design-system/SmallBillboardButt
 import Link from "next/link";
 import { CONTACT_PHONE_NUMBER } from "../client/constants";
 import { formatPhoneNumber } from "../client/utils";
+import VideoPlayer from "../components/VideoPlayer";
 import { mixpanelClient, VISITED_HOME } from "../client/mixpanel";
 import { useEffect } from "react";
 
@@ -98,8 +99,12 @@ const IndexPage = () => {
       <Subheader>
         <span className="text-[18px] uppercase">You&apos;re here. You&apos;re there. You&apos;re everywhere</span>
       </Subheader>
-      <div className="relative h-[340px] w-full">
-        <Image src="/cabs.png" alt="Mad Realities wordmark logo" fill />
+      <div
+        // className="relative h-[340px] w-full"
+        className="relative w-full"
+      >
+        <VideoPlayer playback_id="d7n3IuLlolLJ1gxNVnkWh8os2Vjyk8O009gsWvQOPXv4" />
+        {/* <Image src="/cabs.png" alt="Mad Realities wordmark logo" fill /> */}
       </div>
       <Subheader flipped>
         <div className="text-right text-[19px] uppercase">You&apos;re on a billboard in Times Square</div>
