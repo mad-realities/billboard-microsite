@@ -143,23 +143,25 @@ const ProfileCard = ({
       <div className="align-center m-2 flex flex-col items-center justify-center gap-4 rounded-xl border border-white p-5">
         {text}
         <div className="flex w-full flex-row gap-2">
-          <a href={getSmsHref(handle)} onClick={clickedVote}>
+          <a href={getSmsHref(handle)} onClick={clickedVote} className="flex-grow">
             <BillboardButton fill color="mr-sky-blue">
               VOTE
             </BillboardButton>
           </a>
-          <RWebShare
-            data={{
-              // text: "Like humans, flamingos make friends for life",
-              url,
-              // title: "Share this article on Flamingos",
-            }}
-            onClick={() => clickedShare()}
-          >
-            <BillboardButton fill color="mr-sky-blue">
-              SHARE
-            </BillboardButton>
-          </RWebShare>
+          <div className="flex-grow">
+            <RWebShare
+              data={{
+                // text: "Like humans, flamingos make friends for life",
+                url,
+                // title: "Share this article on Flamingos",
+              }}
+              onClick={() => clickedShare()}
+            >
+              <BillboardButton fill color="mr-sky-blue">
+                SHARE
+              </BillboardButton>
+            </RWebShare>
+          </div>
         </div>
       </div>
     </div>
