@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { delay } from "./script";
-import { trackGauge } from "./datadog";
+import { incrementCount, trackGauge } from "./datadog";
+import { delay } from "./utils";
 
 dotenv.config({
   path: ".env.local",
@@ -51,6 +51,35 @@ function get_community_ids_that_messaged_since_date_from_chats(since_date: Date,
   });
 
   return community_ids;
+}
+
+export async function dm(fanId: string, text: string, shorten_links: boolean = false) {
+  try {
+    const url = `https://api.community.com/client-dashboard/v2/edefb05a-ec9b-40ac-a3fd-7b2459d195cb/messaging/dm`;
+    const payload = {
+      text: text,
+      fan_id: fanId,
+      shorten_links: shorten_links,
+    };
+    const response = await fetch(url, {
+      body: JSON.stringify(payload),
+      headers: headers,
+      method: "POST",
+    });
+
+    if (response.status === 201) {
+      incrementCount("community.dm.success", 1, ["success"]);
+      return true;
+    } else {
+      console.error("Error Sending DM: ", response.status, response.statusText);
+      incrementCount("community.dm.success", 1, ["failure"]);
+      return false;
+    }
+  } catch (e) {
+    console.error("Error Sending DM", e);
+    incrementCount("community.dm.success", 1, ["failure"]);
+    return false;
+  }
 }
 
 async function get_community_ids_that_messaged_since_date(since_date: Date) {
@@ -299,14 +328,7 @@ function hasWordAfterKeyword(str: string, keyword: string) {
 }
 
 async function main() {
-  const str1 = "vote    ";
-  const str2 = "word vote dpromise word";
-  const str3 = "vote";
-
-  console.log(str1, hasWordAfterKeyword(str1, "vote "));
-  console.log(str2, hasWordAfterKeyword(str2, "vote "));
-  console.log(str3, hasWordAfterKeyword(str3, "vote "));
-
+  // const response = await dm("58704615-37e5-4148-804c-e675f5107968", "gm gm");
   // const dateSince = addDays(new Date(), -1);
   // console.log(dateSince);
   // const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
