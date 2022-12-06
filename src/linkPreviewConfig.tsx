@@ -54,13 +54,13 @@ export function getLinkPreview(page: keyof typeof LINK_PREVIEW_CONFIG, handle?: 
       {/* <meta property="fb:app_id" content="your fb app id" /> */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={config.description} />
-      <meta property="og:image" content="https://billboard-microsite.vercel.app/mad_famous_link_preview.png" />
+      <meta property="og:image" content="https://billboard.madrealities.xyz/mad_famous_link_preview.png" />
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta property="twitter:site" content={url} />
       <meta property="twitter:title" content={title} />
       <meta property="twitter:description" content={config.description} />
-      <meta property="twitter:image" content="https://billboard-microsite.vercel.app/mad_famous_link_preview.png" />
+      <meta property="twitter:image" content="https://billboard.madrealities.xyz/mad_famous_link_preview.png" />
     </Head>
   );
 }
