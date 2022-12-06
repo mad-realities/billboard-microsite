@@ -68,16 +68,16 @@ export async function dm(fanId: string, text: string, shorten_links: boolean = f
     });
 
     if (response.status === 201) {
-      incrementCount("community.dm.success", 1, ["success"]);
+      incrementCount("community.dm.status", 1, ["success"]);
       return true;
     } else {
       console.error("Error Sending DM: ", response.status, response.statusText);
-      incrementCount("community.dm.success", 1, ["failure"]);
+      incrementCount("community.dm.status", 1, ["failure"]);
       return false;
     }
   } catch (e) {
     console.error("Error Sending DM", e);
-    incrementCount("community.dm.success", 1, ["failure"]);
+    incrementCount("community.dm.status", 1, ["failure"]);
     return false;
   }
 }
