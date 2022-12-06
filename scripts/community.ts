@@ -146,15 +146,18 @@ function getMessagesWithSpecificWord(
   const ids_to_messages_with_word: {
     [community_id: string]: CommunityMessage[];
   } = {};
+
   Object.keys(ids_to_messages).forEach((community_id) => {
     const messages = ids_to_messages[community_id];
     const messages_with_word = messages.filter((msg) => {
-      const messageText = msg.text.replace(/^\s+|\s+$/g, "").toLowerCase();
+      if (msg.text) {
+        const messageText = msg.text.replace(/^\s+|\s+$/g, "").toLowerCase();
 
-      if (needsFollowUpWord) {
-        return messageText.includes(word.toLowerCase()) && hasWordAfterKeyword(messageText, word);
-      } else {
-        return messageText.includes(word.toLowerCase());
+        if (needsFollowUpWord) {
+          return messageText.includes(word.toLowerCase()) && hasWordAfterKeyword(messageText, word);
+        } else {
+          return messageText.includes(word.toLowerCase());
+        }
       }
     });
 
