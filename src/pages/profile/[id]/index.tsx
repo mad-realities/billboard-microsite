@@ -114,17 +114,17 @@ const ProfileCard = ({
     });
   }, [handle, rank, hasVote]);
 
-  function clickedShare() {
-    mixpanelClient.track(CLICKED_SHARE);
-  }
+  // function clickedShare() {
+  //   mixpanelClient.track(CLICKED_SHARE);
+  // }
 
-  function clickedVote() {
-    mixpanelClient.track(CLICKED_VOTE, {
-      username: handle,
-      rank: rank,
-      hasVote: hasVote,
-    });
-  }
+  // function clickedVote() {
+  //   mixpanelClient.track(CLICKED_VOTE, {
+  //     username: handle,
+  //     rank: rank,
+  //     hasVote: hasVote,
+  //   });
+  // }
 
   return (
     <div className="flex grow flex-col items-center gap-2 rounded-xl text-3xl">
@@ -144,9 +144,7 @@ const ProfileCard = ({
         {text}
         <div className="flex w-full flex-row gap-2">
           <BillboardButton fill color="mr-sky-blue">
-            <a href={getSmsHref(handle)} onClick={clickedVote}>
-              VOTE
-            </a>
+            <a href={getSmsHref(handle)}>VOTE</a>
           </BillboardButton>
           <RWebShare
             data={{
@@ -154,7 +152,6 @@ const ProfileCard = ({
               url,
               // title: "Share this article on Flamingos",
             }}
-            onClick={() => clickedShare()}
           >
             <BillboardButton fill color="mr-sky-blue">
               SHARE
