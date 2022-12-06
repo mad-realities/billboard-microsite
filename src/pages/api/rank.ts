@@ -84,7 +84,7 @@ const generateRankDirectionDescriptor = (rankDelta: number | null) => {
   if (rankDelta === null) {
     return "NEW";
   } else if (rankDelta > 0) {
-    return "DOWN";
+    return "SAME";
   } else if (rankDelta < 0) {
     return "UP";
   } else {
@@ -140,12 +140,11 @@ export const loadRank = async (offset: number, limit: number, includeCount?: boo
   const results = Object.entries(newVoteCounts)
     .map(([instagramHandle, newVoteCount]) => {
       const rankDirection = generateRankDirectionDescriptor(rankDelta[instagramHandle]);
-      const finalRankDirection = rankDirection === "DOWN" && newRanks[instagramHandle] > 50 ? "SAME" : rankDirection;
 
       return {
         instagramHandle,
         rank: newRanks[instagramHandle],
-        rankDirection: finalRankDirection,
+        rankDirection: rankDirection,
         ...(includeCount && { count: newVoteCount }),
       };
     })
