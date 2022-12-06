@@ -1,11 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { dm, getKeywordMessages, getMessagesSinceDate, getVotesFromMessages, getVotesSinceDate } from "./community";
+import {
+  dm,
+  getKeywordMessages,
+  getMessagesSinceDate,
+  getVotesFromMessages,
+  getVotesSinceDate,
+  MessagePayload,
+  sendMessages,
+} from "./community";
 import { isValidUsername } from "./igData";
 import { incrementCount } from "./datadog";
 import { triggerCommunityMessageZap } from "./zapier";
 import { mixpanel, VOTED } from "./mixpanel";
 import { delay } from "./utils";
+import { ANOTHER_SUCCESSFUL_VOTE_RESPONSE, BAD_VOTE_RESPONSE, SUCCESSFUL_VOTE_RESPONSE } from "./constants";
 
 dotenv.config({
   path: ".env.local",
@@ -118,6 +127,8 @@ export async function runScript(withDelay = false) {
     for (const vote of validUserVotes) {
       try {
         const isValid = await isValidUsername(vote.vote);
+        incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
+
         if (isValid) {
           validUserVotesWithExistingHandles.push(vote);
         } else {
@@ -126,6 +137,7 @@ export async function runScript(withDelay = false) {
       } catch (e) {
         console.log("Error checking if username", vote.vote, "exists.", "Error:", e);
         console.log("Since instagram check isn't working, we'll just assume it's valid");
+        incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, "failure"]);
 
         // since instagram check failed, we'll assume the handle is valid
         validUserVotesWithExistingHandles.push(vote);
@@ -137,20 +149,16 @@ export async function runScript(withDelay = false) {
       return !userVotesMap[communityId];
     });
 
-    const badVoteZapierPayload = badVotesIds.map((val) => ({
+    const badVoteZapierPayload: MessagePayload[] = badVotesIds.map((val) => ({
       communityId: val,
       fanId: communityIdToFanSubscriptionId[val],
-      text: `Oops! That didn't work... If you're trying to vote for an existing candidate or nominate a new one, use the format below:\n\nVOTE: [insert IG username]\n\nText "3" for help voting.`,
+      text: BAD_VOTE_RESPONSE(),
     }));
 
     // seen
     const communityIdToVoteCount: { [communityId: string]: boolean } = {};
     const communityIdToVote: { [communityId: string]: string[] } = {};
-    const successfulZapierPayload: {
-      fanId: string;
-      text: string;
-      communityId: string;
-    }[] = [];
+    const successfulZapierPayload: MessagePayload[] = [];
 
     console.log("validUserVotesWithExistingHandles", validUserVotesWithExistingHandles);
 
@@ -165,7 +173,7 @@ export async function runScript(withDelay = false) {
           successfulZapierPayload.push({
             communityId: val.community_id,
             fanId: communityIdToFanSubscriptionId[val.community_id],
-            text: `SUCCESS! You also voted for ${val.vote}. You can see the rank of their username by clicking the link below. https://billboard.madrealities.xyz/profile/${val.vote}`,
+            text: ANOTHER_SUCCESSFUL_VOTE_RESPONSE(val.vote),
           });
         }
       } else {
@@ -174,7 +182,7 @@ export async function runScript(withDelay = false) {
         successfulZapierPayload.push({
           communityId: val.community_id,
           fanId: communityIdToFanSubscriptionId[val.community_id],
-          text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
+          text: SUCCESSFUL_VOTE_RESPONSE(val.vote),
         });
       }
     });
@@ -201,27 +209,3 @@ export async function runScript(withDelay = false) {
 }
 
 runScript();
-
-export async function sendMessages(
-  payload: {
-    fanId: string;
-    text: string;
-    communityId: string;
-  }[],
-) {
-  console.log("Sending messages", payload);
-  let count = 0;
-  // serial loop through payload, pause for .3-.7 seconds betwee, send dm for each
-  for (const message of payload) {
-    const randomDelay = Math.floor(Math.random() * 400) + 300;
-    await delay(randomDelay);
-    const response = await dm(message.communityId, message.text);
-    if (response) {
-      count++;
-    } else {
-      console.log("Error sending message", message);
-    }
-  }
-
-  console.log("Sent", count, "messages out of ", payload.length);
-}

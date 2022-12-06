@@ -54,5 +54,8 @@ const getUserData = async (username: string) => {
     .catch((err) => console.error(err));
 };
 
-async function main() {}
+async function main() {
+  const isValid = await isValidUsername("ftx");
+  console.log("isValid", isValid);
+}
 main();
