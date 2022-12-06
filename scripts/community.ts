@@ -328,8 +328,7 @@ function hasWordAfterKeyword(str: string, keyword: string) {
 }
 
 async function main() {
-  const response = await dm("58704615-37e5-4148-804c-e675f5107968", "gm gm");
-
+  // const response = await dm("58704615-37e5-4148-804c-e675f5107968", "gm gm");
   // const dateSince = addDays(new Date(), -1);
   // console.log(dateSince);
   // const community_ids = await get_community_ids_that_messaged_since_date(dateSince);
@@ -339,4 +338,4 @@ async function main() {
   // console.log(communityIdMessageMap);
 }
 
-main();
+// main();
