@@ -62,9 +62,14 @@ export function getLinkPreview(
       <meta property="og:type" content="website" />
       {/* <meta property="fb:app_id" content="your fb app id" /> */}
       <meta property="og:title" content={title} />
-      <meta name="twitter:card" content="summary" />
       <meta property="og:description" content={config.description} />
       <meta property="og:image" content={image} />
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta property="twitter:site" content={url} />
+      <meta property="twitter:title" content={title} />
+      <meta property="twitter:description" content={config.description} />
+      <meta property="twitter:image" content={image} />
     </Head>
   );
 }
