@@ -71,12 +71,12 @@ export async function dm(fanId: string, text: string, shorten_links: boolean = f
       incrementCount("community.dm.success", 1, ["success"]);
       return true;
     } else {
-      console.log("Error: ", response.status, response.statusText);
+      console.error("Error Sending DM: ", response.status, response.statusText);
       incrementCount("community.dm.success", 1, ["failure"]);
       return false;
     }
   } catch (e) {
-    console.log("Error", e);
+    console.error("Error Sending DM", e);
     incrementCount("community.dm.success", 1, ["failure"]);
     return false;
   }
