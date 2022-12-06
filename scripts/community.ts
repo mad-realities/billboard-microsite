@@ -179,20 +179,36 @@ async function getCommunityIdMessageMapSinceDate(communityIds: string[], dateSin
   return communityIdMessageMap;
 }
 
+function getVote(message: CommunityMessage, keyword: string) {
+  const messageText = message.text;
+  const vote = messageText
+    // remove extra spaces and lowercase
+    .replace(/^\s+|\s+$/g, "")
+    .toLowerCase()
+    .split(keyword)[1];
+  return { igHandle: vote, timestamp: new Date(message.created_at) };
+}
+
 function getIdToVoteHandleMap(mostRecentMessages: { [communityId: string]: CommunityMessage }, keyword: string) {
   const idsToInstgramHandleVote: { [communityId: string]: { igHandle: string; timestamp: Date } } = {};
   Object.keys(mostRecentMessages).forEach((community_id) => {
     if (mostRecentMessages[community_id]) {
-      const message = mostRecentMessages[community_id];
-      const messageText = message.text;
-      const vote = messageText
-        // remove extra spaces and lowercase
-        .replace(/^\s+|\s+$/g, "")
-        .toLowerCase()
-        .split(keyword)[1];
-      idsToInstgramHandleVote[community_id] = { igHandle: vote, timestamp: new Date(message.created_at) };
+      idsToInstgramHandleVote[community_id] = getVote(mostRecentMessages[community_id], keyword);
     }
   });
+  return idsToInstgramHandleVote;
+}
+
+function getIdToVotesMap(messages: { [communityId: string]: CommunityMessage[] }, keyword: string) {
+  const idsToInstgramHandleVote: { [communityId: string]: { igHandle: string; timestamp: Date }[] } = {};
+  Object.keys(messages).forEach((community_id) => {
+    const messagesWithKeyword = messages[community_id];
+    const votes = messagesWithKeyword.map((message) => {
+      return getVote(message, keyword);
+    });
+    idsToInstgramHandleVote[community_id] = votes;
+  });
+
   return idsToInstgramHandleVote;
 }
 
@@ -232,13 +248,13 @@ export async function getVotesFromMessages(
   voteKeyword = "vote: ",
 ) {
   const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, voteKeyword);
-  const communityIdMostRecentMessageMap = getMostRecentMessagePerMember(communityIdMessageWithWordMap);
-  const idsToInstgramHandleVote = getIdToVoteHandleMap(communityIdMostRecentMessageMap, voteKeyword);
-  const idToFanIdAndVote: { [communityId: string]: { fanId: string; igHandle: string; timestamp: Date } } = {};
+  // const communityIdMostRecentMessageMap = getMostRecentMessagePerMember(communityIdMessageWithWordMap);
+  const idsToInstgramHandleVote = getIdToVotesMap(communityIdMessageWithWordMap, voteKeyword);
+  const idToFanIdAndVote: { [communityId: string]: { igHandle: string; timestamp: Date }[] } = {};
   Object.keys(idsToInstgramHandleVote).forEach((communityId) => {
     const fanId = communityIdToFanSubscriptionId[communityId];
-    const vote = idsToInstgramHandleVote[communityId];
-    idToFanIdAndVote[communityId] = { fanId, ...vote };
+    const votes = idsToInstgramHandleVote[communityId];
+    idToFanIdAndVote[communityId] = [...votes];
   });
   return idToFanIdAndVote;
 }
