@@ -6,6 +6,7 @@ import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../c
 import { RWebShare } from "react-web-share";
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
+import { getLinkPreviewUrl } from "../../api/preview";
 import { useEffect } from "react";
 import { CLICKED_SHARE, CLICKED_VOTE, mixpanelClient, VISITED_PROFILE } from "../../../client/mixpanel";
 
@@ -20,6 +21,7 @@ type Props = {
     handle: string;
     prompt: string;
     hostname: string;
+    linkPreviewUrl: string;
   };
 };
 
@@ -42,11 +44,13 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
         hasVote: false,
         prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
         hostname: hostname || "",
+        linkPreviewUrl: "",
       },
     };
   }
 
   const rank = await loadRankForHandle(id as string);
+  const linkPreviewUrl = await getLinkPreviewUrl(id as string, context.req.headers.host as string);
 
   return {
     props: {
@@ -55,6 +59,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
       hasVote: rank ? true : false,
       prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
       hostname: hostname || "",
+      linkPreviewUrl: linkPreviewUrl,
     }, // will be passed to the page component as props
   };
 };
@@ -65,10 +70,41 @@ const ProfileCard = ({
   hasVote,
   prompt,
   hostname,
+  linkPreviewUrl,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const url = `https://${hostname}/profile/${handle}`;
-  const linkPreview = getLinkPreview("PROFILE", handle, rank);
+  const linkPreview = getLinkPreview("PROFILE", handle, rank, linkPreviewUrl);
+  console.log(linkPreviewUrl);
+
+  const text = (
+    <>
+      <div className="text-3xl">
+        <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
+          <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
+        </a>
+        <span> {hasVote ? "is in..." : "has"}</span>
+      </div>
+
+      {hasVote ? (
+        <>
+          <div className="text-center text-6xl">{ordinal_suffix_of(rank)}</div>
+          <div className="text-center">
+            <span className="">for </span>
+            <span className="font-bold">{prompt}</span>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="text-center text-6xl">No Votes :(</div>
+          <div className="text-center">
+            <span className="">for </span>
+            <span className="font-bold">{prompt}</span>
+          </div>
+        </>
+      )}
+    </>
+  );
 
   useEffect(() => {
     mixpanelClient.track(VISITED_PROFILE, {
@@ -105,31 +141,7 @@ const ProfileCard = ({
         </BillboardButton>
       </div>
       <div className="align-center m-2 flex flex-col items-center justify-center gap-4 rounded-xl border border-white p-5">
-        <div className="text-3xl">
-          <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
-            <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
-          </a>
-          <span> {hasVote ? "is in..." : "has"}</span>
-        </div>
-
-        {hasVote ? (
-          <>
-            <div className="text-center text-6xl">{ordinal_suffix_of(rank)}</div>
-            <div className="text-center">
-              <span className="">for </span>
-              <span className="font-bold">{prompt}</span>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="text-center text-6xl">No Votes :(</div>
-            <div className="text-center">
-              <span className="">for </span>
-              <span className="font-bold">{prompt}</span>
-            </div>
-          </>
-        )}
-
+        {text}
         <div className="flex w-full flex-row gap-2">
           <BillboardButton fill color="mr-sky-blue">
             <a href={getSmsHref(handle)} onClick={clickedVote}>
