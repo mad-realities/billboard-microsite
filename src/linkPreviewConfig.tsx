@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { ordinal_suffix_of } from "./client/utils";
 
-const hostname = "https://billboard-microsite.vercel.app";
+const hostname = "https://billboard.madrealities.xyz";
 export const LINK_PREVIEW_CONFIG = {
   LANDING: {
     title: "MAD FAMOUS: THE BILLBOARD",
