@@ -68,13 +68,13 @@ export const loadRank = async (offset: number, limit: number, includeCount?: boo
   const results = sortedVoteCounts.map((voteCount, index) => {
     if (includeCount) {
       return {
-        rank: offset + index + 1,
+        rank: index + 1,
         instagramHandle: voteCount.instagramHandle,
         count: voteCount.count,
       };
     } else {
       return {
-        rank: offset + index + 1,
+        rank: index + 1,
         instagramHandle: voteCount.instagramHandle,
       };
     }
