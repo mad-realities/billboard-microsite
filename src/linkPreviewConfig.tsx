@@ -54,7 +54,9 @@ export function getLinkPreview(
   const url = typeof config.url === "function" ? config.url(handle || "") : config.url;
   const title = typeof config.title === "function" ? config.title(handle || "", rank || 0) : config.title;
   const image =
-    typeof config.image === "function" ? config.image(imageUrl || "/mad_famous_link_preview.png") : config.image;
+    typeof config.image === "function"
+      ? config.image(imageUrl || "https://billboard.madrealities.xyz/mad_famous_link_preview.png")
+      : config.image;
 
   return (
     <Head>
