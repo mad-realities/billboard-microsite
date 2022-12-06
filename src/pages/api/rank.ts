@@ -66,7 +66,6 @@ export const loadRank = async (offset: number, limit: number, includeCount?: boo
 
   // convert voteCounts to a list with rank and instagram handle
   const results = sortedVoteCounts.map((voteCount, index) => {
-    console.log("index", index);
     if (includeCount) {
       return {
         rank: index + 1,
