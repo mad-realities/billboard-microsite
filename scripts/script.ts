@@ -145,25 +145,39 @@ export async function runScript(withDelay = false) {
 
     // seen
     const communityIdToVoteCount: { [communityId: string]: boolean } = {};
+    const communityIdToVote: { [communityId: string]: string[] } = {};
+    const successfulZapierPayload: {
+      fanId: string;
+      text: string;
+      communityId: string;
+    }[] = [];
 
-    const successfulZapierPayload = validUserVotesWithExistingHandles.map((val) => {
+    console.log("validUserVotesWithExistingHandles", validUserVotesWithExistingHandles);
+
+    validUserVotesWithExistingHandles.forEach((val) => {
+      if (!communityIdToVote[val.community_id]) {
+        communityIdToVote[val.community_id] = [];
+      }
+
       if (communityIdToVoteCount[val.community_id]) {
-        return {
-          communityId: val.community_id,
-          fanId: communityIdToFanSubscriptionId[val.community_id],
-          text: `SUCCESS! You also voted for ${val.vote}. You can see the rank of their username by clicking the link below. https://billboard.madrealities.xyz/profile/${val.vote}`,
-        };
+        if (!communityIdToVote[val.community_id].includes(val.vote)) {
+          communityIdToVote[val.community_id].push(val.vote);
+          successfulZapierPayload.push({
+            communityId: val.community_id,
+            fanId: communityIdToFanSubscriptionId[val.community_id],
+            text: `SUCCESS! You also voted for ${val.vote}. You can see the rank of their username by clicking the link below. https://billboard.madrealities.xyz/profile/${val.vote}`,
+          });
+        }
       } else {
         communityIdToVoteCount[val.community_id] = true;
-        return {
+        communityIdToVote[val.community_id].push(val.vote);
+        successfulZapierPayload.push({
           communityId: val.community_id,
           fanId: communityIdToFanSubscriptionId[val.community_id],
           text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
-        };
+        });
       }
     });
-
-    console.log("communityIdToFanSubscriptionId", communityIdToFanSubscriptionId);
 
     // triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
     incrementCount("scriptRuns", 1);
