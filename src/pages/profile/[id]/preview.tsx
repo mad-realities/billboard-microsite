@@ -84,8 +84,8 @@ const ProfileCard = ({
         </>
       ) : (
         <>
-          <div className="text-center text-6xl">No Votes :(</div>
-          <div className="text-center">
+          <div className="text-center text-[200px]">No Votes :(</div>
+          <div className="text-center text-6xl">
             <span className="font-bold">{prompt}</span>
           </div>
         </>
