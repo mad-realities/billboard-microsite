@@ -10,7 +10,7 @@ const datadog = new v2.MetricsApi(client.createConfiguration());
 // as the DogStatsD client. This can degrade application performance under load. We should consider
 // using https://github.com/dbader/node-datadog-metrics (which wraps @datadog/datadog-api-client) instead.
 
-export const incrementCount = async (metricName: string, value: number) => {
+export const incrementCount = async (metricName: string, value: number, extraTags: string[] = []) => {
   const params: v2.MetricsApiSubmitMetricsRequest = {
     body: {
       series: [
@@ -23,7 +23,7 @@ export const incrementCount = async (metricName: string, value: number) => {
               value,
             },
           ],
-          tags: [process.env.NODE_ENV || "", "billboard", "v1"],
+          tags: [process.env.NODE_ENV || "", "billboard", "v1", ...extraTags],
         },
       ],
     },

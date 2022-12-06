@@ -1,10 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { getKeywordMessages, getMessagesSinceDate, getVotesFromMessages, getVotesSinceDate } from "./community";
+import { dm, getKeywordMessages, getMessagesSinceDate, getVotesFromMessages, getVotesSinceDate } from "./community";
 import { isValidUsername } from "./igData";
 import { incrementCount } from "./datadog";
 import { triggerCommunityMessageZap } from "./zapier";
 import { mixpanel, VOTED } from "./mixpanel";
+import { delay } from "./utils";
 
 dotenv.config({
   path: ".env.local",
@@ -84,11 +85,10 @@ export async function runScript(withDelay = false) {
     const { communityIdMessageMap, communityIdToFanSubscriptionId } = await getMessagesSinceDate(dateSinceLastRun);
 
     const badVoteMessage = await getKeywordMessages(communityIdMessageMap, "vote ", true);
-    console.log("voteMessages", badVoteMessage);
 
     // getVotesSinceDate picks up the latest vote per communityId since the last script run
     const userVotesMap = await getVotesFromMessages(communityIdMessageMap, communityIdToFanSubscriptionId);
-    console.log("userMap", userVotesMap);
+    console.log("userVoteMap", userVotesMap);
 
     const allUserVotes = Object.keys(userVotesMap)
       .map((community_id) => {
@@ -138,6 +138,7 @@ export async function runScript(withDelay = false) {
     });
 
     const badVoteZapierPayload = badVotesIds.map((val) => ({
+      communityId: val,
       fanId: communityIdToFanSubscriptionId[val],
       text: `Oops! That didn't work... If you're trying to vote for an existing candidate or nominate a new one, use the format below:\n\nVOTE: [insert IG username]\n\nText "3" for help voting.`,
     }));
@@ -148,19 +149,23 @@ export async function runScript(withDelay = false) {
     const successfulZapierPayload = validUserVotesWithExistingHandles.map((val) => {
       if (communityIdToVoteCount[val.community_id]) {
         return {
+          communityId: val.community_id,
           fanId: communityIdToFanSubscriptionId[val.community_id],
           text: `SUCCESS! You also voted for ${val.vote}. You can see the rank of their username by clicking the link below. https://billboard.madrealities.xyz/profile/${val.vote}`,
         };
       } else {
         communityIdToVoteCount[val.community_id] = true;
         return {
+          communityId: val.community_id,
           fanId: communityIdToFanSubscriptionId[val.community_id],
           text: `SUCCESS! Thanks for exercising your civic duty in the Mad Realities Universe by casting your vote. You can see the rank of the username you nominated or voted for by clicking the link below. Share and rack up as many votes as you can to get to #1! https://billboard.madrealities.xyz/profile/${val.vote}`,
         };
       }
     });
 
-    triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
+    console.log("communityIdToFanSubscriptionId", communityIdToFanSubscriptionId);
+
+    // triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
     incrementCount("scriptRuns", 1);
     incrementCount("votes", validUserVotesWithExistingHandles.length);
     for (const vote of validUserVotesWithExistingHandles) {
@@ -173,6 +178,7 @@ export async function runScript(withDelay = false) {
 
     // create new script run
     const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
+    await sendMessages([...successfulZapierPayload, ...badVoteZapierPayload]);
     return scriptRun;
   } else {
     const new_script_run = await createEmptyScriptRun();
@@ -180,8 +186,28 @@ export async function runScript(withDelay = false) {
   }
 }
 
-export function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 runScript();
+
+export async function sendMessages(
+  payload: {
+    fanId: string;
+    text: string;
+    communityId: string;
+  }[],
+) {
+  console.log("Sending messages", payload);
+  let count = 0;
+  // serial loop through payload, pause for .3-.7 seconds betwee, send dm for each
+  for (const message of payload) {
+    const randomDelay = Math.floor(Math.random() * 400) + 300;
+    await delay(randomDelay);
+    const response = await dm(message.communityId, message.text);
+    if (response) {
+      count++;
+    } else {
+      console.log("Error sending message", message);
+    }
+  }
+
+  console.log("Sent", count, "messages out of ", payload.length);
+}
