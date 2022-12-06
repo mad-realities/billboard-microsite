@@ -3,7 +3,7 @@ import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-
 import { incrementCount, trackGauge } from "./datadog";
 import { delay } from "./utils";
 import { SUCCESSFUL_VOTE_RESPONSE } from "./constants";
-
+import { ConversationService } from "./conversations";
 dotenv.config({
   path: ".env.local",
 });
@@ -175,36 +175,6 @@ export async function getVotesMapSinceDateByKeyword(keywords: string[], dateSinc
   return user_keyword_counts;
 }
 
-function getMessagesWithSpecificWord(
-  ids_to_messages: {
-    [community_id: string]: CommunityMessage[];
-  },
-  word: string,
-  needsFollowUpWord: boolean = false,
-) {
-  const ids_to_messages_with_word: {
-    [community_id: string]: CommunityMessage[];
-  } = {};
-
-  Object.keys(ids_to_messages).forEach((community_id) => {
-    const messages = ids_to_messages[community_id];
-    const messages_with_word = messages.filter((msg) => {
-      if (msg.text) {
-        const messageText = msg.text.replace(/^\s+|\s+$/g, "").toLowerCase();
-
-        if (needsFollowUpWord) {
-          return messageText.includes(word.toLowerCase()) && hasWordAfterKeyword(messageText, word);
-        } else {
-          return messageText.includes(word.toLowerCase());
-        }
-      }
-    });
-
-    ids_to_messages_with_word[community_id] = messages_with_word;
-  });
-  return ids_to_messages_with_word;
-}
-
 const getMostRecentMessage = (messages: CommunityMessage[], direction: "inbound" | "outbound" | "both" = "both") => {
   let mostRecentMessage: CommunityMessage | null = null;
   messages.forEach((msg) => {
@@ -302,7 +272,7 @@ export function getKeywordMessages(
   keyword: string,
   needsFollowUpWord: boolean = false,
 ) {
-  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, keyword);
+  const communityIdMessageWithWordMap = ConversationService.getMessagesWithSpecificWord(communityIdMessageMap, keyword);
   return communityIdMessageWithWordMap;
 }
 
@@ -311,7 +281,10 @@ export async function getVotesFromMessages(
   communityIdToFanSubscriptionId: { [communityId: string]: string },
   voteKeyword = "vote: ",
 ) {
-  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, voteKeyword);
+  const communityIdMessageWithWordMap = ConversationService.getMessagesWithSpecificWord(
+    communityIdMessageMap,
+    voteKeyword,
+  );
   // const communityIdMostRecentMessageMap = getMostRecentMessagePerMember(communityIdMessageWithWordMap);
   const idsToInstgramHandleVote = getIdToVotesMap(communityIdMessageWithWordMap, voteKeyword);
   const idToFanIdAndVote: { [communityId: string]: { igHandle: string; timestamp: Date }[] } = {};
@@ -334,7 +307,7 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
 
   const communityIds = community_ids.map((c) => c.communityId);
   const communityIdMessageMap = await getCommunityIdMessageMapSinceDate(communityIds, dateSince, "inbound");
-  const communityIdMessageWithWordMap = getMessagesWithSpecificWord(communityIdMessageMap, keyword);
+  const communityIdMessageWithWordMap = ConversationService.getMessagesWithSpecificWord(communityIdMessageMap, keyword);
   const communityIdMostRecentMessageMap = getMostRecentMessagePerMember(communityIdMessageWithWordMap);
   const idsToInstgramHandleVote = getIdToVoteHandleMap(communityIdMostRecentMessageMap, keyword);
   const idToFanIdAndVote: { [communityId: string]: { fanId: string; igHandle: string; timestamp: Date } } = {};
@@ -347,23 +320,11 @@ export async function getVotesSinceDate(dateSince: Date, keyword = "vote: ") {
   return idToFanIdAndVote;
 }
 
-function hasWordAfterKeyword(str: string, keyword: string) {
-  str = str.replace(/^\s+|\s+$/g, "");
-  const index = str.indexOf(keyword);
-  if (index === -1) {
-    return false;
-  } else if (index + keyword.length === str.length) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
 async function main() {
   // const response = await dm("58704615-37e5-4148-804c-e675f5107968", "gm gm");
   const votingOpened = new Date("2022-12-05T18:30:00.000");
   const dateSince = new Date("2022-12-06T11:20:00.000");
-  await followUpOnConversations(votingOpened, false);
+  await followUpOnConversations(votingOpened, true);
 }
 
 async function followUpOnConversations(dateSince: Date, autoFollowUp: boolean = false) {
@@ -387,6 +348,12 @@ async function followUpOnConversations(dateSince: Date, autoFollowUp: boolean = 
   const payload: MessagePayload[] = [];
   for (const followUp of followUps) {
     if (followUp.type === "VOTED WITHOUT EVER SENDING RESPONSE") {
+      payload.push({
+        communityId: followUp.communityId,
+        text: SUCCESSFUL_VOTE_RESPONSE(followUp.vote),
+        fanId: communityIdToFanSubscriptionId[followUp.communityId],
+      });
+    } else if (followUp.type === "VOTED WITHOUT NEW RESPONSE") {
       payload.push({
         communityId: followUp.communityId,
         text: SUCCESSFUL_VOTE_RESPONSE(followUp.vote),
