@@ -11,7 +11,7 @@ function BillboardApp({ Component, pageProps }: AppProps) {
 
   if (router.pathname.includes("preview")) {
     return (
-      <div className="flex flex-col bg-star-texture bg-contain">
+      <div className="flex max-h-screen min-h-screen w-full grow flex-col">
         <Head>
           <title>MAD FAMOUS: THE BILLBOARD</title>
           <meta name="description" content="MAD FAMOUS: THE BILLBOARD" />

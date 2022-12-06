@@ -67,8 +67,8 @@ const ProfileCard = ({
   const linkPreview = getLinkPreview("PROFILE", handle, rank);
 
   const text = (
-    <div className="flex grow flex-col items-center gap-3 rounded-xl">
-      <div className="text-4xl">
+    <div className="flex grow flex-col items-center gap-24 rounded-xl pt-10">
+      <div className="text-6xl">
         <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
           <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
         </a>
@@ -77,14 +77,14 @@ const ProfileCard = ({
 
       {hasVote ? (
         <>
-          <div className="text-center text-8xl">{ordinal_suffix_of(rank)}</div>
-          <div className="text-center">
+          <div className="text-center text-[200px]">{ordinal_suffix_of(rank)}</div>
+          <div className="text-center text-6xl">
             <span className="font-bold">{prompt}</span>
           </div>
         </>
       ) : (
         <>
-          <div className="text-center text-8xl">No Votes :(</div>
+          <div className="text-center text-6xl">No Votes :(</div>
           <div className="text-center">
             <span className="font-bold">{prompt}</span>
           </div>
@@ -103,13 +103,13 @@ const ProfileCard = ({
           color: "white",
         }}
       >
-        <Image src="/PreviewCard2.png" alt="Link Preview Card" width={1366} height={768} style={{ width: "100%" }} />
+        <Image src="/PreviewCard.png" alt="Link Preview Card" width={1200} height={600} style={{ width: "100%" }} />
         <div
           className="text-center"
           style={{
             textAlign: "center",
-
             position: "absolute",
+            width: "60%",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",

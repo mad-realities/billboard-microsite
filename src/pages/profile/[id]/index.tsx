@@ -50,7 +50,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
   }
 
   const rank = await loadRankForHandle(id as string);
-  const linkPreviewUrl = await getLinkPreviewUrl(id as string);
+  const linkPreviewUrl = await getLinkPreviewUrl(id as string, context.req.headers.host as string);
 
   return {
     props: {
