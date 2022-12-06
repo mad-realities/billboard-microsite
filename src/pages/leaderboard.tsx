@@ -18,6 +18,7 @@ type Props = {
     initialRows: {
       rank: number;
       instagramHandle: string;
+      rankDirection: string;
     }[];
   };
 };
@@ -103,7 +104,12 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             }
           >
             {rows.map((row) => (
-              <InstagramLeaderboardRow key={row.rank} rank={row.rank.toString()} id={row.instagramHandle} />
+              <InstagramLeaderboardRow
+                key={row.rank}
+                rankDirection={row.rankDirection}
+                rank={row.rank.toString()}
+                id={row.instagramHandle}
+              />
             ))}
           </InfiniteScroll>
         </div>
