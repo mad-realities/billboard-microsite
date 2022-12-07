@@ -14,6 +14,7 @@ import {
 } from "./constants";
 import { CommunityService, MessagingProvider } from "./CommunityService";
 import { Conversation, ConversationService, Message, Vote } from "./ConversationService";
+
 import { getUniqueVotesForCommunityId, getVotesForCommunityId } from "./db";
 
 dotenv.config({
@@ -79,6 +80,7 @@ export async function saveVotesOnlyToDB(votes: Vote[]) {
   return response;
 }
 
+
 interface RunScriptOptions {
   debug?: boolean;
   withDelay?: boolean;
@@ -86,6 +88,7 @@ interface RunScriptOptions {
 
 // 1pm est dec 7th
 const BILLBOARD_END_TIME = new Date("2022-12-07T18:00:00.000Z");
+
 
 export async function runScript({ debug = false, withDelay = false }: RunScriptOptions = {}) {
   // random number of miliseconds between 5 seconds and 2 minutes
@@ -129,6 +132,7 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
     // create new script run
     if (!debug) {
       const scriptRun = await saveVotesToDB(votesForDb);
+
       console.log("Sending", messages);
       const count = await messagingProvider.sendMessages(messages);
       console.log("Sent", count, "messages out of ", messages.length, "messages");
@@ -136,6 +140,7 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
       incrementCount("messagesSent", count);
       incrementCount("scriptRuns", 1);
       incrementCount("votes", votesForDb.length);
+
       return scriptRun;
     } else {
       console.log("Debug mode, not saving votes to DB");
@@ -293,6 +298,7 @@ export async function prepareVote(vote: Vote) {
     return null;
   }
 }
+
 
 runScript({
   debug: false,

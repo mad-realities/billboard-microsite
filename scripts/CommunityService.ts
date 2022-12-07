@@ -184,6 +184,7 @@ export class CommunityService implements MessagingProvider {
       messageHistorySinceDate,
       "both",
     );
+
     return communityIdMessageMap;
   }
 

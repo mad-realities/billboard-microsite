@@ -8,6 +8,7 @@ import { checkForVote } from "./db";
 import { CommunityService, MessagingProvider } from "./CommunityService";
 import { instagramVote } from "./igData";
 import { prepareVote, saveVotesOnlyToDB } from "./script";
+
 dotenv.config({
   path: ".env.local",
 });
@@ -68,6 +69,7 @@ async function main(messagingProvider: MessagingProvider) {
   await followUpOnConversations(messagingProvider, dateSince, votingOpened, false);
   // const allvotes = await getAllVotesSinceDate(messagingProvider, dateSince);
   // console.log(allvotes);
+
 }
 
 async function followUpOnConversations(
@@ -83,12 +85,14 @@ async function followUpOnConversations(
   for (const id in conversationMap) {
     counter++;
     console.log("checking conversation", counter, "of", Object.keys(conversationMap).length);
+
     let flups = await checkConversation(id, conversationMap[id]);
     followUps.push(...flups);
   }
 
   const payload: MessagePayload[] = [];
   const votes: Vote[] = [];
+
 
   for (const followUp of followUps) {
     if (followUp.type === "VOTED WITHOUT EVER SENDING RESPONSE") {
@@ -111,6 +115,7 @@ async function followUpOnConversations(
       if (preparedVote) {
         votes.push(preparedVote);
       }
+
     }
   }
 
@@ -146,6 +151,7 @@ async function followUpOnConversations(
 
   console.log("new votes", votes.length);
   console.log("votes", votes);
+
 }
 
 type ConversationFollowUp = {
@@ -194,6 +200,7 @@ async function checkConversation(cid: string, conversation: CommunityMessage[]) 
 
     handles.add(handle.vote);
   }
+
 
   const mostRecentOutboundMessage = ConversationService.getMostRecentMessage(conversation, "outbound");
 
