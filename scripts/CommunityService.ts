@@ -41,7 +41,10 @@ type ChatsResponse = {
 export interface MessagingProvider {
   sendMessage: (payload: MessagePayload) => Promise<boolean>;
   sendMessages: (payload: MessagePayload[], delayMs?: number) => Promise<number>;
-  getMessagesSinceDate: (dateSince: Date) => Promise<{ [id: string]: Conversation }>;
+  getMessagesSinceDate: (
+    conversationDataSince: Date,
+    messageHistorySince?: Date,
+  ) => Promise<{ [id: string]: Conversation }>;
 }
 
 export class CommunityService implements MessagingProvider {
@@ -162,8 +165,8 @@ export class CommunityService implements MessagingProvider {
     return msgarr;
   }
 
-  async getMessagesSinceDate(dateSince: Date) {
-    const communityIds = await this.getCommunityAndFanIdsSinceDate(dateSince);
+  async getMessagesSinceDate(conversationsSince: Date, messageHistorySinceDate?: Date) {
+    const communityIds = await this.getCommunityAndFanIdsSinceDate(conversationsSince);
 
     // we don't need this map anymore but might be needed in future, used in zapier call
     const communityIdToFanSubscriptionId: { [communityId: string]: string } = {};
@@ -171,8 +174,16 @@ export class CommunityService implements MessagingProvider {
       communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
     });
 
+    if (!messageHistorySinceDate) {
+      messageHistorySinceDate = conversationsSince;
+    }
+
     const communityIdsOnly = communityIds.map((member) => member.communityId);
-    const communityIdMessageMap = await this.getCommunityIdMessageMapSinceDate(communityIdsOnly, dateSince, "inbound");
+    const communityIdMessageMap = await this.getCommunityIdMessageMapSinceDate(
+      communityIdsOnly,
+      messageHistorySinceDate,
+      "both",
+    );
     return communityIdMessageMap;
   }
 
