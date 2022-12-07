@@ -47,7 +47,7 @@ const IndexPage = () => {
       <div className="text-xl text-center">This stage will be active for 2 weeks starting Monday, December 5th.</div> */}
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Questions?</div>
-      <div className="text-center text-xl">Text “HELP” to {formatPhoneNumber(CONTACT_PHONE_NUMBER)}.</div>
+      <div className="text-center text-xl">Text “FAQ” to {formatPhoneNumber(CONTACT_PHONE_NUMBER)}.</div>
       <div className="text-center text-xl">*Terms and Conditions apply*</div>
     </div>
   );
@@ -86,7 +86,7 @@ const IndexPage = () => {
         </Link>
       </SmallBillboardButton>
       <SmallBillboardButton fill color="mr-lime">
-        <a href="https://my.community.com/madrealities?t=HELP" target="_blank" rel="noreferrer">
+        <a href="https://my.community.com/madrealities?t=FAQ" target="_blank" rel="noreferrer">
           <span className="mx-1 text-sm font-regular uppercase tracking-wide">Contact Support</span>
         </a>
       </SmallBillboardButton>
