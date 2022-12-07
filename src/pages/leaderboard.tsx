@@ -70,10 +70,10 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="flex-grow"></div>
             <div className="place-items-end">
               <div className="flex flex-row gap-1 text-sm">
-                <div>UPDATES IN: </div>
+                {/* <div>UPDATES IN: </div>
                 <div>
                   <UpdateCounter />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -87,10 +87,15 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
-        <div className="text-5xl font-bold">
-          <CountdownTimer endDatetime={new Date("December 07, 2022 13:00:00")} onEnd={console.log} />
+        <div className="flex flex-col items-center gap-2 py-4">
+          <div className="text-5xl font-bold">
+            VOTING IS CLOSED
+            {/* <CountdownTimer endDatetime={new Date("December 07, 2022 13:00:00")} onEnd={console.log} /> */}
+          </div>
+          <div>Want to bring back round 2 of the Billboard?</div>
+          <BillboardButton color="mr-sky-blue">TEXT TO BRING IT BACK</BillboardButton>
         </div>
-        <div>UNTIL VOTING CLOSES FOR THE BILLBOARD</div>
+
         <div className="w-full grow rounded-lg border-4 border-double border-mr-offwhite">
           <InfiniteScroll
             dataLength={rows.length}
