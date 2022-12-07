@@ -60,6 +60,20 @@ async function saveVotesToDB(votes: Vote[]) {
   return response;
 }
 
+export async function saveVotesOnlyToDB(votes: Vote[]) {
+  // create new script run
+  const response = await prisma.vote.createMany({
+    data: votes.map((vote) => ({
+      instagramHandle: vote.vote,
+      timestamp: vote.timestamp,
+      communityId: vote.voter,
+    })),
+  });
+
+  incrementCount("votes", response.count);
+  return response;
+}
+
 interface RunScriptOptions {
   debug?: boolean;
   withDelay?: boolean;
@@ -238,6 +252,15 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
   }
 }
 
-runScript({
-  debug: false,
-});
+export async function prepareVote(vote: Vote) {
+  vote.vote = vote.vote.replace("@", "");
+  const igVote = await instagramVote(vote);
+  if (igVote) {
+    return igVote;
+  } else {
+    return null;
+  }
+}
+// runScript({
+//   debug: true,
+// });
