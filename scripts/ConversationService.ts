@@ -38,7 +38,6 @@ export const ConversationService = {
               ConversationService.hasWordAfterKeyword(messageText, word.toLowerCase())
             );
           } else {
-            console.log(messageText, word, messageText.includes(word.toLowerCase()));
             return messageText.includes(word.toLowerCase());
           }
         }

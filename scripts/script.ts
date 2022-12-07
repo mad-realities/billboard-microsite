@@ -6,9 +6,15 @@ import { incrementCount } from "./datadog";
 import { triggerCommunityMessageZap } from "./zapier";
 import { mixpanel, VOTED } from "./mixpanel";
 import { delay } from "./utils";
-import { ANOTHER_SUCCESSFUL_VOTE_RESPONSE, BAD_VOTE_RESPONSE, SUCCESSFUL_VOTE_RESPONSE } from "./constants";
+import {
+  ANOTHER_SUCCESSFUL_VOTE_RESPONSE,
+  BAD_VOTE_RESPONSE,
+  SUCCESSFUL_VOTE_RESPONSE,
+  TOO_LATE_RESPONSE,
+} from "./constants";
 import { CommunityService, MessagingProvider } from "./CommunityService";
-import { ConversationService, Message, Vote } from "./ConversationService";
+import { Conversation, ConversationService, Message, Vote } from "./ConversationService";
+
 import { getUniqueVotesForCommunityId, getVotesForCommunityId } from "./db";
 
 dotenv.config({
@@ -60,10 +66,29 @@ async function saveVotesToDB(votes: Vote[]) {
   return response;
 }
 
+export async function saveVotesOnlyToDB(votes: Vote[]) {
+  // create new script run
+  const response = await prisma.vote.createMany({
+    data: votes.map((vote) => ({
+      instagramHandle: vote.vote,
+      timestamp: vote.timestamp,
+      communityId: vote.voter,
+    })),
+  });
+
+  incrementCount("votes", response.count);
+  return response;
+}
+
+
 interface RunScriptOptions {
   debug?: boolean;
   withDelay?: boolean;
 }
+
+// 1pm est dec 7th
+const BILLBOARD_END_TIME = new Date("2022-12-07T18:00:00.000Z");
+
 
 export async function runScript({ debug = false, withDelay = false }: RunScriptOptions = {}) {
   // random number of miliseconds between 5 seconds and 2 minutes
@@ -89,126 +114,14 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
     const messagesSinceLastRun = await messagingProvider.getMessagesSinceDate(dateSinceLastRun);
     const idsToVotes = ConversationService.getVotesFromMessages(messagesSinceLastRun, "vote: ");
 
-    const badVotesMessage = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "vote ", true);
-    const sendColonVotesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "send:votes");
-    const sendVotesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "send votes");
-    console.log("sendVotesMessages", sendVotesMessages);
-    const sendNudesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "send nudes");
-    const allSendVoteMessages: {
-      [x: string]: Message[];
-    } = {};
+    const { votesForDb, voteMessagePayload } = await getLegitimateVotesAndMessages(idsToVotes, BILLBOARD_END_TIME);
 
-    Object.keys(sendVotesMessages).forEach((val) => {
-      allSendVoteMessages[val] = sendVotesMessages[val];
-    });
+    const sendVoteMessagePayload: MessagePayload[] = await handleSendVotesMessages(messagesSinceLastRun);
+    const badVoteMessages: MessagePayload[] =
+      new Date() < BILLBOARD_END_TIME ? await handleBadVoteMessages(messagesSinceLastRun, votesForDb) : [];
+    const messages = [...voteMessagePayload, ...badVoteMessages, ...sendVoteMessagePayload];
 
-    Object.keys(sendColonVotesMessages).forEach((val) => {
-      if (allSendVoteMessages[val]) {
-        allSendVoteMessages[val] = [...allSendVoteMessages[val], ...sendColonVotesMessages[val]];
-      } else {
-        allSendVoteMessages[val] = [...sendColonVotesMessages[val]];
-      }
-    });
-
-    Object.keys(sendNudesMessages).forEach((val) => {
-      if (allSendVoteMessages[val]) {
-        allSendVoteMessages[val] = [
-          ...allSendVoteMessages[val],
-          ...sendColonVotesMessages[val],
-          ...sendNudesMessages[val],
-        ];
-      } else {
-        allSendVoteMessages[val] = [...sendNudesMessages[val]];
-      }
-    });
-
-    const allUserVotes = Object.values(idsToVotes).flat();
-
-    // remove leading @ from each vote in userVotes
-    allUserVotes.forEach((vote) => {
-      vote.vote = vote.vote.replace("@", "");
-    });
-
-    // filter out invalid handles
-    const validUserVotes = allUserVotes.filter((vote) => validInstagramHandle(vote.vote));
-
-    // deduplicate votes by voter and vote
-    const dedupedUserVotes = validUserVotes.reduce((acc, vote) => {
-      const existingVote = acc.find((val) => val.voter === vote.voter && val.vote === vote.vote);
-      if (!existingVote) {
-        acc.push(vote);
-      }
-      return acc;
-    }, [] as Vote[]);
-
-    const realInstagramVotes: Vote[] = [];
-    for (const vote of dedupedUserVotes) {
-      const igVote = await instagramVote(vote);
-      if (igVote) {
-        realInstagramVotes.push(igVote);
-      }
-    }
-
-    // community ids which have a bad vote message and not a valid vote
-    const badVotesIds: string[] = [];
-    Object.keys(badVotesMessage).forEach((val) => {
-      if (!idsToVotes[val]) {
-        badVotesIds.push(val);
-      }
-    });
-
-    const badVotePayload: MessagePayload[] = badVotesIds.map((val) => ({
-      communityId: val,
-      text: BAD_VOTE_RESPONSE(),
-    }));
-
-    const sendVoteMessagePayload: MessagePayload[] = [];
-
-    // { ...sendVotesMessages, ...sendNudesMessages, ...sendColonVotesMessages };
-
-    console.log("allSendVoteMessages", allSendVoteMessages);
-
-    for (const cid of Object.keys(allSendVoteMessages)) {
-      if (allSendVoteMessages[cid].length > 0) {
-        const votes = await getUniqueVotesForCommunityId(cid);
-        const votesString = votes.map((vote) => vote.vote).join("\n@");
-        sendVoteMessagePayload.push({
-          communityId: cid,
-          text: `@${votesString}`,
-        });
-      }
-    }
-
-    const communityIdToVoteCount: { [communityId: string]: boolean } = {};
-    const communityIdToVote: { [communityId: string]: string[] } = {};
-    const successMessagePayload: MessagePayload[] = [];
-    console.log("realInstagramVotes", realInstagramVotes);
-
-    realInstagramVotes.forEach((val) => {
-      if (!communityIdToVote[val.voter]) {
-        communityIdToVote[val.voter] = [];
-      }
-
-      if (communityIdToVoteCount[val.voter]) {
-        if (!communityIdToVote[val.voter].includes(val.vote)) {
-          communityIdToVote[val.voter].push(val.vote);
-          successMessagePayload.push({
-            communityId: val.voter,
-            text: ANOTHER_SUCCESSFUL_VOTE_RESPONSE(val.vote),
-          });
-        }
-      } else {
-        communityIdToVoteCount[val.voter] = true;
-        communityIdToVote[val.voter].push(val.vote);
-        successMessagePayload.push({
-          communityId: val.voter,
-          text: SUCCESSFUL_VOTE_RESPONSE(val.vote),
-        });
-      }
-    });
-
-    const messages = [...successMessagePayload, ...badVotePayload, ...sendVoteMessagePayload];
-    for (const vote of realInstagramVotes) {
+    for (const vote of votesForDb) {
       mixpanel.track(VOTED, {
         community_id: vote.voter,
         username: vote.vote,
@@ -218,14 +131,16 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
 
     // create new script run
     if (!debug) {
-      const scriptRun = await saveVotesToDB(realInstagramVotes);
+      const scriptRun = await saveVotesToDB(votesForDb);
+
       console.log("Sending", messages);
       const count = await messagingProvider.sendMessages(messages);
       console.log("Sent", count, "messages out of ", messages.length, "messages");
 
       incrementCount("messagesSent", count);
       incrementCount("scriptRuns", 1);
-      incrementCount("votes", realInstagramVotes.length);
+      incrementCount("votes", votesForDb.length);
+
       return scriptRun;
     } else {
       console.log("Debug mode, not saving votes to DB");
@@ -237,6 +152,153 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
     return new_script_run;
   }
 }
+
+async function handleBadVoteMessages(messages: { [id: string]: Conversation }, votes: Vote[]) {
+  const badVotesMessages = ConversationService.getMessagesWithSpecificWord(messages, "vote ", true);
+  // community ids which have a bad vote message and not a valid vote
+  const badVotesIds: string[] = [];
+  const voteIds = votes.map((vote) => vote.voter);
+  Object.keys(badVotesMessages).forEach((val) => {
+    if (voteIds.indexOf(val) === -1 && badVotesMessages[val].length > 0) {
+      badVotesIds.push(val);
+    }
+  });
+
+  const badVotePayload: MessagePayload[] = badVotesIds.map((val) => ({
+    communityId: val,
+    text: BAD_VOTE_RESPONSE(),
+  }));
+
+  return badVotePayload;
+}
+
+async function getLegitimateVotesAndMessages(idsToVotes: { [id: string]: Vote[] }, voteEnd: Date) {
+  const allUserVotes = Object.values(idsToVotes).flat();
+
+  // remove leading @ from each vote in userVotes
+  allUserVotes.forEach((vote) => {
+    vote.vote = vote.vote.replace("@", "");
+  });
+
+  // filter out invalid handles
+  const validUserVotes = allUserVotes.filter((vote) => validInstagramHandle(vote.vote));
+
+  // deduplicate votes by voter and vote
+  const dedupedUserVotes = validUserVotes.reduce((acc, vote) => {
+    const existingVote = acc.find((val) => val.voter === vote.voter && val.vote === vote.vote);
+    if (!existingVote) {
+      acc.push(vote);
+    }
+    return acc;
+  }, [] as Vote[]);
+
+  const votesForDb: Vote[] = [];
+  const tooLateVotes: Vote[] = [];
+
+  for (const vote of dedupedUserVotes) {
+    const igVote = await instagramVote(vote);
+    if (igVote) {
+      if (new Date(igVote.timestamp) > voteEnd) {
+        tooLateVotes.push(igVote);
+      } else {
+        votesForDb.push(igVote);
+      }
+    }
+  }
+
+  const communityIdToVoteCount: { [communityId: string]: boolean } = {};
+  const communityIdToVote: { [communityId: string]: string[] } = {};
+  const voteMessagePayload: MessagePayload[] = [];
+  votesForDb.forEach((val) => {
+    if (!communityIdToVote[val.voter]) {
+      communityIdToVote[val.voter] = [];
+    }
+
+    if (communityIdToVoteCount[val.voter]) {
+      if (!communityIdToVote[val.voter].includes(val.vote)) {
+        communityIdToVote[val.voter].push(val.vote);
+        voteMessagePayload.push({
+          communityId: val.voter,
+          text: ANOTHER_SUCCESSFUL_VOTE_RESPONSE(val.vote),
+        });
+      }
+    } else {
+      communityIdToVoteCount[val.voter] = true;
+      communityIdToVote[val.voter].push(val.vote);
+      voteMessagePayload.push({
+        communityId: val.voter,
+        text: SUCCESSFUL_VOTE_RESPONSE(val.vote),
+      });
+    }
+  });
+
+  tooLateVotes.forEach((val) => {
+    voteMessagePayload.push({
+      communityId: val.voter,
+      text: TOO_LATE_RESPONSE(),
+    });
+  });
+
+  return { votesForDb, voteMessagePayload };
+}
+
+export async function handleSendVotesMessages(messages: { [id: string]: Conversation }) {
+  const sendColonVotesMessages = ConversationService.getMessagesWithSpecificWord(messages, "send:votes");
+  const sendVotesMessages = ConversationService.getMessagesWithSpecificWord(messages, "send votes");
+  const sendNudesMessages = ConversationService.getMessagesWithSpecificWord(messages, "send nudes");
+  const allSendVoteMessages: {
+    [x: string]: Message[];
+  } = {};
+
+  Object.keys(sendVotesMessages).forEach((val) => {
+    allSendVoteMessages[val] = sendVotesMessages[val];
+  });
+
+  Object.keys(sendColonVotesMessages).forEach((val) => {
+    if (allSendVoteMessages[val]) {
+      allSendVoteMessages[val] = [...allSendVoteMessages[val], ...sendColonVotesMessages[val]];
+    } else {
+      allSendVoteMessages[val] = [...sendColonVotesMessages[val]];
+    }
+  });
+
+  Object.keys(sendNudesMessages).forEach((val) => {
+    if (allSendVoteMessages[val]) {
+      allSendVoteMessages[val] = [
+        ...allSendVoteMessages[val],
+        ...sendColonVotesMessages[val],
+        ...sendNudesMessages[val],
+      ];
+    } else {
+      allSendVoteMessages[val] = [...sendNudesMessages[val]];
+    }
+  });
+
+  const sendVoteMessagePayload: MessagePayload[] = [];
+  for (const cid of Object.keys(allSendVoteMessages)) {
+    if (allSendVoteMessages[cid].length > 0) {
+      const votes = await getUniqueVotesForCommunityId(cid);
+      const votesString = votes.map((vote) => vote.vote).join("\n@");
+      sendVoteMessagePayload.push({
+        communityId: cid,
+        text: `@${votesString}`,
+      });
+    }
+  }
+
+  return sendVoteMessagePayload;
+}
+
+export async function prepareVote(vote: Vote) {
+  vote.vote = vote.vote.replace("@", "");
+  const igVote = await instagramVote(vote);
+  if (igVote) {
+    return igVote;
+  } else {
+    return null;
+  }
+}
+
 
 runScript({
   debug: false,

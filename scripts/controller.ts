@@ -3,9 +3,12 @@ import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-
 import { incrementCount, trackGauge } from "./datadog";
 import { delay } from "./utils";
 import { SUCCESSFUL_VOTE_RESPONSE } from "./constants";
-import { ConversationService } from "./ConversationService";
+import { ConversationService, Vote } from "./ConversationService";
 import { checkForVote } from "./db";
 import { CommunityService, MessagingProvider } from "./CommunityService";
+import { instagramVote } from "./igData";
+import { prepareVote, saveVotesOnlyToDB } from "./script";
+
 dotenv.config({
   path: ".env.local",
 });
@@ -60,37 +63,59 @@ const messagingProvider: MessagingProvider = new CommunityService();
 async function main(messagingProvider: MessagingProvider) {
   // const response = await dm("58704615-37e5-4148-804c-e675f5107968", "gm gm");
   const votingOpened = new Date("2022-12-05T18:30:00.000");
-  const dateSince = new Date("2022-12-06T11:20:00.000");
-  // await followUpOnConversations(messagingProvider, dateSince, false);
-  const allvotes = await getAllVotesSinceDate(messagingProvider, dateSince);
-  console.log(allvotes);
+  const dateSince = new Date("2022-12-06T10:20:00.000");
+  const dateSince2 = new Date("2022-12-07T10:50:00.000");
+
+  await followUpOnConversations(messagingProvider, dateSince, votingOpened, false);
+  // const allvotes = await getAllVotesSinceDate(messagingProvider, dateSince);
+  // console.log(allvotes);
+
 }
 
 async function followUpOnConversations(
   messagingProvider: MessagingProvider,
-  dateSince: Date,
+  conversationDateSince: Date,
+  messageHistorySince: Date,
   autoFollowUp: boolean = false,
 ) {
-  const conversationMap = await messagingProvider.getMessagesSinceDate(dateSince);
+  const conversationMap = await messagingProvider.getMessagesSinceDate(conversationDateSince, messageHistorySince);
   const followUps: ConversationFollowUp[] = [];
 
+  let counter = 0;
   for (const id in conversationMap) {
+    counter++;
+    console.log("checking conversation", counter, "of", Object.keys(conversationMap).length);
+
     let flups = await checkConversation(id, conversationMap[id]);
     followUps.push(...flups);
   }
 
   const payload: MessagePayload[] = [];
+  const votes: Vote[] = [];
+
+
   for (const followUp of followUps) {
     if (followUp.type === "VOTED WITHOUT EVER SENDING RESPONSE") {
       payload.push({
         communityId: followUp.communityId,
-        text: SUCCESSFUL_VOTE_RESPONSE(followUp.vote),
+        text: SUCCESSFUL_VOTE_RESPONSE(followUp.vote.replace("@", "")),
       });
     } else if (followUp.type === "VOTED WITHOUT NEW RESPONSE") {
       payload.push({
         communityId: followUp.communityId,
-        text: SUCCESSFUL_VOTE_RESPONSE(followUp.vote),
+        text: SUCCESSFUL_VOTE_RESPONSE(followUp.vote.replace("@", "")),
       });
+    } else if (followUp.type === "NO VOTE RECORD") {
+      const vote: Vote = {
+        voter: followUp.communityId,
+        vote: followUp.vote,
+        timestamp: followUp.voteTimestamp,
+      };
+      const preparedVote = await prepareVote(vote);
+      if (preparedVote) {
+        votes.push(preparedVote);
+      }
+
     }
   }
 
@@ -115,12 +140,18 @@ async function followUpOnConversations(
   }
 
   if (autoFollowUp) {
+    await saveVotesOnlyToDB(votes);
     await messagingProvider.sendMessages(payload);
   }
 
-  console.log("communityIdToFollowUps", JSON.stringify(communityIdToFollowUps, null, 2));
   console.log("messages", payload.length);
+  console.log("messages", payload);
+
   console.log("users", Object.keys(communityIdToFollowUps).length);
+
+  console.log("new votes", votes.length);
+  console.log("votes", votes);
+
 }
 
 type ConversationFollowUp = {
@@ -170,7 +201,7 @@ async function checkConversation(cid: string, conversation: CommunityMessage[]) 
     handles.add(handle.vote);
   }
 
-  const mostRecentVoteMessage = ConversationService.getMostRecentMessage(voteMessagesArr, "inbound");
+
   const mostRecentOutboundMessage = ConversationService.getMostRecentMessage(conversation, "outbound");
 
   // vote messages more than 10 minutes ago and after most recent outbound message

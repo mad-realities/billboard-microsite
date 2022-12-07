@@ -6,3 +6,7 @@ export const ANOTHER_SUCCESSFUL_VOTE_RESPONSE = (handle: string) =>
 
 export const BAD_VOTE_RESPONSE = () =>
   `Oops! That didn't work... If you're trying to vote for an existing candidate or nominate a new one, use the format below:\n\nVOTE: [insert IG username]\n\nText "3" for help voting.`;
+
+export const TOO_LATE_RESPONSE = () =>
+  `Oops! Voting has closed. Follow us on IG for more opportunities to get Mad Famous in the near future  https://www.instagram.com/madrealities/`;
+
