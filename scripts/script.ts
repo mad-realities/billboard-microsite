@@ -1,20 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import {
-  dm,
-  getKeywordMessages,
-  getMessagesSinceDate,
-  getVotesFromMessages,
-  getVotesSinceDate,
-  MessagePayload,
-  sendMessages,
-} from "./community";
-import { isValidUsername } from "./igData";
+import { MessagePayload, getAllVotesSinceDate } from "./controller";
+import { instagramVote, isValidUsername } from "./igData";
 import { incrementCount } from "./datadog";
 import { triggerCommunityMessageZap } from "./zapier";
 import { mixpanel, VOTED } from "./mixpanel";
 import { delay } from "./utils";
 import { ANOTHER_SUCCESSFUL_VOTE_RESPONSE, BAD_VOTE_RESPONSE, SUCCESSFUL_VOTE_RESPONSE } from "./constants";
+import { CommunityService, MessagingProvider } from "./CommunityService";
+import { ConversationService, Vote } from "./ConversationService";
+import { getUniqueVotesForCommunityId, getVotesForCommunityId } from "./db";
 
 dotenv.config({
   path: ".env.local",
@@ -42,13 +37,7 @@ async function createEmptyScriptRun() {
   return response;
 }
 
-async function saveVotesToDB(
-  votes: {
-    community_id: string;
-    vote: string;
-    timestamp: Date;
-  }[],
-) {
+async function saveVotesToDB(votes: Vote[]) {
   // create new script run
   const response = await prisma.scriptRun.create({
     data: {
@@ -58,7 +47,7 @@ async function saveVotesToDB(
           data: votes.map((vote) => ({
             instagramHandle: vote.vote,
             timestamp: vote.timestamp,
-            communityId: vote.community_id,
+            communityId: vote.voter,
           })),
         },
       },
@@ -71,7 +60,12 @@ async function saveVotesToDB(
   return response;
 }
 
-export async function runScript(withDelay = false) {
+interface RunScriptOptions {
+  debug?: boolean;
+  withDelay?: boolean;
+}
+
+export async function runScript({ debug = false, withDelay = false }: RunScriptOptions = {}) {
   // random number of miliseconds between 5 seconds and 2 minutes
   if (withDelay) {
     const randomDelay = Math.floor(Math.random() * 120000) + 5000;
@@ -90,25 +84,15 @@ export async function runScript(withDelay = false) {
     const dateSinceLastRun = new Date(latest_script_run.timestamp);
     console.log("Last script ran at", dateSinceLastRun.toLocaleString());
 
-    // get messages since date
-    const { communityIdMessageMap, communityIdToFanSubscriptionId } = await getMessagesSinceDate(dateSinceLastRun);
+    const messagingProvider: MessagingProvider = new CommunityService();
 
-    const badVoteMessage = await getKeywordMessages(communityIdMessageMap, "vote ", true);
+    const messagesSinceLastRun = await messagingProvider.getMessagesSinceDate(dateSinceLastRun);
+    const idsToVotes = ConversationService.getVotesFromMessages(messagesSinceLastRun, "vote: ");
 
-    // getVotesSinceDate picks up the latest vote per communityId since the last script run
-    const userVotesMap = await getVotesFromMessages(communityIdMessageMap, communityIdToFanSubscriptionId);
-    console.log("userVoteMap", userVotesMap);
+    const badVotesMessage = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "vote ", true);
+    const sendVotesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "SEND:VOTES");
 
-    const allUserVotes = Object.keys(userVotesMap)
-      .map((community_id) => {
-        const userVotes = userVotesMap[community_id];
-        return userVotes.map((vote) => ({
-          community_id,
-          vote: vote.igHandle,
-          timestamp: vote.timestamp,
-        }));
-      })
-      .flat();
+    const allUserVotes = Object.values(idsToVotes).flat();
 
     // remove leading @ from each vote in userVotes
     allUserVotes.forEach((vote) => {
@@ -118,94 +102,106 @@ export async function runScript(withDelay = false) {
     // filter out invalid handles
     const validUserVotes = allUserVotes.filter((vote) => validInstagramHandle(vote.vote));
 
-    // filter out handles that don't exist
-    const validUserVotesWithExistingHandles: {
-      community_id: string;
-      vote: string;
-      timestamp: Date;
-    }[] = [];
-    for (const vote of validUserVotes) {
-      try {
-        const isValid = await isValidUsername(vote.vote);
-        incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
+    // deduplicate votes by voter and vote
+    const dedupedUserVotes = validUserVotes.reduce((acc, vote) => {
+      const existingVote = acc.find((val) => val.voter === vote.voter && val.vote === vote.vote);
+      if (!existingVote) {
+        acc.push(vote);
+      }
+      return acc;
+    }, [] as Vote[]);
 
-        if (isValid) {
-          validUserVotesWithExistingHandles.push(vote);
-        } else {
-          console.log("Invalid handle", vote.vote);
-        }
-      } catch (e) {
-        console.log("Error checking if username", vote.vote, "exists.", "Error:", e);
-        console.log("Since instagram check isn't working, we'll just assume it's valid");
-        incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, "failure"]);
-
-        // since instagram check failed, we'll assume the handle is valid
-        validUserVotesWithExistingHandles.push(vote);
+    const realInstagramVotes: Vote[] = [];
+    for (const vote of dedupedUserVotes) {
+      const igVote = await instagramVote(vote);
+      if (igVote) {
+        realInstagramVotes.push(igVote);
       }
     }
 
     // community ids which have a bad vote message and not a valid vote
-    const badVotesIds = Object.keys(badVoteMessage).filter((communityId) => {
-      return !userVotesMap[communityId];
+    const badVotesIds: string[] = [];
+    Object.keys(badVotesMessage).forEach((val) => {
+      if (!idsToVotes[val]) {
+        badVotesIds.push(val);
+      }
     });
 
-    const badVoteZapierPayload: MessagePayload[] = badVotesIds.map((val) => ({
+    const badVotePayload: MessagePayload[] = badVotesIds.map((val) => ({
       communityId: val,
-      fanId: communityIdToFanSubscriptionId[val],
       text: BAD_VOTE_RESPONSE(),
     }));
 
-    // seen
+    const sendVoteMessagePayload: MessagePayload[] = [];
+    for (const cid of Object.keys(sendVotesMessages)) {
+      if (sendVotesMessages[cid].length > 0) {
+        const votes = await getUniqueVotesForCommunityId(cid);
+        const votesString = votes.map((vote) => vote.vote).join("\n@");
+        sendVoteMessagePayload.push({
+          communityId: cid,
+          text: `You've voted for:\n@${votesString}`,
+        });
+      }
+    }
+
     const communityIdToVoteCount: { [communityId: string]: boolean } = {};
     const communityIdToVote: { [communityId: string]: string[] } = {};
-    const successfulZapierPayload: MessagePayload[] = [];
+    const successMessagePayload: MessagePayload[] = [];
+    console.log("realInstagramVotes", realInstagramVotes);
 
-    console.log("validUserVotesWithExistingHandles", validUserVotesWithExistingHandles);
-
-    validUserVotesWithExistingHandles.forEach((val) => {
-      if (!communityIdToVote[val.community_id]) {
-        communityIdToVote[val.community_id] = [];
+    realInstagramVotes.forEach((val) => {
+      if (!communityIdToVote[val.voter]) {
+        communityIdToVote[val.voter] = [];
       }
 
-      if (communityIdToVoteCount[val.community_id]) {
-        if (!communityIdToVote[val.community_id].includes(val.vote)) {
-          communityIdToVote[val.community_id].push(val.vote);
-          successfulZapierPayload.push({
-            communityId: val.community_id,
-            fanId: communityIdToFanSubscriptionId[val.community_id],
+      if (communityIdToVoteCount[val.voter]) {
+        if (!communityIdToVote[val.voter].includes(val.vote)) {
+          communityIdToVote[val.voter].push(val.vote);
+          successMessagePayload.push({
+            communityId: val.voter,
             text: ANOTHER_SUCCESSFUL_VOTE_RESPONSE(val.vote),
           });
         }
       } else {
-        communityIdToVoteCount[val.community_id] = true;
-        communityIdToVote[val.community_id].push(val.vote);
-        successfulZapierPayload.push({
-          communityId: val.community_id,
-          fanId: communityIdToFanSubscriptionId[val.community_id],
+        communityIdToVoteCount[val.voter] = true;
+        communityIdToVote[val.voter].push(val.vote);
+        successMessagePayload.push({
+          communityId: val.voter,
           text: SUCCESSFUL_VOTE_RESPONSE(val.vote),
         });
       }
     });
 
-    // triggerCommunityMessageZap([...successfulZapierPayload, ...badVoteZapierPayload]);
-    incrementCount("scriptRuns", 1);
-    incrementCount("votes", validUserVotesWithExistingHandles.length);
-    for (const vote of validUserVotesWithExistingHandles) {
+    const messages = [...successMessagePayload, ...badVotePayload, ...sendVoteMessagePayload];
+    for (const vote of realInstagramVotes) {
       mixpanel.track(VOTED, {
-        community_id: vote.community_id,
+        community_id: vote.voter,
         username: vote.vote,
         timestamp: vote.timestamp,
       });
     }
 
     // create new script run
-    const scriptRun = await saveVotesToDB(validUserVotesWithExistingHandles);
-    await sendMessages([...successfulZapierPayload, ...badVoteZapierPayload]);
-    return scriptRun;
+    if (!debug) {
+      const scriptRun = await saveVotesToDB(realInstagramVotes);
+      const count = await messagingProvider.sendMessages(messages);
+      console.log("Sent", count, "messages out of ", messages.length, "messages");
+
+      incrementCount("messagesSent", count);
+      incrementCount("scriptRuns", 1);
+      incrementCount("votes", realInstagramVotes.length);
+      return scriptRun;
+    } else {
+      console.log("Debug mode, not saving votes to DB");
+      console.log("Messages to send", messages);
+      return null;
+    }
   } else {
     const new_script_run = await createEmptyScriptRun();
     return new_script_run;
   }
 }
 
-runScript();
+runScript({
+  debug: false,
+});

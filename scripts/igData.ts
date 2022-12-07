@@ -1,4 +1,26 @@
 import fetch from "node-fetch";
+import { Vote } from "./ConversationService";
+import { incrementCount } from "./datadog";
+
+export const instagramVote = async (vote: Vote) => {
+  try {
+    const isValid = await isValidUsername(vote.vote);
+    incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
+
+    if (isValid) {
+      return vote;
+    }
+  } catch (e) {
+    console.error("Error checking if username", vote.vote, "exists.", "Error:", e);
+    console.log("Since instagram check isn't working, we'll just assume it's valid");
+    incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, "failure"]);
+
+    // since instagram check failed, we'll assume the handle is valid
+    return vote;
+  }
+
+  return null;
+};
 
 export const isValidUsername = async (username: string) => {
   try {
