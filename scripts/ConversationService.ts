@@ -1,4 +1,4 @@
-type Message = {
+export type Message = {
   created_at: Date;
   id: string;
   inbound: boolean;
@@ -34,9 +34,11 @@ export const ConversationService = {
 
           if (needsFollowUpWord) {
             return (
-              messageText.includes(word.toLowerCase()) && ConversationService.hasWordAfterKeyword(messageText, word)
+              messageText.includes(word.toLowerCase()) &&
+              ConversationService.hasWordAfterKeyword(messageText, word.toLowerCase())
             );
           } else {
+            console.log(messageText, word, messageText.includes(word.toLowerCase()));
             return messageText.includes(word.toLowerCase());
           }
         }

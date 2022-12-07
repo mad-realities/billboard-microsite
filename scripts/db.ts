@@ -33,7 +33,6 @@ export async function getVotesForCommunityId(communityId: string) {
 
 export async function getUniqueVotesForCommunityId(communityId: string) {
   const response = await getVotesForCommunityId(communityId);
-  console.log("response", response, communityId);
   // get unique votes by handle and communityId
 
   const uniqueVotes = response.reduce((acc, vote) => {
@@ -48,7 +47,6 @@ export async function getUniqueVotesForCommunityId(communityId: string) {
     return acc;
   }, [] as Vote[]);
 
-  console.log("unique votes", uniqueVotes);
   return uniqueVotes;
 }
 

@@ -8,7 +8,7 @@ import { mixpanel, VOTED } from "./mixpanel";
 import { delay } from "./utils";
 import { ANOTHER_SUCCESSFUL_VOTE_RESPONSE, BAD_VOTE_RESPONSE, SUCCESSFUL_VOTE_RESPONSE } from "./constants";
 import { CommunityService, MessagingProvider } from "./CommunityService";
-import { ConversationService, Vote } from "./ConversationService";
+import { ConversationService, Message, Vote } from "./ConversationService";
 import { getUniqueVotesForCommunityId, getVotesForCommunityId } from "./db";
 
 dotenv.config({
@@ -90,7 +90,37 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
     const idsToVotes = ConversationService.getVotesFromMessages(messagesSinceLastRun, "vote: ");
 
     const badVotesMessage = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "vote ", true);
-    const sendVotesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "SEND:VOTES");
+    const sendColonVotesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "send:votes");
+    const sendVotesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "send votes");
+    console.log("sendVotesMessages", sendVotesMessages);
+    const sendNudesMessages = ConversationService.getMessagesWithSpecificWord(messagesSinceLastRun, "send nudes");
+    const allSendVoteMessages: {
+      [x: string]: Message[];
+    } = {};
+
+    Object.keys(sendVotesMessages).forEach((val) => {
+      allSendVoteMessages[val] = sendVotesMessages[val];
+    });
+
+    Object.keys(sendColonVotesMessages).forEach((val) => {
+      if (allSendVoteMessages[val]) {
+        allSendVoteMessages[val] = [...allSendVoteMessages[val], ...sendColonVotesMessages[val]];
+      } else {
+        allSendVoteMessages[val] = [...sendColonVotesMessages[val]];
+      }
+    });
+
+    Object.keys(sendNudesMessages).forEach((val) => {
+      if (allSendVoteMessages[val]) {
+        allSendVoteMessages[val] = [
+          ...allSendVoteMessages[val],
+          ...sendColonVotesMessages[val],
+          ...sendNudesMessages[val],
+        ];
+      } else {
+        allSendVoteMessages[val] = [...sendNudesMessages[val]];
+      }
+    });
 
     const allUserVotes = Object.values(idsToVotes).flat();
 
@@ -133,13 +163,18 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
     }));
 
     const sendVoteMessagePayload: MessagePayload[] = [];
-    for (const cid of Object.keys(sendVotesMessages)) {
-      if (sendVotesMessages[cid].length > 0) {
+
+    // { ...sendVotesMessages, ...sendNudesMessages, ...sendColonVotesMessages };
+
+    console.log("allSendVoteMessages", allSendVoteMessages);
+
+    for (const cid of Object.keys(allSendVoteMessages)) {
+      if (allSendVoteMessages[cid].length > 0) {
         const votes = await getUniqueVotesForCommunityId(cid);
         const votesString = votes.map((vote) => vote.vote).join("\n@");
         sendVoteMessagePayload.push({
           communityId: cid,
-          text: `You've voted for:\n@${votesString}`,
+          text: `@${votesString}`,
         });
       }
     }
@@ -184,6 +219,7 @@ export async function runScript({ debug = false, withDelay = false }: RunScriptO
     // create new script run
     if (!debug) {
       const scriptRun = await saveVotesToDB(realInstagramVotes);
+      console.log("Sending", messages);
       const count = await messagingProvider.sendMessages(messages);
       console.log("Sent", count, "messages out of ", messages.length, "messages");
 
