@@ -2,31 +2,17 @@ import { useRouter } from "next/router";
 import SmallBillboardButton from "./design-system/SmallBillboardButton";
 import { cutOffStringIfTooLong, getSmsHref } from "../client/utils";
 import { useWindowSize } from "../client/hooks";
-
-interface LeaderboardProps {
-  sortedRows: { rank: string; handle: string }[];
-}
-
-const Leaderboard = ({ sortedRows }: LeaderboardProps) => {
-  return (
-    <div className="w-full">
-      <div className="flex flex-col divide-y divide-mr-sky-blue">
-        {sortedRows.map((id) => (
-          <InstagramLeaderboardRow key={id.handle} id={id.handle} rank={id.rank} />
-        ))}
-      </div>
-    </div>
-  );
-};
+import { match } from "ts-pattern";
 
 interface LeaderboardRowProps {
   id: string;
   votedFor: boolean;
+  rankDirection: string;
   voteCount?: number;
   rank: string;
 }
 
-export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, "votedFor">) => {
+export const InstagramLeaderboardRow = ({ id, rank, rankDirection }: Omit<LeaderboardRowProps, "votedFor">) => {
   const router = useRouter();
   const padding = "p-2";
 
@@ -39,6 +25,25 @@ export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, 
         <div className={`${padding} text-md flex-1 text-left`}>
           @{windowSize.width && windowSize.width > 800 ? id : cutOffStringIfTooLong(id, 20)}
         </div>
+        <div>
+          {match(rankDirection)
+            .with("NEW", () => (
+              <span role="img" aria-label="sheep">
+                🆕
+              </span>
+            ))
+            .with("UP", () => (
+              <span role="img" aria-label="fire">
+                🔥
+              </span>
+            ))
+            .with("DOWN", () => (
+              <span role="img" aria-label="ice">
+                🥺
+              </span>
+            ))
+            .otherwise(() => "")}
+        </div>
       </div>
       <div className={`${padding} flex-3`}>
         <a href={getSmsHref(id)} className="w-full">
@@ -50,5 +55,3 @@ export const InstagramLeaderboardRow = ({ id, rank }: Omit<LeaderboardRowProps, 
     </div>
   );
 };
-
-export default Leaderboard;

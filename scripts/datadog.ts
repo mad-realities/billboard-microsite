@@ -32,7 +32,7 @@ export const incrementCount = async (metricName: string, value: number, extraTag
   await datadog.submitMetrics(params).catch((error) => console.error(error));
 };
 
-export const trackGauge = async (metricName: string, value: number) => {
+export const trackGauge = async (metricName: string, value: number, extraTags: string[] = []) => {
   const params: v2.MetricsApiSubmitMetricsRequest = {
     body: {
       series: [
@@ -45,7 +45,7 @@ export const trackGauge = async (metricName: string, value: number) => {
               value,
             },
           ],
-          tags: [process.env.NODE_ENV || "", "billboard", "v1"],
+          tags: [process.env.NODE_ENV || "", "billboard", "v1", ...extraTags],
         },
       ],
     },
