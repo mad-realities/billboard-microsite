@@ -65,7 +65,7 @@ async function main(messagingProvider: MessagingProvider) {
   const dateSince = new Date("2022-12-06T10:20:00.000");
   const dateSince2 = new Date("2022-12-07T10:50:00.000");
 
-  await followUpOnConversations(messagingProvider, dateSince, votingOpened, true);
+  await followUpOnConversations(messagingProvider, dateSince, votingOpened, false);
   // const allvotes = await getAllVotesSinceDate(messagingProvider, dateSince);
   // console.log(allvotes);
 }
