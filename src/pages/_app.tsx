@@ -35,7 +35,7 @@ function BillboardApp({ Component, pageProps }: AppProps) {
           <div className="flex h-full w-full px-2 ">
             <div className="align-center flex w-auto grow flex-col items-center rounded-xl border border-white p-1">
               <Link href="/">
-                <h1 className="pr-3 text-justify text-[88px] uppercase italic leading-none">Mad Famous</h1>
+                <h1 className="pr-3 text-justify text-[76px] uppercase italic leading-none">Mad Famous</h1>
               </Link>
               <Component {...pageProps} />
             </div>

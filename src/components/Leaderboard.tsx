@@ -3,6 +3,7 @@ import SmallBillboardButton from "./design-system/SmallBillboardButton";
 import { cutOffStringIfTooLong, getSmsHref } from "../client/utils";
 import { useWindowSize } from "../client/hooks";
 import { match } from "ts-pattern";
+import clsx from "clsx";
 
 interface LeaderboardRowProps {
   id: string;
@@ -46,8 +47,11 @@ export const InstagramLeaderboardRow = ({ id, rank, rankDirection }: Omit<Leader
         </div>
       </div>
       <div className={`${padding} flex-3`}>
-        <a href={getSmsHref(id)} className="w-full">
-          <SmallBillboardButton color={"mr-sky-blue"} fill>
+        <a
+          href={process.env.NEXT_PUBLIC_LEADERBOARD_DONE ? "#" : getSmsHref(id)}
+          className={clsx("w-full", process.env.NEXT_PUBLIC_LEADERBOARD_DONE && "cursor-not-allowed")}
+        >
+          <SmallBillboardButton color={"mr-sky-blue"} fill disabled={process.env.NEXT_PUBLIC_LEADERBOARD_DONE}>
             Vote
           </SmallBillboardButton>
         </a>

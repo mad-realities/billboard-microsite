@@ -10,6 +10,7 @@ import CountdownTimer from "../components/Countdown";
 import { getLinkPreview } from "../linkPreviewConfig";
 import UpdateCounter from "../components/UpdateCounter";
 import { mixpanelClient, SCROLLED_LEADERBOARD, VISITED_LEADERBOARD } from "../client/mixpanel";
+import { CONTACT_PHONE_NUMBER } from "../client/constants";
 
 const pageSize = 20;
 
@@ -70,10 +71,14 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="flex-grow"></div>
             <div className="place-items-end">
               <div className="flex flex-row gap-1 text-sm">
-                <div>UPDATES IN: </div>
-                <div>
-                  <UpdateCounter />
-                </div>
+                {!process.env.NEXT_PUBLIC_LEADERBOARD_DONE && (
+                  <div>
+                    <div>UPDATES IN: </div>
+                    <div>
+                      <UpdateCounter />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -87,10 +92,23 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
-        <div className="text-5xl font-bold">
-          <CountdownTimer endDatetime={new Date("December 07, 2022 13:00:00")} onEnd={console.log} />
-        </div>
-        <div>UNTIL VOTING CLOSES FOR THE BILLBOARD</div>
+        {!process.env.NEXT_PUBLIC_LEADERBOARD_DONE ? (
+          <div>
+            <div className="text-5xl font-bold">
+              <CountdownTimer endDatetime={new Date("December 07, 2022 13:00:00")} onEnd={console.log} />
+            </div>
+            <div>UNTIL VOTING CLOSES FOR THE BILLBOARD</div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2 py-4">
+            <div className="text-5xl font-bold">VOTING IS CLOSED</div>
+            <div>Want to bring back round 2 of the Billboard?</div>
+            <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=BRINGITBACK`}>
+              <BillboardButton color="mr-sky-blue">TEXT TO BRING IT BACK</BillboardButton>
+            </a>
+          </div>
+        )}
+
         <div className="w-full grow rounded-lg border-4 border-double border-mr-offwhite">
           <InfiniteScroll
             dataLength={rows.length}
