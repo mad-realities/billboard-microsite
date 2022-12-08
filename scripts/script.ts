@@ -9,6 +9,7 @@ import { delay } from "./utils";
 import {
   ANOTHER_SUCCESSFUL_VOTE_RESPONSE,
   BAD_VOTE_RESPONSE,
+  FIRST_LEADERBOARD_ID,
   SUCCESSFUL_VOTE_RESPONSE,
   TOO_LATE_RESPONSE,
 } from "./constants";
@@ -37,7 +38,9 @@ function validInstagramHandle(handle: string) {
 
 async function createEmptyScriptRun() {
   const response = await prisma.scriptRun.create({
-    data: {},
+    data: {
+      leaderboardId: FIRST_LEADERBOARD_ID,
+    },
   });
 
   return response;
@@ -54,9 +57,11 @@ async function saveVotesToDB(votes: Vote[]) {
             instagramHandle: vote.vote,
             timestamp: vote.timestamp,
             communityId: vote.voter,
+            leaderboardId: FIRST_LEADERBOARD_ID,
           })),
         },
       },
+      leaderboardId: FIRST_LEADERBOARD_ID,
     },
     include: {
       votes: true,
@@ -73,13 +78,13 @@ export async function saveVotesOnlyToDB(votes: Vote[]) {
       instagramHandle: vote.vote,
       timestamp: vote.timestamp,
       communityId: vote.voter,
+      leaderboardId: FIRST_LEADERBOARD_ID,
     })),
   });
 
   incrementCount("votes", response.count);
   return response;
 }
-
 
 interface RunScriptOptions {
   debug?: boolean;
@@ -88,7 +93,6 @@ interface RunScriptOptions {
 
 // 1pm est dec 7th
 const BILLBOARD_END_TIME = new Date("2022-12-07T18:00:00.000Z");
-
 
 export async function runScript({ debug = false, withDelay = false }: RunScriptOptions = {}) {
   // random number of miliseconds between 5 seconds and 2 minutes
@@ -298,7 +302,6 @@ export async function prepareVote(vote: Vote) {
     return null;
   }
 }
-
 
 runScript({
   debug: false,
