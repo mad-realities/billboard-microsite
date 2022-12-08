@@ -58,6 +58,7 @@ async function createLeaderboard(
 ) {
   const response = await prisma.leaderboard.create({
     data: {
+      id: 1,
       startTime,
       endTime,
       showCounts: false,
