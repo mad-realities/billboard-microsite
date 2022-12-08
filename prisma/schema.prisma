@@ -18,8 +18,8 @@ model Vote {
   timestamp DateTime @default(now())
   scriptRun ScriptRun? @relation(fields: [scriptRunId], references: [id])
   scriptRunId String?
-  leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
-  leaderboardId Int
+  leaderboard Leaderboard? @relation(fields: [leaderboardId], references: [id])
+  leaderboardId Int?
 
   @@index([leaderboardId])
   @@index([scriptRunId])
@@ -47,8 +47,8 @@ model ScriptRun {
   id String @id @default(uuid())
   timestamp DateTime @default(now())
   votes Vote[]
-  leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
-  leaderboardId Int
+  leaderboard Leaderboard? @relation(fields: [leaderboardId], references: [id])
+  leaderboardId Int?
 
   @@index([leaderboardId])
 }
