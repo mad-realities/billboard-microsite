@@ -1,1 +1,2 @@
 export const CONTACT_PHONE_NUMBER = "+19178103314";
+export const DEFAULT_LEADERBOARD_ID = 1;
