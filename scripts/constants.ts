@@ -12,3 +12,4 @@ export const TOO_LATE_RESPONSE = () =>
 
 // 1pm est dec 7th
 export const BILLBOARD_END_TIME = new Date("2022-12-07T18:00:00.000Z");
+export const FIRST_LEADERBOARD_ID = 1;

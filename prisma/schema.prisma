@@ -3,13 +3,12 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  relationMode = "prisma"
 }
 
 model Vote {
@@ -19,14 +18,37 @@ model Vote {
   timestamp DateTime @default(now())
   scriptRun ScriptRun? @relation(fields: [scriptRunId], references: [id])
   scriptRunId String?
+  leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
+  leaderboardId Int
+
+  @@index([leaderboardId])
+  @@index([scriptRunId])
 }
 
 model ShadowBanList {
   instagramHandle String @id @unique
 }
 
+model Leaderboard {
+  id Int @unique @default(autoincrement())
+  startTime DateTime
+  endTime DateTime
+  showCounts Boolean 
+  showEmojis Boolean
+  cacheSource String? 
+  lastCachedAt DateTime?
+  updateFrequencySeconds Int
+
+  votes Vote[]
+  scriptRuns ScriptRun[]
+}
+
 model ScriptRun {
   id String @id @default(uuid())
   timestamp DateTime @default(now())
   votes Vote[]
+  leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
+  leaderboardId Int
+
+  @@index([leaderboardId])
 }

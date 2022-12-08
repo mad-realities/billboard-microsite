@@ -1,8 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import { FIRST_LEADERBOARD_ID } from "./constants";
 import { Vote } from "./ConversationService";
 import { incrementCount } from "./datadog";
-import { VOTED } from "./mixpanel";
+import { VOTED, mixpanel } from "./mixpanel";
 
 dotenv.config({
   path: ".env.local",
@@ -52,36 +53,36 @@ export async function getUniqueVotesForCommunityId(communityId: string) {
   return uniqueVotes;
 }
 
-export async function saveVotesToDB(votes: Vote[]) {
-  // create new script run
-  const response = await prisma.scriptRun.create({
+async function createLeaderboard(
+  startTime: Date,
+  endTime: Date,
+  connectedVoteIds: string[],
+  connectedScriptRuns: string[],
+) {
+  const response = await prisma.leaderboard.create({
     data: {
-      timestamp: new Date(),
+      id: 1,
+      startTime,
+      endTime,
+      showCounts: false,
+      showEmojis: false,
+      cacheSource: "",
+      updateFrequencySeconds: 300,
+      lastCachedAt: new Date(),
       votes: {
-        createMany: {
-          data: votes.map((vote) => ({
-            instagramHandle: vote.vote,
-            timestamp: vote.timestamp,
-            communityId: vote.voter,
-          })),
-        },
+        connect: connectedVoteIds.map((id) => {
+          return { id };
+        }),
+      },
+      scriptRuns: {
+        connect: connectedScriptRuns.map((id) => {
+          return { id };
+        }),
       },
     },
     include: {
       votes: true,
     },
-  });
-
-  incrementCount("scriptRuns", 1);
-  incrementCount("votes", response.votes.length);
-
-  // send to mixpanel
-  votes.forEach((vote) => {
-    mixpanel.track(VOTED, {
-      community_id: vote.voter,
-      username: vote.vote,
-      timestamp: vote.timestamp,
-    });
   });
 
   return response;
@@ -100,7 +101,46 @@ export async function getLatestScriptRun() {
 
 export async function createEmptyScriptRun() {
   const response = await prisma.scriptRun.create({
-    data: {},
+    data: {
+      leaderboardId: FIRST_LEADERBOARD_ID,
+    },
+  });
+
+  return response;
+}
+
+export async function saveVotesToDB(votes: Vote[]) {
+  // create new script run
+  const response = await prisma.scriptRun.create({
+    data: {
+      timestamp: new Date(),
+      votes: {
+        createMany: {
+          data: votes.map((vote) => ({
+            instagramHandle: vote.vote,
+            timestamp: vote.timestamp,
+            communityId: vote.voter,
+            leaderboardId: FIRST_LEADERBOARD_ID,
+          })),
+        },
+      },
+      leaderboardId: FIRST_LEADERBOARD_ID,
+    },
+    include: {
+      votes: true,
+    },
+  });
+
+  incrementCount("scriptRuns", 1);
+  incrementCount("votes", response.votes.length);
+
+  // send to mixpanel
+  response.votes.forEach((vote) => {
+    mixpanel.track(VOTED, {
+      community_id: vote.communityId,
+      username: vote.instagramHandle,
+      timestamp: vote.timestamp,
+    });
   });
 
   return response;
@@ -113,6 +153,7 @@ export async function saveVotesOnlyToDB(votes: Vote[]) {
       instagramHandle: vote.vote,
       timestamp: vote.timestamp,
       communityId: vote.voter,
+      leaderboardId: FIRST_LEADERBOARD_ID,
     })),
   });
 
@@ -120,9 +161,33 @@ export async function saveVotesOnlyToDB(votes: Vote[]) {
   return response;
 }
 
-async function main() {
-  const votes = await getUniqueVotesForCommunityId("58704615-37e5-4148-804c-e675f5107968");
-  console.log("votes", votes);
+async function getAllVotes() {
+  const response = await prisma.vote.findMany();
+  return response;
 }
+
+async function getAllScriptRuns() {
+  const response = await prisma.scriptRun.findMany();
+  return response;
+}
+
+async function createAndJoinVotesToLeaderboard() {
+  const votes = await getAllVotes();
+  const voteIds = votes.map((vote) => vote.id);
+
+  const scriptRuns = await getAllScriptRuns();
+  const scriptRunIds = scriptRuns.map((scriptRun) => scriptRun.id);
+
+  const startTime = new Date("2022-12-05T18:00:00.000Z");
+  const endTime = new Date("2022-12-07T18:00:00.000Z");
+
+  const leaderboard = await createLeaderboard(startTime, endTime, voteIds, scriptRunIds);
+  return leaderboard;
+}
+
+// async function main() {
+//   const leaderboard = await createAndJoinVotesToLeaderboard();
+//   console.log(leaderboard);
+// }
 
 // main();
