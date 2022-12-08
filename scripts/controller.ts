@@ -1,43 +1,13 @@
-import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { incrementCount, trackGauge } from "./datadog";
-import { delay } from "./utils";
 import { SUCCESSFUL_VOTE_RESPONSE } from "./constants";
-import { ConversationService, Vote } from "./ConversationService";
-import { checkForVote } from "./db";
+import { Conversation, ConversationService, Vote } from "./ConversationService";
+import { checkForVote, saveVotesOnlyToDB } from "./db";
 import { CommunityService, MessagingProvider } from "./CommunityService";
-import { instagramVote } from "./igData";
-import { prepareVote, saveVotesOnlyToDB } from "./script";
+import { prepareVote } from "./script";
 
 dotenv.config({
   path: ".env.local",
 });
-
-let headers = {
-  Authorization: `Bearer ${process.env.COMMUNITY_TOKEN}`,
-  "Content-Type": "application/json",
-  "User-Agent":
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
-  Accept: "*/*",
-};
-
-type CommunityMessage = {
-  created_at: Date;
-  id: string;
-  inbound: boolean;
-  media: string;
-  source_type: string;
-  status: string;
-  text: string;
-};
-
-type MessageHistoryResponse = {
-  data: CommunityMessage[];
-};
-
-type ChatsResponse = {
-  data: any[];
-};
 
 export async function getMostRecentVotesSinceDate(
   messagingProvider: MessagingProvider,
@@ -69,7 +39,6 @@ async function main(messagingProvider: MessagingProvider) {
   await followUpOnConversations(messagingProvider, dateSince, votingOpened, false);
   // const allvotes = await getAllVotesSinceDate(messagingProvider, dateSince);
   // console.log(allvotes);
-
 }
 
 async function followUpOnConversations(
@@ -93,7 +62,6 @@ async function followUpOnConversations(
   const payload: MessagePayload[] = [];
   const votes: Vote[] = [];
 
-
   for (const followUp of followUps) {
     if (followUp.type === "VOTED WITHOUT EVER SENDING RESPONSE") {
       payload.push({
@@ -115,7 +83,6 @@ async function followUpOnConversations(
       if (preparedVote) {
         votes.push(preparedVote);
       }
-
     }
   }
 
@@ -151,7 +118,6 @@ async function followUpOnConversations(
 
   console.log("new votes", votes.length);
   console.log("votes", votes);
-
 }
 
 type ConversationFollowUp = {
@@ -163,7 +129,7 @@ type ConversationFollowUp = {
   communityUrl: string;
 };
 
-async function checkConversation(cid: string, conversation: CommunityMessage[]) {
+async function checkConversation(cid: string, conversation: Conversation) {
   const followUps: ConversationFollowUp[] = [];
   const toCommunityMessages = conversation.filter((m) => m.inbound);
   const fromCommunityMessages = conversation.filter((message) => !message.inbound);
@@ -200,7 +166,6 @@ async function checkConversation(cid: string, conversation: CommunityMessage[]) 
 
     handles.add(handle.vote);
   }
-
 
   const mostRecentOutboundMessage = ConversationService.getMostRecentMessage(conversation, "outbound");
 
@@ -247,4 +212,4 @@ export type MessagePayload = {
   communityId: string;
 };
 
-main(messagingProvider);
+// main(messagingProvider);

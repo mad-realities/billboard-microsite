@@ -49,7 +49,9 @@ export interface MessagingProvider {
 
 export class CommunityService implements MessagingProvider {
   async sendMessage(payload: MessagePayload) {
-    return await this.dm(payload.communityId, payload.text, false);
+    const response = await this.dm(payload.communityId, payload.text, false);
+    if (response) incrementCount("messagesSent", 1);
+    return response;
   }
 
   async sendMessages(payload: MessagePayload[], delayMs: number = 600) {
@@ -64,6 +66,7 @@ export class CommunityService implements MessagingProvider {
       }
     }
 
+    incrementCount("messagesSent", count);
     return count;
   }
 

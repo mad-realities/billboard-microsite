@@ -76,8 +76,17 @@ const getUserData = async (username: string) => {
     .catch((err) => console.error(err));
 };
 
+/**
+ * Your handle can't exceed 30 characters
+ * It can only contain letters, numbers, and periods
+ * It can't contain symbols or punctuation marks
+ * It needs to be unique
+ */
+export async function validInstagramHandle(handle: string) {
+  return handle.length <= 30 && /^[a-zA-Z0-9._]+$/.test(handle);
+}
+
 async function main() {
   const isValid = await isValidUsername("ftx");
   console.log("isValid", isValid);
 }
-main();

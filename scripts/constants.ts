@@ -10,3 +10,5 @@ export const BAD_VOTE_RESPONSE = () =>
 export const TOO_LATE_RESPONSE = () =>
   `Oops! Voting has closed. Follow us on IG for more opportunities to get Mad Famous in the near future  https://www.instagram.com/madrealities/`;
 
+// 1pm est dec 7th
+export const BILLBOARD_END_TIME = new Date("2022-12-07T18:00:00.000Z");
