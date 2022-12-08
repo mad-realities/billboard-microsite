@@ -9,6 +9,7 @@ import { getLinkPreview } from "../../../linkPreviewConfig";
 import { getLinkPreviewUrl } from "../../api/preview";
 import { useEffect } from "react";
 import { CLICKED_SHARE, CLICKED_VOTE, mixpanelClient, VISITED_PROFILE } from "../../../client/mixpanel";
+import { DEFAULT_LEADERBOARD_ID } from "../../../client/constants";
 
 type Props = {
   redirect?: {
@@ -49,7 +50,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
     };
   }
 
-  const rank = await loadRankForHandle(id as string);
+  const rank = await loadRankForHandle(DEFAULT_LEADERBOARD_ID, id as string);
   const linkPreviewUrl = await getLinkPreviewUrl(id as string, context.req.headers.host as string);
 
   return {

@@ -1,39 +1,28 @@
-import { InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { loadRank } from "./api/rank";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Subheader from "../components/design-system/Subheader";
-import BillboardButton from "../components/design-system/BillboardButton";
-import { InstagramLeaderboardRow } from "../components/Leaderboard";
-import CountdownTimer from "../components/Countdown";
+import Subheader from "./design-system/Subheader";
+import BillboardButton from "./design-system/BillboardButton";
+import { InstagramLeaderboardRow } from "./Leaderboard";
+import CountdownTimer from "./Countdown";
 import { getLinkPreview } from "../linkPreviewConfig";
-import UpdateCounter from "../components/UpdateCounter";
+import UpdateCounter from "./UpdateCounter";
 import { mixpanelClient, SCROLLED_LEADERBOARD, VISITED_LEADERBOARD } from "../client/mixpanel";
 import { CONTACT_PHONE_NUMBER } from "../client/constants";
+import { Leaderboard } from "@prisma/client";
 
 const pageSize = 20;
 
-type Props = {
-  props: {
-    initialRows: {
-      rank: number;
-      instagramHandle: string;
-      rankDirection: string;
-    }[];
-  };
-};
-export const getServerSideProps = async (): Promise<Props> => {
-  const results = await loadRank(0, pageSize);
-
-  return {
-    props: {
-      initialRows: results,
-    },
-  };
+type LeaderboardPageProps = {
+  initialRows: {
+    rank: number;
+    instagramHandle: string;
+    rankDirection: string;
+  }[];
+  leaderboard: Leaderboard;
 };
 
-const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const LeaderboardPage = ({ initialRows, leaderboard }: LeaderboardPageProps) => {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
   const [hasMore, setHasMore] = useState(true);
@@ -60,6 +49,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
   };
 
   const linkPreview = getLinkPreview("LEADERBOARD");
+  const isLeaderboardOver = new Date(leaderboard.endTime) < new Date();
 
   return (
     <div className="flex w-full flex-col items-center gap-2">
@@ -92,7 +82,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             CHECK RANK
           </BillboardButton>
         </div>
-        {!process.env.NEXT_PUBLIC_LEADERBOARD_DONE ? (
+        {!isLeaderboardOver ? (
           <div>
             <div className="text-5xl font-bold">
               <CountdownTimer endDatetime={new Date("December 07, 2022 13:00:00")} onEnd={console.log} />
