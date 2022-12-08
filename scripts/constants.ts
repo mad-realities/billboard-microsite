@@ -10,4 +10,4 @@ export const BAD_VOTE_RESPONSE = () =>
 export const TOO_LATE_RESPONSE = () =>
   `Oops! Voting has closed. Follow us on IG for more opportunities to get Mad Famous in the near future  https://www.instagram.com/madrealities/`;
 
-export const FIRST_LEADERBOARD_ID = `6914e6ee-359a-4a72-81cd-ccf0287bcade`;
+export const FIRST_LEADERBOARD_ID = 1;

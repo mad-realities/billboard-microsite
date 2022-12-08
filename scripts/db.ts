@@ -109,6 +109,9 @@ async function createAndJoinVotesToLeaderboard() {
   return leaderboard;
 }
 
-async function main() {}
+// async function main() {
+//   const leaderboard = await createAndJoinVotesToLeaderboard();
+//   console.log(leaderboard);
+// }
 
 // main();

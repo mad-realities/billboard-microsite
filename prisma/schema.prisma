@@ -19,7 +19,7 @@ model Vote {
   scriptRun ScriptRun? @relation(fields: [scriptRunId], references: [id])
   scriptRunId String?
   leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
-  leaderboardId String
+  leaderboardId Int
 
   @@index([leaderboardId])
   @@index([scriptRunId])
@@ -30,7 +30,7 @@ model ShadowBanList {
 }
 
 model Leaderboard {
-  id String @id @default(uuid())
+  id Int @unique @default(autoincrement())
   startTime DateTime
   endTime DateTime
   showCounts Boolean 
@@ -48,7 +48,7 @@ model ScriptRun {
   timestamp DateTime @default(now())
   votes Vote[]
   leaderboard Leaderboard @relation(fields: [leaderboardId], references: [id])
-  leaderboardId String
+  leaderboardId Int
 
   @@index([leaderboardId])
 }
