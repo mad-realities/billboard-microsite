@@ -1,1 +1,2 @@
 export const CONTACT_PHONE_NUMBER = "+19178103314";
+export const FREEZE_DATE = new Date("2022-12-09T13:00:00-0500");

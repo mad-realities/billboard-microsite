@@ -1,8 +1,8 @@
 import * as Icons from "@radix-ui/react-icons";
 import { MouseEventHandler } from "react";
 
-type WithoutIconSufix<T> = T extends `${infer P}Icon` ? P : never;
-export type IconName = WithoutIconSufix<keyof typeof Icons>;
+type WithoutIconSuffix<T> = T extends `${infer P}Icon` ? P : never;
+export type IconName = WithoutIconSuffix<keyof typeof Icons>;
 
 export interface IconProps {
   iconName: IconName;

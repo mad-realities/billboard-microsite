@@ -1,82 +1,87 @@
 import React, { useEffect, useState } from "react";
+import { match } from "ts-pattern";
 
-interface Props {
+interface SimpleCountdownTimerProps {
   endDatetime: Date;
-  onEnd: () => void;
-  onEndWindowSeconds?: number;
+  onDoneWindowSeconds: number;
+  onDone: () => void;
+  format: "verbose" | "numbersOnly" | "minutesOnly";
 }
 
 const defaultProps = {
-  onEndWindowSeconds: 2,
+  format: "verbose",
 };
 
-function getCountdownString(current: Date, end: Date) {
-  const distance = end.getTime() - current.getTime();
-
+function verboseCountdownString(timeLeft: number) {
   // Time calculations for days, hours, minutes and seconds
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.ceil((timeLeft % (1000 * 60)) / 1000);
 
-  const dayString = days > 0 ? days + "d " : "";
-  const hourString = hours > 0 ? hours + "h " : "";
-  const minString = minutes > 0 ? minutes + "m " : "";
-  const secString = seconds + "s";
+  const timeComponents = [`${days}d`, `${hours}h`, `${minutes}m`, `${seconds}s`];
 
-  return dayString + hourString + minString + secString;
+  return timeComponents.join(" ");
 }
 
-function getSimpleCountdownString(current: Date, end: Date) {
-  const distance = end.getTime() - current.getTime();
-
+function numbersOnlyCountdownString(timeLeft: number) {
   // Time calculations for days, hours, minutes and seconds
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-  // string should be in the format of 00:00:00:00
-  const dayString = days > 0 ? days.toString().padStart(2, "0") + ":" : "00:";
-  const hourString = hours > 0 ? hours.toString().padStart(2, "0") + ":" : "00:";
-  const minString = minutes > 0 ? minutes.toString().padStart(2, "0") + ":" : "00:";
-  const secString = seconds.toString().padStart(2, "0");
+  const timeComponents = [
+    days.toString().padStart(2, "0"),
+    hours.toString().padStart(2, "0"),
+    minutes.toString().padStart(2, "0"),
+    seconds.toString().padStart(2, "0"),
+  ];
 
-  //   const dayString = days > 0 ? days + "d " : "";
-  //   const hourString = hours > 0 ? hours + "h " : "";
-  //   const minString = minutes > 0 ? minutes + "m " : "";
-  //   const secString = seconds + "s";
-
-  return dayString + hourString + minString + secString;
+  return timeComponents.join(":");
 }
 
-function CountdownTimer({ endDatetime, onEnd, onEndWindowSeconds }: Props & typeof defaultProps) {
+function minutesOnlyCountdownString(timeLeft: number) {
+  const minutes = Math.ceil(timeLeft / 1000 / 60);
+  return minutes == 1 ? "1 min" : `${minutes} mins`;
+}
+
+function SimpleCountdownTimer({
+  endDatetime,
+  onDoneWindowSeconds,
+  onDone,
+  format,
+}: SimpleCountdownTimerProps & typeof defaultProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [triggered, setTriggered] = useState<boolean>(false);
+  const [done, setDone] = useState<boolean>(false);
+
+  const stringFormatter = match(format)
+    .with("verbose", () => verboseCountdownString)
+    .with("numbersOnly", () => numbersOnlyCountdownString)
+    .with("minutesOnly", () => minutesOnlyCountdownString)
+    .otherwise(() => verboseCountdownString);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      // we store date in variable to make sure it's consistent
+    if (done) {
+      return;
+    }
+    setTimeout(() => {
       const newDate = new Date();
-      const timeDiff = (endDatetime.getTime() - newDate.getTime()) / 1000;
-      const inRange = timeDiff < onEndWindowSeconds;
-      if (inRange && !triggered) {
-        onEnd();
-        setTriggered(true);
-      }
       setCurrentTime(newDate);
-    }, 300);
-
-    return () => clearInterval(timer);
-  }, [onEnd, endDatetime, currentTime, triggered, onEndWindowSeconds]);
+      if (newDate > endDatetime && !done) {
+        setDone(true);
+        onDone();
+      }
+    }, 1000 - new Date().getMilliseconds());
+  }, [onDone, done, endDatetime, currentTime, onDoneWindowSeconds]);
 
   useEffect(() => {
-    setTriggered(false);
+    setDone(false);
   }, [endDatetime]);
 
-  return <div suppressHydrationWarning>{getCountdownString(currentTime, endDatetime)}</div>;
+  return <span suppressHydrationWarning>{stringFormatter(endDatetime.getTime() - currentTime.getTime())}</span>;
 }
 
-CountdownTimer.defaultProps = defaultProps;
+SimpleCountdownTimer.defaultProps = defaultProps;
 
-export default CountdownTimer;
+export default SimpleCountdownTimer;

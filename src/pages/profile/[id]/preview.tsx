@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../client/utils";
+import { truncateString, getSmsHref, ordinal_suffix_of } from "../../../client/stringUtils";
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
 import Image from "next/image";
@@ -70,7 +70,7 @@ const ProfileCard = ({
     <div className="flex grow flex-col items-center gap-24 rounded-xl pt-10">
       <div className="text-6xl">
         <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
-          <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
+          <span className="text-mr-yellow underline">@{truncateString(handle, 15)}</span>
         </a>
         <span> {hasVote ? "is" : "has"}</span>
       </div>

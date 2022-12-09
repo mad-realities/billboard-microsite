@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import { useEffect, useState } from "react";
-import { getSmsHref } from "../client/utils";
+import { getSmsHref } from "../client/stringUtils";
 import { getLinkPreview } from "../linkPreviewConfig";
 import { mixpanelClient, VISITED_NOMINATE } from "../client/mixpanel";
 
