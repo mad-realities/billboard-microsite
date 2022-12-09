@@ -6,7 +6,7 @@ import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { Leaderboard } from "../components/Leaderboard";
 import { getLinkPreview } from "../linkPreviewConfig";
-import { RecurringCountdownTimer, MainCountdownTimer } from "../components/UpdateCounter";
+import { RecurringCountdownTimer, MainCountdownTimer } from "../components/CountdownTimers";
 import { mixpanelClient, VISITED_LEADERBOARD } from "../client/mixpanel";
 import { FREEZE_DATE, LEADERBOARD_REFRESH_INTERVAL, LEADERBOARD_PAGE_SIZE } from "../client/constants";
 

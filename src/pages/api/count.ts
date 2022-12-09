@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "../../server/prisma";
 import { loadRank } from "./rank";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

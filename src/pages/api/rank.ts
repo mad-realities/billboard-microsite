@@ -74,7 +74,7 @@ const strictCounterDifference = (counter1: { [key: string]: number }, counter2: 
 };
 
 const generateRanks = (sortedVoteCounts: [string, number][]) => {
-  return sortedVoteCounts.reduce((acc, [instagramHandle, voteCount], index) => {
+  return sortedVoteCounts.reduce((acc, [instagramHandle], index) => {
     acc[instagramHandle] = index + 1;
     return acc;
   }, {} as { [key: string]: number });
