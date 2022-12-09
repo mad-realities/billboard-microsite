@@ -12,7 +12,7 @@ const contentSecurityPolicy = `
   img-src 'self' image.mux.com;
   media-src 'self' blob: image.mux.com;
   worker-src blob:;
-  connect-src: 'self' inferred.litix.io api-js.mixpanel.com mux.com;
+  connect-src 'self' inferred.litix.io api-js.mixpanel.com mux.com;
 `;
 
 const securityHeaders = [
