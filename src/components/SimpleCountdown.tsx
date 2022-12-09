@@ -8,6 +8,11 @@ interface SimpleCountdownTimerProps {
   format: "verbose" | "numbersOnly" | "minutesOnly";
 }
 
+interface RecurringCountdownTimerProps {
+  format: SimpleCountdownTimerProps["format"];
+  intervalSeconds: number;
+}
+
 const defaultProps = {
   format: "verbose",
 };
@@ -46,7 +51,7 @@ function minutesOnlyCountdownString(timeLeft: number) {
   return minutes == 1 ? "1 min" : `${minutes} mins`;
 }
 
-function SimpleCountdownTimer({
+export function SimpleCountdownTimer({
   endDatetime,
   onDoneWindowSeconds,
   onDone,
@@ -84,4 +89,15 @@ function SimpleCountdownTimer({
 
 SimpleCountdownTimer.defaultProps = defaultProps;
 
-export default SimpleCountdownTimer;
+export function RecurringCountdownTimer({ format, intervalSeconds }: RecurringCountdownTimerProps) {
+  const INTERVAL = intervalSeconds * 1000;
+  const [targetTime, setTargetTime] = useState<Date>(new Date(Math.ceil(Date.now() / INTERVAL) * INTERVAL));
+
+  const onDone = () => {
+    // +1 to Date.now() to force us to the next interval in case we happen to call this function
+    // on the exact millisecond when the previous interval finishes.
+    setTargetTime(new Date(Math.ceil((Date.now() + 1) / INTERVAL) * INTERVAL));
+  };
+
+  return <SimpleCountdownTimer endDatetime={targetTime} onDoneWindowSeconds={2} onDone={onDone} format={format} />;
+}

@@ -6,9 +6,10 @@ import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { Leaderboard } from "../components/Leaderboard";
 import { getLinkPreview } from "../linkPreviewConfig";
-import { RecurringCountdownTimer, MainCountdownTimer } from "../components/CountdownTimers";
+import { RecurringCountdownTimer } from "../components/SimpleCountdown";
+import { MainCountdownTimer } from "../components/CountdownTimers";
 import { mixpanelClient, VISITED_LEADERBOARD } from "../client/mixpanel";
-import { FREEZE_DATE, LEADERBOARD_REFRESH_INTERVAL, LEADERBOARD_PAGE_SIZE } from "../client/constants";
+import { LEADERBOARD_FREEZE_DATE, LEADERBOARD_REFRESH_INTERVAL, LEADERBOARD_PAGE_SIZE } from "../client/constants";
 
 const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -28,7 +29,8 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             <div className="text-xl">LEADERBOARD</div>
             <div className="flex-grow"></div> {/* Spacer */}
             <div className="text-sm">
-              UPDATES IN: <RecurringCountdownTimer intervalSeconds={LEADERBOARD_REFRESH_INTERVAL} />
+              UPDATES IN:{" "}
+              <RecurringCountdownTimer format="minutesOnly" intervalSeconds={LEADERBOARD_REFRESH_INTERVAL} />
             </div>
           </div>
         </Subheader>
@@ -41,7 +43,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             Check rank
           </BillboardButton>
         </div>
-        <MainCountdownTimer endDatetime={FREEZE_DATE} />
+        <MainCountdownTimer endDatetime={LEADERBOARD_FREEZE_DATE} />
         <Leaderboard initialRows={initialRows} />
       </div>
     </div>

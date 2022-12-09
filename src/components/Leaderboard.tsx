@@ -7,7 +7,7 @@ import clsx from "clsx";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import { Loading } from "../components/design-system";
-import { FREEZE_DATE, LEADERBOARD_PAGE_SIZE } from "../client/constants";
+import { LEADERBOARD_FREEZE_DATE, LEADERBOARD_PAGE_SIZE } from "../client/constants";
 import { mixpanelClient, SCROLLED_LEADERBOARD } from "../client/mixpanel";
 
 interface LeaderboardRowData {
@@ -115,7 +115,7 @@ export const Leaderboard = ({ initialRows }: { initialRows: LeaderboardRowData[]
                 rankDirection={row.rankDirection}
                 rank={row.rank.toString()}
                 id={row.instagramHandle}
-                voteEnabled={currentTime < FREEZE_DATE}
+                voteEnabled={currentTime < LEADERBOARD_FREEZE_DATE}
               />
             ))}
           </tbody>
