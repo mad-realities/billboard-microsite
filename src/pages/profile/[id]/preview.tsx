@@ -1,6 +1,5 @@
-import { useRouter } from "next/router";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { cutOffStringIfTooLong, ordinal_suffix_of } from "../../../client/utils";
+import { truncateString, ordinal_suffix_of } from "../../../client/stringUtils";
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
 import Image from "next/image";
@@ -16,14 +15,12 @@ type Props = {
     rank: number;
     handle: string;
     prompt: string;
-    hostname: string;
   };
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext): Promise<Props> => {
   // aggregate votes per handle and return ranking
   const { id } = context.query;
-  const hostname = context.req.headers.host;
 
   const removeLeadingAt = id && id.toString().replace("@", "");
 
@@ -38,7 +35,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
         handle: id as string,
         hasVote: false,
         prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
-        hostname: hostname || "",
       },
     };
   }
@@ -51,27 +47,18 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
       handle: id as string,
       hasVote: rank ? true : false,
       prompt: "MOST LIKELY TO BE ON A BILLBOARD IN TIMES SQUARE",
-      hostname: hostname || "",
     }, // will be passed to the page component as props
   };
 };
 
-const ProfileCard = ({
-  rank,
-  handle,
-  hasVote,
-  prompt,
-  hostname,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const router = useRouter();
-  const url = `https://${hostname}/profile/${handle}`;
+const ProfileCard = ({ rank, handle, hasVote, prompt }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const linkPreview = getLinkPreview("PROFILE", handle, rank);
 
   const text = (
     <div className="flex grow flex-col items-center gap-24 rounded-xl pt-10">
       <div className="text-6xl">
         <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
-          <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
+          <span className="text-mr-yellow underline">@{truncateString(handle, 15)}</span>
         </a>
         <span> {hasVote ? "is" : "has"}</span>
       </div>

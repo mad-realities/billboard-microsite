@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { DEFAULT_LEADERBOARD_ID } from "../../client/constants";
-import { prisma } from "../../server/prisma";
 import { loadRank } from "./rank";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

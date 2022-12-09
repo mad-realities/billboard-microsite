@@ -1,12 +1,11 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
-import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import { getLinkPreview } from "../linkPreviewConfig";
-import SmallBillboardButton from "../components/design-system/SmallBillboardButton";
+import { BillboardButton } from "../components/design-system";
 import Link from "next/link";
 import { CONTACT_PHONE_NUMBER } from "../client/constants";
-import { formatPhoneNumber } from "../client/utils";
+import { formatPhoneNumber } from "../client/stringUtils";
 import VideoPlayer from "../components/VideoPlayer";
 import { mixpanelClient, VISITED_HOME } from "../client/mixpanel";
 import { useEffect } from "react";
@@ -43,9 +42,6 @@ const IndexPage = () => {
         this Sunday from 6-8pm.{" "}
       </div>
 
-      {/* <div className="mt-3 text-3xl text-center uppercase text-mr-lime">Repeat</div>
-      <div className="text-xl text-center">This stage will be active for 2 weeks starting Monday, December 5th.</div> */}
-
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Questions?</div>
       <div className="text-center text-xl">Text “FAQ” to {formatPhoneNumber(CONTACT_PHONE_NUMBER)}.</div>
       <div className="text-center text-xl">*Terms and Conditions apply*</div>
@@ -80,16 +76,16 @@ const IndexPage = () => {
 
   const FOOTER = (
     <div className="my-2 flex flex-row gap-2">
-      <SmallBillboardButton fill color="mr-sky-blue" className="w-auto">
+      <BillboardButton fill color="mr-sky-blue" className="w-auto" small>
         <Link href="/tcs">
           <span className="mx-10 text-sm font-regular uppercase tracking-wide">Terms</span>
         </Link>
-      </SmallBillboardButton>
-      <SmallBillboardButton fill color="mr-lime">
+      </BillboardButton>
+      <BillboardButton fill color="mr-lime" small>
         <a href="https://my.community.com/madrealities?t=FAQ" target="_blank" rel="noreferrer">
           <span className="mx-1 text-sm font-regular uppercase tracking-wide">Contact Support</span>
         </a>
-      </SmallBillboardButton>
+      </BillboardButton>
     </div>
   );
 
@@ -99,12 +95,8 @@ const IndexPage = () => {
       <Subheader>
         <span className="text-[18px] uppercase">You&apos;re here. You&apos;re there. You&apos;re everywhere</span>
       </Subheader>
-      <div
-        // className="relative h-[340px] w-full"
-        className="relative w-full"
-      >
+      <div className="relative w-full">
         <VideoPlayer playback_id="4hjuF700HM4CZsQLb3OKMSBmtA97SJ00aF565b9dR00Nv4" />
-        {/* <Image src="/cabs.png" alt="Mad Realities wordmark logo" fill /> */}
       </div>
       <Subheader flipped>
         <div className="text-right text-[19px] uppercase">You&apos;re on a billboard in Times Square</div>

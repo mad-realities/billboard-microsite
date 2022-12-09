@@ -2,9 +2,8 @@ import React, { useEffect } from "react";
 import { Map, Marker } from "pigeon-maps";
 import { stamenToner } from "pigeon-maps/providers";
 import Subheader from "../components/design-system/Subheader";
-import BillboardButton from "../components/design-system/BillboardButton";
+import { BillboardButton } from "../components/design-system";
 import { useRouter } from "next/router";
-import SmallBillboardButton from "../components/design-system/SmallBillboardButton";
 import { mixpanelClient, VISITED_MAP } from "../client/mixpanel";
 
 export default function MyMap() {
@@ -46,9 +45,9 @@ export default function MyMap() {
         </Map>
       </div>
       <div>
-        <SmallBillboardButton fill color="mr-sky-blue" onPress={() => mapsSelector()}>
+        <BillboardButton fill color="mr-sky-blue" onPress={() => mapsSelector()} small>
           DIRECTIONS
-        </SmallBillboardButton>
+        </BillboardButton>
       </div>
     </div>
   );

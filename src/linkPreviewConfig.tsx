@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { ordinal_suffix_of } from "./client/utils";
+import { ordinal_suffix_of } from "./client/stringUtils";
 
 const hostname = "https://billboard.madrealities.xyz";
 export const LINK_PREVIEW_CONFIG = {
