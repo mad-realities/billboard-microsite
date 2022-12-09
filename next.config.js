@@ -5,11 +5,11 @@
 const contentSecurityPolicy = `
   default-src 'self';
   script-src 'self';
-  style-src 'self';
+  style-src 'self' 'unsafe-inline';
   font-src 'self';
   frame-src 'self';
   child-src 'self';
-  img-src 'self';
+  img-src 'self' image.mux.com;
   media-src 'self';
 `;
 
