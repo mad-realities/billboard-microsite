@@ -9,4 +9,3 @@ export const BAD_VOTE_RESPONSE = () =>
 
 export const TOO_LATE_RESPONSE = () =>
   `Oops! Voting has closed. Follow us on IG for more opportunities to get Mad Famous in the near future  https://www.instagram.com/madrealities/`;
-

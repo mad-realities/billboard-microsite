@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { mixpanelClient, VISITED_MR } from "../../client/mixpanel";
-import { BillboardButton } from "../design-system";
+import { mixpanelClient, VISITED_MR } from "../client/mixpanel";
+import { BillboardButton } from "./design-system";
 
 export const NavBar = () => {
   return (

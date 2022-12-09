@@ -26,7 +26,6 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Londrina Solid"],
-        mono: ['"Lilita One"'],
       },
       fontWeight: {
         regular: 500,

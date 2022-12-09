@@ -7,7 +7,7 @@ import clsx from "clsx";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import { Loading } from "../components/design-system";
-import { FREEZE_DATE } from "../client/constants";
+import { FREEZE_DATE, LEADERBOARD_PAGE_SIZE } from "../client/constants";
 import { mixpanelClient, SCROLLED_LEADERBOARD } from "../client/mixpanel";
 
 interface LeaderboardRowData {
@@ -74,10 +74,9 @@ LeaderboardRow.defaultProps = defaultProps;
 export const Leaderboard = ({ initialRows }: { initialRows: LeaderboardRowData[] }) => {
   const [hasMore, setHasMore] = useState(true);
   const [rows, setRows] = useState(initialRows);
-  const pageSize = 20;
 
   const getMore = async () => {
-    const res = await fetch(`/api/rank?offset=${rows.length}&limit=${pageSize}`);
+    const res = await fetch(`/api/rank?offset=${rows.length}&limit=${LEADERBOARD_PAGE_SIZE}`);
     const newRowsResponse = await res.json();
     const newRows = newRowsResponse["results"];
     if (newRows.length === 0) {

@@ -1,50 +1,14 @@
 import { InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { loadRank } from "./api/rank";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Subheader from "../components/design-system/Subheader";
 import BillboardButton from "../components/design-system/BillboardButton";
 import { Leaderboard } from "../components/Leaderboard";
-import SimpleCountdownTimer from "../components/Countdown";
 import { getLinkPreview } from "../linkPreviewConfig";
-import UpdateCounter from "../components/UpdateCounter";
+import { RecurringCountdownTimer, MainCountdownTimer } from "../components/UpdateCounter";
 import { mixpanelClient, VISITED_LEADERBOARD } from "../client/mixpanel";
-import { CONTACT_PHONE_NUMBER } from "../client/constants";
-import { FREEZE_DATE } from "../client/constants";
-
-interface CountdownTimerProps {
-  endDatetime: Date;
-}
-
-const pageSize = 20;
-
-function CountdownTimer({ endDatetime }: CountdownTimerProps) {
-  const [done, setDone] = useState<boolean>(new Date() >= endDatetime);
-
-  useEffect(() => {
-    setDone(new Date() >= endDatetime);
-  }, [endDatetime]);
-
-  return done ? (
-    <div className="flex flex-col items-center gap-2 py-4">
-      <div className="text-5xl font-bold uppercase">Voting is closed</div>
-      <div>Want to bring back round 2 of the Billboard?</div>
-      <a href={`sms:${CONTACT_PHONE_NUMBER}?&body=BRINGITBACK`}>
-        <BillboardButton color="mr-sky-blue" className="uppercase">
-          Text to bring it back
-        </BillboardButton>
-      </a>
-    </div>
-  ) : (
-    <div>
-      {/* We need to suppress hydration warning because we're using a different date on the server */}
-      <div className="text-5xl font-bold">
-        <SimpleCountdownTimer endDatetime={endDatetime} onDoneWindowSeconds={2} onDone={() => setDone(true)} />
-      </div>
-      <div className="text-center uppercase">until voting closes for the billboard</div>
-    </div>
-  );
-}
+import { FREEZE_DATE, LEADERBOARD_REFRESH_INTERVAL, LEADERBOARD_PAGE_SIZE } from "../client/constants";
 
 const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
@@ -60,18 +24,11 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
       {linkPreview}
       <div className="flex w-full flex-col items-center gap-2">
         <Subheader>
-          <div className="flex w-full flex-row">
-            <div className="text-sm">LEADERBOARD</div>
-            <div className="flex-grow"></div>
-            <div className="place-items-end">
-              <div className="flex flex-row gap-1 text-sm">
-                <div>
-                  <div>UPDATES IN: </div>
-                  <div>
-                    <UpdateCounter />
-                  </div>
-                </div>
-              </div>
+          <div className="flex flex-row items-end">
+            <div className="text-xl">LEADERBOARD</div>
+            <div className="flex-grow"></div> {/* Spacer */}
+            <div className="text-sm">
+              UPDATES IN: <RecurringCountdownTimer intervalSeconds={LEADERBOARD_REFRESH_INTERVAL} />
             </div>
           </div>
         </Subheader>
@@ -84,9 +41,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             Check rank
           </BillboardButton>
         </div>
-
-        <CountdownTimer endDatetime={FREEZE_DATE} />
-
+        <MainCountdownTimer endDatetime={FREEZE_DATE} />
         <Leaderboard initialRows={initialRows} />
       </div>
     </div>
@@ -94,7 +49,7 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
 };
 
 export const getServerSideProps = async () => {
-  const results = await loadRank(0, pageSize);
+  const results = await loadRank(0, LEADERBOARD_PAGE_SIZE);
 
   return {
     props: {
