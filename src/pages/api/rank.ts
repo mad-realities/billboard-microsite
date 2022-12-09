@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../server/prisma";
 import { Vote } from "@prisma/client";
+import { DEFAULT_LEADERBOARD_ID } from "../../client/constants";
 
-export const loadRankForHandle = async (handle: string) => {
-  const results = await loadRank(0, 10000);
+export const loadRankForHandle = async (leaderboardIdNum: number, handle: string) => {
+  const results = await loadRank(leaderboardIdNum, 0, 10000);
   return results.find((result) => result.instagramHandle === handle);
 };
 
@@ -92,7 +93,7 @@ const generateRankDirectionDescriptor = (rankDelta: number | null) => {
   }
 };
 
-export const loadRank = async (offset: number, limit: number, includeCount?: boolean) => {
+export const loadRank = async (leaderboardId: number, offset: number, limit: number, includeCount?: boolean) => {
   // exclude instagram handles that are in the shadow ban list
   const shadowBans = await prisma.shadowBanList.findMany();
   const shadowBanHandles = shadowBans.map((shadowBan) => shadowBan.instagramHandle);
@@ -102,6 +103,7 @@ export const loadRank = async (offset: number, limit: number, includeCount?: boo
       communityId: {
         notIn: shadowBanHandles,
       },
+      leaderboardId: leaderboardId,
     },
     orderBy: {
       timestamp: "desc",
@@ -160,10 +162,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(405).end("Method Not Allowed");
   } else {
     try {
-      const { offset, limit } = req.query;
+      const { leaderboardId, offset, limit } = req.query;
+      const leaderboardIdNum = parseInt(leaderboardId as string) || DEFAULT_LEADERBOARD_ID;
       const offsetNum = parseInt(offset as string) || 0;
       const limitNum = parseInt(limit as string) || 10;
-      const results = await loadRank(offsetNum, limitNum);
+      const results = await loadRank(leaderboardIdNum, offsetNum, limitNum);
       res.json({ results });
     } catch {
       res.status(500).end("Server Error");

@@ -7,7 +7,7 @@ import clsx from "clsx";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import { Loading } from "../components/design-system";
-import { LEADERBOARD_FREEZE_DATE, LEADERBOARD_PAGE_SIZE } from "../client/constants";
+import { LEADERBOARD_PAGE_SIZE } from "../client/constants";
 import { mixpanelClient, SCROLLED_LEADERBOARD } from "../client/mixpanel";
 
 interface LeaderboardRowData {
@@ -22,6 +22,11 @@ interface LeaderboardRowProps {
   voteCount?: number;
   rank: string;
   voteEnabled?: boolean;
+}
+
+interface LeaderboardProps {
+  initialRows: LeaderboardRowData[];
+  endDatetime: Date;
 }
 
 const defaultProps = {
@@ -71,7 +76,7 @@ const LeaderboardRow = ({ id, rank, rankDirection, voteEnabled }: LeaderboardRow
 
 LeaderboardRow.defaultProps = defaultProps;
 
-export const Leaderboard = ({ initialRows }: { initialRows: LeaderboardRowData[] }) => {
+export const Leaderboard = ({ initialRows, endDatetime }: LeaderboardProps) => {
   const [hasMore, setHasMore] = useState(true);
   const [rows, setRows] = useState(initialRows);
 
@@ -115,7 +120,7 @@ export const Leaderboard = ({ initialRows }: { initialRows: LeaderboardRowData[]
                 rankDirection={row.rankDirection}
                 rank={row.rank.toString()}
                 id={row.instagramHandle}
-                voteEnabled={currentTime < LEADERBOARD_FREEZE_DATE}
+                voteEnabled={currentTime < endDatetime}
               />
             ))}
           </tbody>

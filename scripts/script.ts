@@ -9,6 +9,7 @@ import { delay } from "./utils";
 import {
   ANOTHER_SUCCESSFUL_VOTE_RESPONSE,
   BAD_VOTE_RESPONSE,
+  FIRST_LEADERBOARD_ID,
   SUCCESSFUL_VOTE_RESPONSE,
   TOO_LATE_RESPONSE,
 } from "./constants";
@@ -37,7 +38,9 @@ function validInstagramHandle(handle: string) {
 
 async function createEmptyScriptRun() {
   const response = await prisma.scriptRun.create({
-    data: {},
+    data: {
+      leaderboardId: FIRST_LEADERBOARD_ID,
+    },
   });
 
   return response;
@@ -54,9 +57,11 @@ async function saveVotesToDB(votes: Vote[]) {
             instagramHandle: vote.vote,
             timestamp: vote.timestamp,
             communityId: vote.voter,
+            leaderboardId: FIRST_LEADERBOARD_ID,
           })),
         },
       },
+      leaderboardId: FIRST_LEADERBOARD_ID,
     },
     include: {
       votes: true,
@@ -73,6 +78,7 @@ export async function saveVotesOnlyToDB(votes: Vote[]) {
       instagramHandle: vote.vote,
       timestamp: vote.timestamp,
       communityId: vote.voter,
+      leaderboardId: FIRST_LEADERBOARD_ID,
     })),
   });
 

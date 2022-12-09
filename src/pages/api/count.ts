@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { DEFAULT_LEADERBOARD_ID } from "../../client/constants";
 import { loadRank } from "./rank";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -13,7 +14,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       } else {
         const offsetNum = parseInt(offset as string) || 0;
         const limitNum = parseInt(limit as string) || 10;
-        const results = await loadRank(offsetNum, limitNum, true);
+        const results = await loadRank(DEFAULT_LEADERBOARD_ID, offsetNum, limitNum, true);
         res.json({ results });
       }
     } catch {

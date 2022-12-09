@@ -1,17 +1,25 @@
-import { InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
-import { loadRank } from "./api/rank";
 import { useEffect } from "react";
-import Subheader from "../components/design-system/Subheader";
-import BillboardButton from "../components/design-system/BillboardButton";
-import { Leaderboard } from "../components/Leaderboard";
+import Subheader from "./design-system/Subheader";
+import BillboardButton from "./design-system/BillboardButton";
+import { Leaderboard } from "./Leaderboard";
 import { getLinkPreview } from "../linkPreviewConfig";
 import { RecurringCountdownTimer } from "../components/SimpleCountdown";
 import { MainCountdownTimer } from "../components/CountdownTimers";
 import { mixpanelClient, VISITED_LEADERBOARD } from "../client/mixpanel";
-import { LEADERBOARD_FREEZE_DATE, LEADERBOARD_REFRESH_INTERVAL, LEADERBOARD_PAGE_SIZE } from "../client/constants";
+import { LEADERBOARD_REFRESH_INTERVAL } from "../client/constants";
+import { Leaderboard as LeaderboardType } from "@prisma/client";
 
-const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+type LeaderboardPageProps = {
+  initialRows: {
+    rank: number;
+    instagramHandle: string;
+    rankDirection: string;
+  }[];
+  leaderboard: LeaderboardType;
+};
+
+const LeaderboardPage = ({ initialRows, leaderboard }: LeaderboardPageProps) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -43,21 +51,11 @@ const LeaderboardPage = ({ initialRows }: InferGetServerSidePropsType<typeof get
             Check rank
           </BillboardButton>
         </div>
-        <MainCountdownTimer endDatetime={LEADERBOARD_FREEZE_DATE} />
-        <Leaderboard initialRows={initialRows} />
+        <MainCountdownTimer endDatetime={leaderboard.endTime} />
+        <Leaderboard initialRows={initialRows} endDatetime={leaderboard.endTime} />
       </div>
     </div>
   );
-};
-
-export const getServerSideProps = async () => {
-  const results = await loadRank(0, LEADERBOARD_PAGE_SIZE);
-
-  return {
-    props: {
-      initialRows: results,
-    },
-  };
 };
 
 export default LeaderboardPage;
