@@ -34,10 +34,10 @@ const LeaderboardPage = ({ initialRows, leaderboard }: LeaderboardPageProps) => 
       <div className="flex w-full flex-col items-center gap-2">
         <Subheader>
           <div className="flex flex-row items-end">
-            <div className="text-xl">LEADERBOARD</div>
+            <div className="text-xl uppercase">Leaderboard</div>
             <div className="flex-grow"></div> {/* Spacer */}
-            <div className="text-sm">
-              UPDATES IN:{" "}
+            <div className="text-sm uppercase">
+              Updates in:{" "}
               <RecurringCountdownTimer format="minutesOnly" intervalSeconds={LEADERBOARD_REFRESH_INTERVAL} />
             </div>
           </div>
