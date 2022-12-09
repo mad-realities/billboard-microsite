@@ -2,23 +2,30 @@
  * @type {import('next').NextConfig}
  * */
 
-const contentSecurityPolicy = `
-  default-src 'self';
-  script-src 'self';
-  style-src 'self' 'unsafe-inline';
-  font-src 'self';
-  frame-src 'self';
-  child-src 'self';
-  img-src 'self' image.mux.com;
-  media-src 'self' blob: image.mux.com;
-  worker-src blob:;
-  connect-src 'self' inferred.litix.io api-js.mixpanel.com mux.com;
-`;
+const contentSecurityPolicy = {
+  "default-src": ["'self'"],
+  "script-src": ["'self'"],
+  "style-src": ["'self'", "'unsafe-inline'"],
+  "font-src": ["'self'"],
+  "frame-src": ["'self'"],
+  "child-src": ["'self'"],
+  "img-src": ["'self'", "image.mux.com"],
+  "media-src": ["'self'", "blob:", "image.mux.com"],
+  "worker-src": ["blob:"],
+  "connect-src": ["'self'", "inferred.litix.io", "api-js.mixpanel.com", "*.mux.com"],
+};
+
+if (process.env.NODE_ENV === "development") {
+  // NextJS needs unsafe-eval for development as it uses source maps to help with debugging.
+  contentSecurityPolicy["script-src"].push("'unsafe-eval'");
+}
 
 const securityHeaders = [
   {
     key: "Content-Security-Policy-Report-Only",
-    value: contentSecurityPolicy.replace(/\s{2,}/g, " ").trim(),
+    value: Object.entries(contentSecurityPolicy)
+      .map(([k, v]) => k + " " + v.join(" "))
+      .join("; "),
   },
   {
     key: "X-Content-Type-Options",
