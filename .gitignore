@@ -32,6 +32,9 @@ node_modules/
 .env.production.local
 .env.local
 
+# Webpack Bundle Analyzer
+analyze/
+
 # Next.js build output
 .next
 out
