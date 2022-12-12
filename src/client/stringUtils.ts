@@ -1,8 +1,8 @@
 import { CONTACT_PHONE_NUMBER } from "./constants";
 
 export function ordinal_suffix_of(i: number) {
-  const j = i % 10,
-    k = i % 100;
+  const j = i % 10;
+  const k = i % 100;
   if (j == 1 && k != 11) {
     return i + "st";
   }
@@ -15,7 +15,7 @@ export function ordinal_suffix_of(i: number) {
   return i + "th";
 }
 
-export function cutOffStringIfTooLong(string: string, length: number) {
+export function truncateString(string: string, length: number) {
   if (string.length > length) {
     return string.substring(0, length) + "...";
   }

@@ -1,11 +1,6 @@
 import mixpanel from "mixpanel-browser";
-// or with require() syntax:
-// const mixpanel = require('mixpanel-browser');
 
-// Enabling the debug mode flag is useful during implementation,
-// but it's re"3b5c32cad6dea5e56999749830a854b7"commended you remove it for production
-
-mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN || "", { debug: true });
+mixpanel.init(process.env.NEXT_PUBLIC_MIXPANEL_PROJECT_TOKEN || "", { debug: process.env.NODE_ENV === "development" });
 export const mixpanelClient = mixpanel;
 
 export const VISITED_HOME = "Visited home";
@@ -19,8 +14,3 @@ export const VISITED_PROFILE = "Visited profile";
 export const VOTED = "Voted";
 export const SCROLLED_LEADERBOARD = "Scrolled leaderboard";
 export const VISITED_MR = "Visited mad realities";
-// mixpanel.track('Sign up');
-
-// exports = {
-//     mixpanel: mixpanel
-// }
