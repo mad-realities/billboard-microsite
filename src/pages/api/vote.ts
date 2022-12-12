@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { FIRST_LEADERBOARD_ID } from "../../../scripts/constants";
+import { DEFAULT_LEADERBOARD_ID } from "../../../scripts/constants";
 import { prisma } from "../../server/prisma";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -18,7 +18,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           data: {
             communityId,
             instagramHandle,
-            leaderboardId: FIRST_LEADERBOARD_ID,
+            leaderboardId: DEFAULT_LEADERBOARD_ID,
           },
         });
         res.status(200).json(vote);
