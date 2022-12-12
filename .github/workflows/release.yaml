@@ -2,7 +2,7 @@ name: Create Release PR
 on:
   push:
     branches:
-      - main
+      - shrey/new-release-pr-flow
 jobs:
   auto-pull-request:
     name: Create Release PR
