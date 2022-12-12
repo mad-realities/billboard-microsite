@@ -39,7 +39,7 @@ const IndexPage = () => {
         <Link href={"/map"} className="text-mr-sky-blue underline">
           the big screen in Times Square
         </Link>{" "}
-        this Sunday from 6-8pm.{" "}
+        . Details TBA.
       </div>
 
       <div className="mt-3 text-center text-3xl uppercase text-mr-lime">Questions?</div>
