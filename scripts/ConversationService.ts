@@ -4,6 +4,21 @@ import { VoteWithoutLeaderboard } from "./db/vote";
 export type Conversation = Message[];
 
 export const ConversationService = {
+  getMessagesWithoutResponse: (startingMessageMap: MessageMap, fullConversations: MessageMap): MessageMap => {
+    const messagesWithoutResponse: MessageMap = {};
+    const mostRecentResponses = ConversationService.getMostRecentMessageMap(fullConversations, "outbound");
+    for (const communityId in startingMessageMap) {
+      if (mostRecentResponses[communityId]) {
+        messagesWithoutResponse[communityId] = startingMessageMap[communityId].filter(
+          (message) => new Date(message.created_at) >= new Date(mostRecentResponses[communityId].created_at),
+        );
+      } else {
+        messagesWithoutResponse[communityId] = startingMessageMap[communityId];
+      }
+    }
+
+    return messagesWithoutResponse;
+  },
   getMessagesWithSpecificWord: (ids_to_messages: MessageMap, word: string, needsFollowUpWord: boolean = false) => {
     const ids_to_messages_with_word: { [id: string]: Message[] } = {};
 

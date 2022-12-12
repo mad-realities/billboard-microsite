@@ -9,9 +9,14 @@ export default class SendVotesCommand extends Command {
   }
   async apply(messages: MessageMap): Promise<CommandReturnType> {
     const allSendVoteMessages = ConversationService.getMessagesWithSpecificWords(messages, this.keywords);
+    console.log("allSendVoteMessages", allSendVoteMessages);
+
+    const messagesWithoutResponse = ConversationService.getMessagesWithoutResponse(allSendVoteMessages, messages);
+    console.log("messagesWithoutResponse", messagesWithoutResponse);
+
     const sendVoteMessagePayload: MessagePayload[] = [];
-    for (const cid of Object.keys(allSendVoteMessages)) {
-      if (allSendVoteMessages[cid].length > 0) {
+    for (const cid of Object.keys(messagesWithoutResponse)) {
+      if (messagesWithoutResponse[cid].length > 0) {
         const votes = await getUniqueVotesForCommunityId(cid);
         const votesString = votes.length ? votes.map((vote) => vote.vote).join("\n@") : "No votes yet";
         sendVoteMessagePayload.push({
