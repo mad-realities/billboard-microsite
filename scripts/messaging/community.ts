@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { incrementCount } from "./datadog";
-import { addDays, delay } from "./utils";
-import { Conversation, ConversationService, MessageDirection } from "./ConversationService";
+import { incrementCount } from "../logs/datadog";
+import { addDays, delay } from "../utils";
+import { MessageDirection, MessagePayload, MessagingProvider } from "./MessagingProvider";
 dotenv.config({
   path: ".env.local",
 });
@@ -29,25 +29,11 @@ type MessageHistoryResponse = {
   data: CommunityMessage[];
 };
 
-type MessagePayload = {
-  text: string;
-  communityId: string;
-};
-
 type ChatsResponse = {
   data: any[];
 };
 
-export interface MessagingProvider {
-  sendMessage: (payload: MessagePayload) => Promise<boolean>;
-  sendMessages: (payload: MessagePayload[], delayMs?: number) => Promise<number>;
-  getMessagesSinceDate: (
-    conversationDataSince: Date,
-    messageHistorySince?: Date,
-  ) => Promise<{ [id: string]: Conversation }>;
-}
-
-export class CommunityService implements MessagingProvider {
+export class CommunityMessagingProvider implements MessagingProvider {
   async sendMessage(payload: MessagePayload) {
     const response = await this.dm(payload.communityId, payload.text, false);
     if (response) incrementCount("messagesSent", 1);
@@ -68,6 +54,60 @@ export class CommunityService implements MessagingProvider {
 
     incrementCount("messagesSent", count);
     return count;
+  }
+
+  async getMessagesSinceDate(conversationsSince: Date, messageHistorySinceDate?: Date) {
+    const communityIds = await this.getCommunityAndFanIdsSinceDate(conversationsSince);
+
+    // we don't need this map anymore but might be needed in future, used in zapier call
+    const communityIdToFanSubscriptionId: { [communityId: string]: string } = {};
+    communityIds.forEach((member) => {
+      communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
+    });
+
+    if (!messageHistorySinceDate) {
+      messageHistorySinceDate = conversationsSince;
+    }
+
+    const communityIdsOnly = communityIds.map((member) => member.communityId);
+    const communityIdMessageMap = await this.getCommunityIdMessageMapSinceDate(
+      communityIdsOnly,
+      messageHistorySinceDate,
+      "both",
+    );
+
+    return communityIdMessageMap;
+  }
+
+  async getMessagesBetweeenDates(conversationStart: Date, conversationEnd: Date, messageHistorySinceDate?: Date) {
+    const communityIds = await this.getCommunityAndFanIdsBetweenDates(conversationStart, conversationEnd);
+
+    // we don't need this map anymore but might be needed in future, used in zapier call
+    const communityIdToFanSubscriptionId: { [communityId: string]: string } = {};
+    communityIds.forEach((member) => {
+      communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
+    });
+
+    if (!messageHistorySinceDate) {
+      messageHistorySinceDate = conversationStart;
+    }
+
+    const communityIdsOnly = communityIds.map((member) => member.communityId);
+    const communityIdMessageMap = await this.getCommunityIdMessageMapSinceDate(
+      communityIdsOnly,
+      messageHistorySinceDate,
+      "both",
+    );
+
+    // filter out messages that are outside of the conversation window
+    for (const communityId in communityIdMessageMap) {
+      communityIdMessageMap[communityId] = communityIdMessageMap[communityId].filter((message) => {
+        const createdAt = new Date(message.created_at);
+        return createdAt >= conversationStart && createdAt <= conversationEnd;
+      });
+    }
+
+    return communityIdMessageMap;
   }
 
   async dm(fanId: string, text: string, shorten_links: boolean = false) {
@@ -98,6 +138,7 @@ export class CommunityService implements MessagingProvider {
       return false;
     }
   }
+
   async get50Chats(page_number: number = 1): Promise<ChatsResponse> {
     const url = `https://api.community.com/client-dashboard/messaging/chats?page_number=${page_number}&page_size=50`;
     const response = await fetch(url, { method: "GET", headers: headers });
@@ -124,14 +165,37 @@ export class CommunityService implements MessagingProvider {
     return community_ids;
   }
 
-  getCommunityIdsMessagedSinceDateFromChats(since_date: Date, chats: any[]) {
+  async getCommunityAndFanIdsBetweenDates(sinceDate: Date, endDate: Date) {
+    let pageNumber = 1;
+    const chats = await this.get50Chats(pageNumber);
+    const community_ids = this.getCommunityIdsMessagedSinceDateFromChats(sinceDate, chats["data"]);
+
+    if (community_ids.length == 50) {
+      // there are more than 50 chats, so we need to get the rest
+      while (true) {
+        pageNumber++;
+        const next_page_chats = await this.get50Chats(pageNumber);
+        community_ids.push(...this.getCommunityIdsMessagedSinceDateFromChats(sinceDate, next_page_chats["data"]));
+        if (next_page_chats["data"].length < 50) {
+          break;
+        }
+      }
+    }
+    return community_ids;
+  }
+
+  getCommunityIdsMessagedSinceDateFromChats(sinceDate: Date, chats: any[], endDate?: Date) {
     const community_ids: { communityId: string; fanSubscriptionId: string }[] = [];
     chats.forEach((chat) => {
       const last_message_at = new Date(chat["last_msg"]["created_at"]);
-      if (last_message_at > since_date) {
-        const communityId = chat["fan_profile"]["id"];
-        const fanSubscriptionId = chat["fan_profile"]["fan_subscription_id"];
-        community_ids.push({ communityId, fanSubscriptionId });
+      if (last_message_at > sinceDate) {
+        if (endDate && last_message_at > endDate) {
+          return;
+        } else {
+          const communityId = chat["fan_profile"]["id"];
+          const fanSubscriptionId = chat["fan_profile"]["fan_subscription_id"];
+          community_ids.push({ communityId, fanSubscriptionId });
+        }
       }
     });
 
@@ -168,42 +232,36 @@ export class CommunityService implements MessagingProvider {
     return msgarr;
   }
 
-  async getMessagesSinceDate(conversationsSince: Date, messageHistorySinceDate?: Date) {
-    const communityIds = await this.getCommunityAndFanIdsSinceDate(conversationsSince);
-
-    // we don't need this map anymore but might be needed in future, used in zapier call
-    const communityIdToFanSubscriptionId: { [communityId: string]: string } = {};
-    communityIds.forEach((member) => {
-      communityIdToFanSubscriptionId[member.communityId] = member.fanSubscriptionId;
-    });
-
-    if (!messageHistorySinceDate) {
-      messageHistorySinceDate = conversationsSince;
-    }
-
-    const communityIdsOnly = communityIds.map((member) => member.communityId);
-    const communityIdMessageMap = await this.getCommunityIdMessageMapSinceDate(
-      communityIdsOnly,
-      messageHistorySinceDate,
-      "both",
-    );
-
-    return communityIdMessageMap;
-  }
-
   async getCommunityIdMessageMapSinceDate(
     communityIds: string[],
     dateSince: Date,
     direction: MessageDirection = "both",
   ) {
     const communityIdMessageMap: { [communityId: string]: CommunityMessage[] } = {};
-    for (const cid of communityIds) {
-      // sleep for random amount of time to avoid rate limiting (max 100 requests per minute)
-      await delay(Math.random() * 600);
-      console.log("fetching messages for", cid);
-      const messages = await this.getMessageHistorySinceDate(cid, dateSince, direction);
-      communityIdMessageMap[cid] = messages;
+
+    console.log("fetching messages for", communityIds.length, "conversations");
+    if (communityIds.length <= 50) {
+      // make this a promise all instead
+      const promises = communityIds.map(async (cid) => {
+        // sleep for random amount of time to avoid rate limiting (max 100 requests per minute)
+        await delay(Math.random() * 2470);
+        console.log("fetching messages for", cid);
+        const messages = await this.getMessageHistorySinceDate(cid, dateSince, direction);
+        communityIdMessageMap[cid] = messages;
+      });
+
+      await Promise.all(promises);
+    } else {
+      for (const cid of communityIds) {
+        // sleep for random amount of time to avoid rate limiting (max 100 requests per minute)
+        await delay(Math.random() * 300);
+        console.log("fetching messages for", cid);
+        const messages = await this.getMessageHistorySinceDate(cid, dateSince, direction);
+        communityIdMessageMap[cid] = messages;
+      }
+      return communityIdMessageMap;
     }
+
     return communityIdMessageMap;
   }
 }

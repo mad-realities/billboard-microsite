@@ -1,14 +1,18 @@
 import fetch from "node-fetch";
-import { Vote } from "./ConversationService";
-import { incrementCount } from "./datadog";
+import { incrementCount } from "./logs/datadog";
+import { Vote } from "./db/vote";
 
 export const instagramVote = async (vote: Vote) => {
   try {
-    const isValid = await isValidUsername(vote.vote);
-    incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
+    vote.vote = vote.vote.replace("@", "");
+    const handleValid = await validInstagramHandle(vote.vote);
+    if (handleValid) {
+      const isValid = await isValidUsername(vote.vote);
+      incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
 
-    if (isValid) {
-      return vote;
+      if (isValid) {
+        return vote;
+      }
     }
   } catch (e) {
     console.error("Error checking if username", vote.vote, "exists.", "Error:", e);

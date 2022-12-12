@@ -1,23 +1,37 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { FIRST_LEADERBOARD_ID } from "./constants";
-import { Vote } from "./ConversationService";
-import { incrementCount } from "./datadog";
-import { VOTED, mixpanel } from "./mixpanel";
+import { DEFAULT_LEADERBOARD_ID } from "../constants";
+import { incrementCount } from "../logs/datadog";
+import { VOTED, mixpanel } from "../logs/mixpanel";
+import { Vote } from "./vote";
 
 dotenv.config({
   path: ".env.local",
 });
 
-const prisma = new PrismaClient({
+export const prisma = new PrismaClient({
   datasources: { db: { url: process.env.DATABASE_URL } },
 });
 
-export async function checkForVote(communityId: string, handle: string) {
+export async function getLeaderboard(leaderboardId: number, includeVotes = false) {
+  const response = await prisma.leaderboard.findUnique({
+    where: {
+      id: leaderboardId,
+    },
+    include: {
+      votes: includeVotes,
+    },
+  });
+
+  return response;
+}
+
+export async function checkForVote(communityId: string, handle: string, leaderboardId: number) {
   const response = await prisma.vote.findFirst({
     where: {
       communityId,
       instagramHandle: handle,
+      leaderboardId: leaderboardId,
     },
   });
 
@@ -44,6 +58,7 @@ export async function getUniqueVotesForCommunityId(communityId: string) {
         vote: vote.instagramHandle,
         timestamp: vote.timestamp,
         voter: vote.communityId,
+        leaderboardId: vote.leaderboardId,
       });
     }
 
@@ -88,6 +103,17 @@ async function createLeaderboard(
   return response;
 }
 
+export async function getLatestLeaderboard() {
+  // get latest leaderboard run from prisma
+  const leaderboard = await prisma.leaderboard.findFirst({
+    orderBy: {
+      endTime: "desc",
+    },
+  });
+
+  return leaderboard;
+}
+
 export async function getLatestScriptRun() {
   // get latest script run from prisma
   const latest_script_run = await prisma.scriptRun.findFirst({
@@ -99,17 +125,31 @@ export async function getLatestScriptRun() {
   return latest_script_run;
 }
 
-export async function createEmptyScriptRun() {
+export async function getLatestLeaderboardScriptRun(leaderboardId: number) {
+  // get latest script run from prisma
+  const latestScriptRun = await prisma.scriptRun.findFirst({
+    orderBy: {
+      timestamp: "desc",
+    },
+    where: {
+      leaderboardId,
+    },
+  });
+
+  return latestScriptRun;
+}
+
+export async function createEmptyScriptRun(leaderboardId: number) {
   const response = await prisma.scriptRun.create({
     data: {
-      leaderboardId: FIRST_LEADERBOARD_ID,
+      leaderboardId: leaderboardId,
     },
   });
 
   return response;
 }
 
-export async function saveVotesToDB(votes: Vote[]) {
+export async function saveVotesToDB(votes: Vote[], leaderboardId: number) {
   // create new script run
   const response = await prisma.scriptRun.create({
     data: {
@@ -120,11 +160,11 @@ export async function saveVotesToDB(votes: Vote[]) {
             instagramHandle: vote.vote,
             timestamp: vote.timestamp,
             communityId: vote.voter,
-            leaderboardId: FIRST_LEADERBOARD_ID,
+            leaderboardId: vote.leaderboardId,
           })),
         },
       },
-      leaderboardId: FIRST_LEADERBOARD_ID,
+      leaderboardId,
     },
     include: {
       votes: true,
@@ -153,12 +193,12 @@ export async function saveVotesOnlyToDB(votes: Vote[]) {
       instagramHandle: vote.vote,
       timestamp: vote.timestamp,
       communityId: vote.voter,
-      leaderboardId: FIRST_LEADERBOARD_ID,
+      leaderboardId: vote.leaderboardId,
     })),
   });
 
   incrementCount("votes", response.count);
-  return response;
+  return response.count;
 }
 
 async function getAllVotes() {

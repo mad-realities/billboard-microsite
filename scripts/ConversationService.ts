@@ -1,29 +1,10 @@
-export type Message = {
-  created_at: Date;
-  id: string;
-  inbound: boolean;
-  media: string;
-  source_type: string;
-  status: string;
-  text: string;
-};
-
-export type Vote = {
-  vote: string;
-  voter: string;
-  timestamp: Date;
-};
+import { Message, MessageDirection, MessageMap } from "./messaging/MessagingProvider";
+import { VoteWithoutLeaderboard } from "./db/vote";
 
 export type Conversation = Message[];
 
-export type MessageDirection = "inbound" | "outbound" | "both";
-
 export const ConversationService = {
-  getMessagesWithSpecificWord: (
-    ids_to_messages: { [id: string]: Conversation },
-    word: string,
-    needsFollowUpWord: boolean = false,
-  ) => {
+  getMessagesWithSpecificWord: (ids_to_messages: MessageMap, word: string, needsFollowUpWord: boolean = false) => {
     const ids_to_messages_with_word: { [id: string]: Message[] } = {};
 
     Object.keys(ids_to_messages).forEach((community_id) => {
@@ -46,6 +27,30 @@ export const ConversationService = {
       ids_to_messages_with_word[community_id] = messages_with_word;
     });
     return ids_to_messages_with_word;
+  },
+
+  getMessagesWithSpecificWords: (
+    ids_to_messages: MessageMap,
+    words: string[],
+    needFollowUpWord: boolean = false,
+  ): MessageMap => {
+    if (!words || words.length === 0) return {};
+    else {
+      let returnMessageMap: MessageMap = {};
+      words = words.map((word) => word.toLowerCase());
+      for (const i in words) {
+        let messageMap = ConversationService.getMessagesWithSpecificWord(ids_to_messages, words[i], needFollowUpWord);
+        for (const communityId in messageMap) {
+          if (returnMessageMap[communityId]) {
+            returnMessageMap[communityId] = returnMessageMap[communityId].concat(messageMap[communityId]);
+          } else {
+            returnMessageMap[communityId] = messageMap[communityId];
+          }
+        }
+      }
+
+      return returnMessageMap;
+    }
   },
   hasWordAfterKeyword: (str: string, keyword: string) => {
     str = str.replace(/^\s+|\s+$/g, "");
@@ -77,7 +82,7 @@ export const ConversationService = {
     });
     return mostRecentMessage as Message | null;
   },
-  getMostRecentMessageMap: (conversationMap: { [id: string]: Conversation }, direction: MessageDirection = "both") => {
+  getMostRecentMessageMap: (conversationMap: MessageMap, direction: MessageDirection = "both") => {
     const recentMessageMap: { [id: string]: Message } = {};
     Object.keys(conversationMap).forEach((cid) => {
       const messages = conversationMap[cid];
@@ -110,7 +115,7 @@ export const ConversationService = {
     return { vote: vote, timestamp: new Date(message.created_at) };
   },
   getVoteMap: (messages: { [id: string]: Message }, voteKeyword: string) => {
-    const idToVote: { [id: string]: Vote } = {};
+    const idToVote: { [id: string]: VoteWithoutLeaderboard } = {};
     Object.keys(messages).forEach((id) => {
       const message = messages[id];
       const vote = { voter: id, ...ConversationService.getVote(message, voteKeyword) };
@@ -119,8 +124,8 @@ export const ConversationService = {
 
     return idToVote;
   },
-  getVotesMap: (messages: { [id: string]: Conversation }, voteKeyword: string) => {
-    const idToVote: { [id: string]: Vote[] } = {};
+  getVotesMap: (messages: MessageMap, voteKeyword: string) => {
+    const idToVote: { [id: string]: VoteWithoutLeaderboard[] } = {};
     Object.keys(messages).forEach((id) => {
       const messagesWithKeyword = messages[id];
       const votes = messagesWithKeyword.map((message) => {
@@ -131,13 +136,39 @@ export const ConversationService = {
 
     return idToVote;
   },
-  getVotesFromMessages: (conversationMap: { [id: string]: Conversation }, voteKeyword = "vote: ") => {
-    const communityIdMessageWithWordMap = ConversationService.getMessagesWithSpecificWord(
+
+  getVotesMapFromKeywords: (messages: MessageMap, voteKeywords: string[]) => {
+    const idToVote: { [id: string]: VoteWithoutLeaderboard[] } = {};
+    Object.keys(messages).forEach((id) => {
+      voteKeywords.forEach((voteKeyword) => {
+        const messagesWithKeyword = ConversationService.getMessagesWithSpecificWord(
+          { [id]: messages[id] },
+          voteKeyword,
+          true,
+        );
+
+        if (!messagesWithKeyword[id]) return;
+        const votes = messagesWithKeyword[id].map((message) => {
+          return { voter: id, ...ConversationService.getVote(message, voteKeyword) };
+        });
+
+        if (idToVote[id]) {
+          idToVote[id] = idToVote[id].concat(votes);
+        } else idToVote[id] = votes;
+      });
+    });
+
+    return idToVote;
+  },
+
+  getVotesFromMessages: (conversationMap: MessageMap, voteKeywords: string[] = ["vote: "]) => {
+    const communityIdMessageWithWordMap = ConversationService.getMessagesWithSpecificWords(
       conversationMap,
-      voteKeyword,
+      voteKeywords,
       true,
     );
-    const idsToVotes = ConversationService.getVotesMap(communityIdMessageWithWordMap, voteKeyword);
+
+    const idsToVotes = ConversationService.getVotesMapFromKeywords(communityIdMessageWithWordMap, voteKeywords);
     return idsToVotes;
   },
   getVoteMapFromMessageMap: (conversationMap: { [id: string]: Message }, voteKeyword = "vote: ") => {

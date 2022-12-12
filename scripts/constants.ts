@@ -10,6 +10,18 @@ export const BAD_VOTE_RESPONSE = () =>
 export const TOO_LATE_RESPONSE = () =>
   `Oops! Voting has closed. Follow us on IG for more opportunities to get Mad Famous in the near future  https://www.instagram.com/madrealities/`;
 
+export const INVALID_VOTE_RESPONSE = (handle: string) =>
+  `Oops! @${handle} is not a valid Instagram handle - vote didn't go through.`;
+
+export const NO_ACTIVE_LEADERBOARD_RESPONSE = () =>
+  `Uh oh! There are no active leaderboard right now. Follow us on IG for more opportunities to get Mad Famous in the near future  https://www.instagram.com/madrealities/`;
+
+export const LEADERBOARD_CLOSED = (leaderboardId: number) =>
+  `Oops! Voting has closed. You can checkout the final rankings of the leaderboard by clicking the link below. https://billboard.madrealities.xyz/leaderboard/${leaderboardId}`;
+
+export const LEADERBOARD_NOT_OPEN_YET = (leaderboardStart: Date) =>
+  `Oops! The leaderboard isn't open yet! Voting begins at ${leaderboardStart.toLocaleString()}. Only votes cast after the leaderboard opens will count.`;
+
 // 1pm est dec 7th
 export const BILLBOARD_END_TIME = new Date("2022-12-07T18:00:00.000Z");
-export const FIRST_LEADERBOARD_ID = 1;
+export const DEFAULT_LEADERBOARD_ID = 1;
