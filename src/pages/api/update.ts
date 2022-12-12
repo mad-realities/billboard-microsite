@@ -1,6 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { runScript } from "../../../scripts/script";
+import { SendVotesCommand, VoteCommand } from "../../../scripts/commands";
+import CommandCoordinator from "../../../scripts/commands/CommandCoordinator";
+import ScriptCoordinator from "../../../scripts/ScriptCoordinator";
 import { prisma } from "../../server/prisma";
+
+const cc = new CommandCoordinator([new VoteCommand(["vote: "]), new SendVotesCommand(["send:votes"])]);
+const scriptCoordinator = new ScriptCoordinator(cc, { debug: false, withDelay: true });
 
 // TODO: Convert to POST request to ensure API key doesn't get passed in plaintext.
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -31,7 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               new Date(latestScriptRun.timestamp).toLocaleTimeString(),
           });
         } else {
-          const scriptResponse = await runScript();
+          const scriptResponse = await scriptCoordinator.runCommandsSinceLastRun();
           res.status(200).json(scriptResponse);
         }
       }

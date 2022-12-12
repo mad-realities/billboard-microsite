@@ -1,14 +1,18 @@
 import fetch from "node-fetch";
-import { Vote } from "./ConversationService";
-import { incrementCount } from "./datadog";
+import { incrementCount } from "./monitoring/datadog";
+import { Vote } from "./db/vote";
 
 export const instagramVote = async (vote: Vote) => {
   try {
-    const isValid = await isValidUsername(vote.vote);
-    incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
+    vote.vote = vote.vote.replace("@", "");
+    const handleValid = await validInstagramHandle(vote.vote);
+    if (handleValid) {
+      const isValid = await isValidUsername(vote.vote);
+      incrementCount("instgram.account.valid", 1, [`handle:${vote.vote}`, `valid:${isValid}`, "success"]);
 
-    if (isValid) {
-      return vote;
+      if (isValid) {
+        return vote;
+      }
     }
   } catch (e) {
     console.error("Error checking if username", vote.vote, "exists.", "Error:", e);
@@ -76,8 +80,17 @@ const getUserData = async (username: string) => {
     .catch((err) => console.error(err));
 };
 
+/**
+ * Your handle can't exceed 30 characters
+ * It can only contain letters, numbers, and periods
+ * It can't contain symbols or punctuation marks
+ * It needs to be unique
+ */
+export async function validInstagramHandle(handle: string) {
+  return handle.length <= 30 && /^[a-zA-Z0-9._]+$/.test(handle);
+}
+
 async function main() {
   const isValid = await isValidUsername("ftx");
   console.log("isValid", isValid);
 }
-main();
