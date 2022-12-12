@@ -4,8 +4,8 @@ import CommandCoordinator from "../../../scripts/commands/CommandCoordinator";
 import ScriptCoordinator from "../../../scripts/ScriptCoordinator";
 import { prisma } from "../../server/prisma";
 
-const cc = new CommandCoordinator([new VoteCommand(["vote: ", "v: "]), new SendVotesCommand(["send:vote"])]);
-const scriptCoordinator = new ScriptCoordinator(cc, { debug: true });
+const cc = new CommandCoordinator([new VoteCommand(["vote: "]), new SendVotesCommand(["send:votes"])]);
+const scriptCoordinator = new ScriptCoordinator(cc, { debug: false, withDelay: true });
 
 // TODO: Convert to POST request to ensure API key doesn't get passed in plaintext.
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

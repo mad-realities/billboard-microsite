@@ -163,15 +163,15 @@ export default class ScriptCoordinator {
 
 async function main() {
   const cc = new CommandCoordinator([
-    new VoteCommand(["vote: ", "vote "]),
+    new VoteCommand(["vote: "]),
     new SendVotesCommand(["send:votes", "send votes", "send nudes"]),
   ]);
-  const sc = new ScriptCoordinator(cc, { debug: true, withDelay: false });
+  const sc = new ScriptCoordinator(cc, { debug: false, withDelay: false });
 
-  // const response = await sc.runCommandsSinceLastRun();
+  const response = await sc.runCommandsSinceLastRun();
   // const response = await sc.runCommandsForLeaderboard(1);
   // const response = await sc.runCommandsInSweepingPattern();
-  // console.log(response);
+  console.log(response);
 }
 
 main();

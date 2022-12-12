@@ -1,5 +1,5 @@
 import { Message, MessageDirection, MessageMap } from "../messaging/MessagingProvider";
-import ComandCoordinator from "./CommandCoordinator";
+import CommandCoordinator from "./CommandCoordinator";
 import SendVotesCommand from "./SendVotesCommand";
 import VoteCommand from "./VoteCommand";
 
@@ -26,7 +26,7 @@ const TEST_MESSAGES: MessageMap = {
 };
 
 async function main() {
-  const cc = new ComandCoordinator([new VoteCommand(["vote: "]), new SendVotesCommand(["send:votes"])]);
+  const cc = new CommandCoordinator([new VoteCommand(["vote: "]), new SendVotesCommand(["send:votes"])]);
   const response = await cc.apply(TEST_MESSAGES);
   console.log(response);
 }

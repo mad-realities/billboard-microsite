@@ -1,7 +1,7 @@
 import { MessageMap } from "../messaging/MessagingProvider";
 import Command, { CommandReturnType } from "./Command";
 
-export default class ComandCoordinator {
+export default class CommandCoordinator {
   async apply(messages: MessageMap): Promise<{ [command: string]: CommandReturnType }> {
     const commandReturnTypes: { [command: string]: CommandReturnType } = {};
     for (const command of this.commands) {
