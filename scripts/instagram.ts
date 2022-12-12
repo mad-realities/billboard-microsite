@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { incrementCount } from "./logs/datadog";
+import { incrementCount } from "./monitoring/datadog";
 import { Vote } from "./db/vote";
 
 export const instagramVote = async (vote: Vote) => {

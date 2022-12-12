@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { incrementCount } from "../logs/datadog";
+import { incrementCount } from "../monitoring/datadog";
 import { addDays, delay } from "../utils";
 import { MessageDirection, MessagePayload, MessagingProvider } from "./MessagingProvider";
 dotenv.config({

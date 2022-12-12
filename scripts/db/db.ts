@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { incrementCount } from "../logs/datadog";
-import { VOTED, mixpanel } from "../logs/mixpanel";
+import { incrementCount } from "../monitoring/datadog";
+import { VOTED, mixpanel } from "../monitoring/mixpanel";
 import { Vote } from "./vote";
 
 dotenv.config({
