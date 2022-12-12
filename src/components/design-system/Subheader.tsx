@@ -5,7 +5,7 @@ type SubheaderProps = {
   flipped?: boolean;
 };
 
-export default function Subheader({ children, flipped }: SubheaderProps) {
+export const Subheader = ({ children, flipped }: SubheaderProps) => {
   return (
     <div
       className={clsx([
@@ -24,4 +24,6 @@ export default function Subheader({ children, flipped }: SubheaderProps) {
       <div className={clsx(flipped && "rotate-180")}>{children}</div>
     </div>
   );
-}
+};
+
+export default Subheader;

@@ -3,8 +3,7 @@ import { loadRank } from "../api/rank";
 import { prisma } from "../../server/prisma";
 import { deserializeLeaderboard, LeaderboardProps, serializeLeaderboard } from ".";
 import LeaderboardPage from "../../components/LeaderboardPage";
-
-const pageSize = 20;
+import { LEADERBOARD_PAGE_SIZE } from "../../client/constants";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext): Promise<LeaderboardProps> => {
   try {
@@ -12,7 +11,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
     const { id } = context.query;
     const leaderboardId = parseInt(id as string);
 
-    const results = await loadRank(leaderboardId, 0, pageSize);
+    const results = await loadRank(leaderboardId, 0, LEADERBOARD_PAGE_SIZE);
 
     const leaderboard = await prisma.leaderboard.findUnique({
       where: {

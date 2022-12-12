@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import BillboardButton from "../components/design-system/BillboardButton";
 import Subheader from "../components/design-system/Subheader";
 import { useEffect, useState } from "react";
-import { getSmsHref } from "../client/utils";
+import { getSmsHref } from "../client/stringUtils";
 import { getLinkPreview } from "../linkPreviewConfig";
 import { mixpanelClient, VISITED_NOMINATE } from "../client/mixpanel";
 
@@ -40,7 +40,7 @@ const Vote = () => {
           CHECK RANK
         </BillboardButton>
       </div>
-      <div className="text-center text-xl">WHO&apos;S FACE SHOULD BE ON A BILLBOARD IN TIMES SQUARE?</div>
+      <div className="text-center text-xl uppercase">Whose face should be on a billboard in Times Square?</div>
       <div className="flex w-3/4 flex-col gap-2">
         <input
           placeholder="enter instagram username here"
@@ -51,17 +51,17 @@ const Vote = () => {
           {handleIsValid ? (
             <a
               href={getSmsHref(handle)}
-              className="w-full"
+              className="w-full uppercase"
               onClick={() => {
                 if (handleIsValid) {
                   router.push("/profile/" + handle);
                 }
               }}
             >
-              TEXT TO CAST VOTE
+              Text to cast vote
             </a>
           ) : (
-            <>TEXT TO CAST VOTE</>
+            <>Text to cast vote</>
           )}
         </BillboardButton>
       </div>

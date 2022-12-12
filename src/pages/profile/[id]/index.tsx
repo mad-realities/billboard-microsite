@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import BillboardButton from "../../../components/design-system/BillboardButton";
 import Subheader from "../../../components/design-system/Subheader";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { cutOffStringIfTooLong, getSmsHref, ordinal_suffix_of } from "../../../client/utils";
+import { truncateString, getSmsHref, ordinal_suffix_of } from "../../../client/stringUtils";
 import { RWebShare } from "react-web-share";
 import { loadRankForHandle } from "../../api/rank";
 import { getLinkPreview } from "../../../linkPreviewConfig";
@@ -82,7 +82,7 @@ const ProfileCard = ({
     <>
       <div className="text-3xl">
         <a href={`https://instagram.com/${handle}`} target="_blank" rel="noreferrer">
-          <span className="text-mr-yellow underline">@{cutOffStringIfTooLong(handle, 15)}</span>
+          <span className="text-mr-yellow underline">@{truncateString(handle, 15)}</span>
         </a>
         <span> {hasVote ? "is in..." : "has"}</span>
       </div>

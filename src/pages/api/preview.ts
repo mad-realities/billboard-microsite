@@ -25,7 +25,7 @@ export async function getLinkPreviewUrl(handle: string, host: string) {
       const response = await fetch(url, { method: "POST", headers, body: JSON.stringify(payload) });
       const json = await response.json();
 
-      const deleteResponse = await fetch(json.url, { headers, method: "DELETE" });
+      await fetch(json.url, { headers, method: "DELETE" });
 
       const response2 = await fetch(url, { method: "POST", headers, body: JSON.stringify(payload) });
       const json2 = await response2.json();

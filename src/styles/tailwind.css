@@ -1,13 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@tailwind forms;
-
-@font-face {
-  font-family: "Lilita One";
-  src: url("../../public/fonts/LilitaOne-Regular.ttf");
-  font-weight: 400;
-}
 
 @font-face {
   font-family: "Londrina Solid";
