@@ -21,10 +21,10 @@ export const BillboardButton = ({ small, transparentAccent, ...props }: Billboar
   return (
     <Button
       {...props}
+      size={small ? "sm" : "md"}
+      rounded={small ? "3xl" : "xl"}
       className={
-        small
-          ? clsx("h-7", "rounded-3xl", props.className)
-          : clsx("rounded-[12px]", "border-4", "border-double", borderColor, textColor, props.className)
+        small ? clsx(props.className) : clsx("border-4", "border-double", borderColor, textColor, props.className)
       }
     >
       {props.children}

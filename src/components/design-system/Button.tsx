@@ -29,7 +29,7 @@ export interface ButtonProps extends Pick<AriaButtonProps<"button">, "isDisabled
   text?: ReactNode;
   /** @default "default" */
   style?: "default" | "minimal";
-  rounded?: boolean;
+  rounded?: boolean | string;
   fill?: boolean;
   children?: ReactNode;
   submit?: boolean;
@@ -67,8 +67,16 @@ export const Button = (props: ButtonProps) => {
       {...ariaButtonProps}
       type={submit ? "submit" : "button"}
       className={clsx(
-        "flex items-center justify-center rounded px-3 py-1.5 focus:outline-none",
-        rounded && "rounded-md",
+        "flex items-center justify-center focus:outline-none",
+        match(rounded)
+          .with(true, () => "rounded-md")
+          .with("sm", () => "rounded-sm")
+          .with("md", () => "rounded-md")
+          .with("lg", () => "rounded-lg")
+          .with("xl", () => "rounded-xl")
+          .with("2xl", () => "rounded-2xl")
+          .with("3xl", () => "rounded-3xl")
+          .otherwise(() => ""),
         fill && "w-full",
         style === "minimal" && [
           "bg-transparent",
@@ -100,7 +108,7 @@ export const Button = (props: ButtonProps) => {
             .with("transparent", () => "bg-transparent")
             .otherwise(() => "bg-mr-black text-mr-white"),
         match(size)
-          .with("sm", () => "h-8 px-1 text-sm font-semibold")
+          .with("sm", () => "h-7 px-3 py-1 text-sm font-semibold")
           .with("lg", () => "h-12 px-5 py-3 text-lg font-semibold")
           .otherwise(() => "h-12 px-3 text-base font-semibold"),
         "active:opacity-75",
